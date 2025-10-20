@@ -6,6 +6,8 @@
 
 A production-ready personal portfolio built with Laravel. It features SEO-optimized public pages, an admin area to manage content, and visitor analytics.
 
+Visit Here: jayxcoder.duckdns.org
+
 ## Features
 
 - Public pages: Home, About, Skills, Projects, Portfolio, Experience, Contact
