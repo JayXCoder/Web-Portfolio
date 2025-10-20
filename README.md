@@ -1,0 +1,205 @@
+# Portfolio (Laravel Based)
+
+<p align="center">
+  <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%231a1a1a' rx='8'/%3E%3Crect x='8' y='8' width='84' height='84' fill='none' stroke='%238b5cf6' stroke-width='2' rx='6'/%3E%3Ctext x='50' y='42' font-family='Courier New, monospace' font-size='20' font-weight='bold' text-anchor='middle' fill='%23ffffff'%3EJXG%3C/text%3E%3Ctext x='50' y='62' font-family='Courier New, monospace' font-size='12' text-anchor='middle' fill='%238b5cf6'%3E%3E_%3C/text%3E%3C/svg%3E" alt="JXG Terminal Logo" width="260" />
+</p>
+
+A production-ready personal portfolio built with Laravel. It features SEO-optimized public pages, an admin area to manage content, and visitor analytics.
+
+## Features
+
+- Public pages: Home, About, Skills, Projects, Portfolio, Experience, Contact
+- Individual portfolio items by slug (`/portfolio/{slug}`)
+- Contact form submission with admin review workflow
+- Admin authentication, profile management, and role-based access
+- Portfolio and Work Experience CRUD (publish, feature, sort order)
+- Visitor analytics API and admin dashboards (unique visitors, page views, devices, browsers, countries)
+- SEO: sitemap, robots, Open Graph, Twitter cards, structured data slots
+- Asset pipeline via Vite; modern, responsive Bootstrap 5 UI
+- Secure route grouping for admin with HTTPS enforcement
+
+## Tech Stack
+
+- Laravel 10/11 (PHP 8.2+)
+- MySQL or MariaDB (any SQL DB supported by Laravel)
+- Redis (optional) for cache/queue
+- Bootstrap 5, Font Awesome, Google Fonts
+- Vite for asset bundling
+- Docker and Docker Compose (optional)
+
+## Repository Structure (high level)
+
+- `app/Http/Controllers` — Public and admin controllers
+- `app/Models` — Eloquent models: `Portfolio`, `WorkExperience`, `Contact`, `Visitor`, `User`
+- `resources/views` — Blade views; `layouts/app.blade.php` is the main layout
+- `routes/web.php` — Public/admin routes, SEO routes, file-serving helpers
+- `public/` — Public assets, `robots.txt`, `sitemap*.xml`
+- `storage/` — Uploaded images and framework storage
+
+## Requirements (manual/local)
+
+- PHP 8.2+
+- Composer
+- Node 18+ and npm (for Vite dev/build)
+- MySQL/MariaDB running locally
+
+## Quick Start (manual)
+
+1) Copy environment file and set credentials:
+
+```bash
+cp .env.example .env
+php artisan key:generate
+```
+
+2) Configure DB in `.env` (DB_HOST, DB_PORT, DB_DATABASE, DB_USERNAME, DB_PASSWORD).
+
+3) Install dependencies:
+
+```bash
+composer install
+npm install
+```
+
+4) Run migrations and optionally seed:
+
+```bash
+php artisan migrate
+# php artisan db:seed
+```
+
+5) Link storage and start servers:
+
+```bash
+php artisan storage:link
+php artisan serve
+npm run dev
+```
+
+Visit `http://127.0.0.1:8000`.
+
+## Docker Setup
+
+You can run the entire stack using Docker Compose. Below is a reference compose file; save as `docker-compose.yml` at the repository root.
+
+```yaml
+version: "3.9"
+services:
+  app:
+    image: webdevops/php-nginx:8.2
+    working_dir: /app
+    volumes:
+      - ./:/app
+    environment:
+      - WEB_DOCUMENT_ROOT=/app/public
+      - PHP_DISPLAY_ERRORS=0
+      - PHP_MEMORY_LIMIT=512M
+    depends_on:
+      - db
+    ports:
+      - "8080:80"
+
+  db:
+    image: mariadb:11
+    environment:
+      - MARIADB_DATABASE=portfolio
+      - MARIADB_USER=portfolio
+      - MARIADB_PASSWORD=portfolio
+      - MARIADB_ROOT_PASSWORD=root
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+      - "3307:3306"
+
+  node:
+    image: node:20
+    working_dir: /app
+    command: sh -c "npm install && npm run build && tail -f /dev/null"
+    volumes:
+      - ./:/app
+
+volumes:
+  db_data:
+```
+
+### First-time bootstrap
+
+1) Create `.env` and set DB to match compose:
+
+```
+DB_CONNECTION=mysql
+DB_HOST=db
+DB_PORT=3306
+DB_DATABASE=portfolio
+DB_USERNAME=portfolio
+DB_PASSWORD=portfolio
+APP_URL=http://localhost:8080
+```
+
+2) Start containers:
+
+```bash
+docker compose up -d
+```
+
+3) Install PHP deps and run artisan commands inside the app container:
+
+```bash
+docker compose exec app bash -lc "composer install && php artisan key:generate && php artisan migrate && php artisan storage:link"
+```
+
+4) Build assets (node service already runs build on start). For development HMR you can run:
+
+```bash
+docker compose exec node bash -lc "npm run dev"
+```
+
+Open `http://localhost:8080`.
+
+### Useful container commands
+
+- Shell into PHP container: `docker compose exec app bash`
+- Run artisan: `docker compose exec app php artisan <cmd>`
+- Run composer: `docker compose exec app composer <cmd>`
+- Rebuild assets: `docker compose exec node npm run build`
+
+## Admin Access
+
+- Visit `/admin/login`
+- Create a user via tinker or a seed. Example:
+
+```bash
+php artisan tinker
+>>> \App\Models\User::create(['name'=>'Admin','email'=>'admin@example.com','password'=>bcrypt('secret123'),'role'=>'admin','is_active'=>true]);
+```
+
+## SEO
+
+- `GET /sitemap.xml` and `GET /robots.txt` are generated by routes
+- Set `APP_URL` in `.env` correctly for canonical links
+
+## Environment Variables
+
+Key variables you may need:
+
+- `APP_NAME`, `APP_ENV`, `APP_KEY`, `APP_URL`
+- `DB_*` — database configuration
+- `SESSION_DRIVER`, `CACHE_DRIVER`, `QUEUE_CONNECTION`
+- `LOG_CHANNEL`, `LOG_LEVEL`
+
+## Testing
+
+```bash
+php artisan test
+```
+
+## Deployment Notes
+
+- Ensure `APP_ENV=production` and `APP_DEBUG=false`
+- Run `php artisan config:cache route:cache view:cache`
+- Serve the `public/` directory via your web server
+- Configure HTTPS termination and set `APP_URL` to `https://...`
+
+## License
+
+MIT (or your chosen license).

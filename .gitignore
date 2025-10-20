@@ -1,0 +1,44 @@
+# Laravel standard ignores + sensitive files
+
+# Dependencies
+/vendor/
+/node_modules/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Storage and generated keys
+/storage/*.key
+/public/storage/
+/storage/app/public/
+
+# Framework caches (generated)
+/bootstrap/cache/*.php
+.phpunit.result.cache
+.phpunit.cache
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+/.idea/
+/.vscode/
+/.fleet/
+
+# Logs
+npm-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Misc tool caches
+.php-cs-fixer.cache
+.pnp.*
+
+# Build outputs (if any)
+/build/
+/dist/
+
+# Homestead/Vagrant
+Homestead.yaml
+Homestead.json
