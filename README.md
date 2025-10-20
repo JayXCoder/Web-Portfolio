@@ -202,4 +202,26 @@ php artisan test
 
 ## License
 
-MIT (or your chosen license).
+This project is licensed under the **Eclipse Public License v2.0** (EPL-2.0).
+
+### Key Points:
+- **Open Source**: Free to use, modify, and distribute
+- **Commercial Use**: Allowed for commercial purposes
+- **Copyleft**: Derivative works must also be distributed under EPL-2.0
+- **Patent Protection**: Includes patent grants and protections
+- **Source Code**: Must be made available when distributing
+
+### Full License Text
+See [LICENSE.txt](LICENSE.txt) for the complete license terms.
+
+### Quick Summary
+You are free to:
+- ✅ Use this software for any purpose
+- ✅ Modify and create derivative works
+- ✅ Distribute copies (with source code)
+- ✅ Use in commercial products
+
+You must:
+- 📋 Include the license text with distributions
+- 📋 Make source code available when distributing
+- 📋 License derivative works under EPL-2.0
