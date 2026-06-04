@@ -8,7 +8,11 @@ use App\Services\PortfolioAiService;
 use App\Services\PortfolioService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
+use Throwable;
 
 class AdminPortfolioAiController extends Controller
 {
@@ -29,38 +33,105 @@ class AdminPortfolioAiController extends Controller
 
     public function generate(Request $request): JsonResponse
     {
-        $request->validate([
-            'markdown_files' => 'nullable|array',
-            'markdown_files.*' => 'file|mimes:md,txt|max:5120',
-            'markdown_paste' => 'nullable|string|max:100000',
-        ]);
+        try {
+            $request->validate([
+                'markdown_files' => 'nullable|array',
+                'markdown_files.*' => [
+                    'file',
+                    'max:5120',
+                    function (string $attribute, mixed $value, \Closure $fail): void {
+                        if (! $value instanceof UploadedFile) {
+                            return;
+                        }
 
-        $parts = [];
+                        $ext = strtolower($value->getClientOriginalExtension());
+                        if (! in_array($ext, ['md', 'txt'], true)) {
+                            $fail('Each file must be a .md or .txt file.');
+                        }
+                    },
+                ],
+                'markdown_paste' => 'nullable|string|max:100000',
+            ]);
 
-        if ($request->hasFile('markdown_files')) {
-            foreach ($request->file('markdown_files') as $file) {
-                $parts[] = '# '.$file->getClientOriginalName()."\n\n".$file->get();
+            $parts = [];
+
+            if ($request->hasFile('markdown_files')) {
+                foreach ($request->file('markdown_files') as $file) {
+                    if (! $file instanceof UploadedFile) {
+                        continue;
+                    }
+
+                    $parts[] = '# '.$file->getClientOriginalName()."\n\n".$this->readMarkdownFile($file);
+                }
             }
-        }
 
-        if ($request->filled('markdown_paste')) {
-            $parts[] = $request->input('markdown_paste');
-        }
+            if ($request->filled('markdown_paste')) {
+                $parts[] = $request->input('markdown_paste');
+            }
 
-        if (empty($parts)) {
+            if ($parts === []) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Provide at least one markdown file or paste content.',
+                ], 422);
+            }
+
+            $combined = implode("\n\n---\n\n", $parts);
+            $result = $this->portfolioAi->generateFromMarkdown($combined);
+
+            return response()->json($result, $result['success'] ? 200 : 422);
+        } catch (ValidationException $e) {
+            throw $e;
+        } catch (Throwable $e) {
+            Log::error('Portfolio AI generate failed', [
+                'message' => $e->getMessage(),
+                'exception' => $e::class,
+            ]);
+
             return response()->json([
                 'success' => false,
-                'message' => 'Provide at least one markdown file or paste content.',
-            ], 422);
+                'message' => 'Server error while generating portfolio. Check storage/logs/laravel.log on the server.',
+            ], 500);
+        }
+    }
+
+    private function readMarkdownFile(UploadedFile $file): string
+    {
+        $path = $file->getRealPath();
+
+        if (! is_string($path) || $path === '' || ! is_readable($path)) {
+            throw new \RuntimeException('Could not read uploaded file: '.$file->getClientOriginalName());
         }
 
-        $combined = implode("\n\n---\n\n", $parts);
-        $result = $this->portfolioAi->generateFromMarkdown($combined);
+        $contents = file_get_contents($path);
 
-        return response()->json($result, $result['success'] ? 200 : 422);
+        if ($contents === false) {
+            throw new \RuntimeException('Could not read uploaded file: '.$file->getClientOriginalName());
+        }
+
+        return $contents;
     }
 
     public function saveDraft(Request $request): JsonResponse
+    {
+        try {
+            return $this->saveDraftResponse($request);
+        } catch (ValidationException $e) {
+            throw $e;
+        } catch (Throwable $e) {
+            Log::error('Portfolio AI save failed', [
+                'message' => $e->getMessage(),
+                'exception' => $e::class,
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Server error while saving portfolio.',
+            ], 500);
+        }
+    }
+
+    private function saveDraftResponse(Request $request): JsonResponse
     {
         $request->validate([
             'portfolio' => 'required|array',

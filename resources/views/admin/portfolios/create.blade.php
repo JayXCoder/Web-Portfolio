@@ -64,8 +64,17 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
         document.getElementById('tab-manual').classList.toggle('hidden', tab !== 'manual');
     });
 });
-fetch('{{ route('admin.portfolios.ai.status') }}')
-    .then(r => r.json())
+fetch('{{ route('admin.portfolios.ai.status') }}', {
+    headers: { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+})
+    .then(async (r) => {
+        const text = await r.text();
+        try {
+            return JSON.parse(text);
+        } catch {
+            return { available: false, api_url: 'unknown', model: '' };
+        }
+    })
     .then(d => {
         const el = document.getElementById('ollama-status');
         if (d.available) {

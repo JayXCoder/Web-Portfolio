@@ -55,6 +55,7 @@ RUN composer dump-autoload --optimize --classmap-authoritative --no-interaction 
     && chmod -R ug+rwx storage bootstrap/cache
 
 COPY docker/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
+COPY docker/php/uploads.ini /usr/local/etc/php/conf.d/uploads.ini
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 
 RUN chmod +x /usr/local/bin/entrypoint.sh

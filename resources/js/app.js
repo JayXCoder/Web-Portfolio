@@ -156,9 +156,9 @@ function initPortfolioAi() {
                 body,
                 headers: { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
             });
-            const data = await res.json();
+            const data = await parseJsonResponse(res);
             if (!res.ok || !data.success) {
-                throw new Error(data.message || data.error || 'Generation failed');
+                throw new Error(data.message || data.error || formatValidationErrors(data) || 'Generation failed');
             }
 
             lastDraft = data.portfolio;
@@ -191,9 +191,9 @@ function initPortfolioAi() {
                 },
                 body: JSON.stringify({ portfolio: lastDraft }),
             });
-            const data = await res.json();
+            const data = await parseJsonResponse(res);
             if (!res.ok || !data.success) {
-                throw new Error(data.message || 'Save failed');
+                throw new Error(data.message || formatValidationErrors(data) || 'Save failed');
             }
             window.location.href = data.redirect || form.dataset.indexUrl;
         } catch (e) {
@@ -201,6 +201,34 @@ function initPortfolioAi() {
             saveBtn.disabled = false;
         }
     });
+}
+
+async function parseJsonResponse(res) {
+    const text = await res.text();
+    const contentType = res.headers.get('content-type') || '';
+
+    if (!contentType.includes('application/json')) {
+        const snippet = text.replace(/\s+/g, ' ').trim().slice(0, 160);
+        throw new Error(
+            snippet
+                ? `Server returned an error page instead of JSON: ${snippet}`
+                : `Server returned ${res.status} without JSON (check PHP/nginx logs).`,
+        );
+    }
+
+    try {
+        return JSON.parse(text);
+    } catch {
+        throw new Error('Server returned invalid JSON. Try again or check server logs.');
+    }
+}
+
+function formatValidationErrors(data) {
+    if (!data?.errors || typeof data.errors !== 'object') {
+        return '';
+    }
+
+    return Object.values(data.errors).flat().join(' ');
 }
 
 function showStatus(el, message, type) {
