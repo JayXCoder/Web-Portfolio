@@ -135,7 +135,15 @@ class Portfolio extends Model
             return $path;
         }
 
-        return route('portfolio.image', basename($path));
+        return route('portfolio.image', ['filename' => basename($path)]);
+    }
+
+    /**
+     * Blade-friendly alias (snake_case is not auto-mapped to imageUrl).
+     */
+    public function image_url(?string $path): ?string
+    {
+        return $this->imageUrl($path);
     }
 
     /**

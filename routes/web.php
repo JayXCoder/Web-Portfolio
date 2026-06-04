@@ -8,6 +8,7 @@ use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\VisitorController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\AdminPortfolioAiController;
+use App\Http\Controllers\StorageAssetController;
 
 // Main portfolio routes
 Route::get('/', [PortfolioController::class, 'home'])->name('home');
@@ -56,33 +57,14 @@ Route::get('/robots.txt', function() {
         ->header('Content-Type', 'text/plain');
 })->name('robots');
 
-// Serve portfolio images through Laravel to bypass permission issues
-Route::get('/storage/portfolios/{filename}', function (string $filename) {
-    $filename = basename($filename);
-    $candidates = [
-        storage_path('app/public/portfolios/'.$filename),
-        storage_path('app/public/'.$filename),
-    ];
+// Serve uploaded assets through Laravel (works with Docker volumes + route:cache)
+Route::get('/storage/portfolios/{filename}', [StorageAssetController::class, 'portfolioImage'])
+    ->where('filename', '[A-Za-z0-9._-]+')
+    ->name('portfolio.image');
 
-    foreach ($candidates as $path) {
-        if (is_file($path)) {
-            return response()->file($path);
-        }
-    }
-
-    abort(404);
-})->where('filename', '[A-Za-z0-9._-]+')->name('portfolio.image');
-
-// Serve company logos through Laravel to bypass permission issues
-Route::get('/storage/company-logos/{filename}', function($filename) {
-    $path = storage_path('app/public/company-logos/' . $filename);
-    
-    if (!file_exists($path)) {
-        abort(404);
-    }
-    
-    return response()->file($path);
-})->name('company.logo');
+Route::get('/storage/company-logos/{filename}', [StorageAssetController::class, 'companyLogo'])
+    ->where('filename', '[A-Za-z0-9._-]+')
+    ->name('company.logo');
 
 // Individual portfolio item routes
 Route::get('/portfolio/{slug}', [PortfolioController::class, 'portfolioItem'])->name('portfolio.item');

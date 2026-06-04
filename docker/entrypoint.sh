@@ -50,7 +50,9 @@ php artisan storage:link --force 2>/dev/null || true
 
 if [ "${APP_ENV}" = "production" ]; then
     php artisan config:cache --no-interaction
+    php artisan route:clear --no-interaction
     php artisan route:cache --no-interaction
+    php artisan view:clear --no-interaction
     php artisan view:cache --no-interaction
 fi
 

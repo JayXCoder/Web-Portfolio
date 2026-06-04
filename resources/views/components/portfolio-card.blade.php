@@ -3,7 +3,7 @@
 <article {{ $attributes->merge(['class' => 'card-surface-hover fade-in-view overflow-hidden flex flex-col']) }} data-category="{{ $item->category }}">
     <div class="aspect-video bg-surface-muted">
         @if($item->main_image)
-            <img src="{{ $item->image_url($item->main_image) }}" alt="{{ $item->title }}" class="h-full w-full object-cover" loading="lazy" width="640" height="360">
+            <img src="{{ $item->imageUrl($item->main_image) }}" alt="{{ $item->title }}" class="h-full w-full object-cover" loading="lazy" width="640" height="360">
         @else
             <div class="flex h-full items-center justify-center text-text-dim text-sm">No image</div>
         @endif
