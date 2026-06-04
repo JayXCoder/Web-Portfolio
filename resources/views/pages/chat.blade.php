@@ -96,7 +96,8 @@ function appendMsg(box, text, role, options = {}) {
             const a = document.createElement('a');
             a.href = project.url;
             a.className = 'btn-secondary text-xs !min-h-9 !px-3 !py-1.5';
-            a.textContent = 'View project: ' + project.title;
+            a.textContent = project.title;
+            a.title = 'View project: ' + project.title;
             actions.appendChild(a);
         });
         el.appendChild(actions);
@@ -114,8 +115,18 @@ function escapeHtml(text) {
         .replace(/"/g, '&quot;');
 }
 
+function sanitizeChatReply(text) {
+    return text
+        .replace(/^[\s*\-•]*View project:\s*.*$/gim, '')
+        .replace(/\s*\(slug:\s*[a-z0-9-]+\)/gi, '')
+        .replace(/\bslug:\s*[a-z0-9-]+/gi, '')
+        .replace(/\s*Use the buttons below[^\n.]*/gi, '')
+        .replace(/\n{3,}/g, '\n\n')
+        .trim();
+}
+
 function formatChatMarkdown(text) {
-    let safe = escapeHtml(text);
+    let safe = escapeHtml(sanitizeChatReply(text));
     safe = safe.replace(/\*\*(.+?)\*\*/gs, '<strong class="font-semibold text-text">$1</strong>');
     safe = safe.replace(/(?<!\*)\*([^*\n]+)\*(?!\*)/g, '<em class="text-text-muted">$1</em>');
     safe = safe.replace(/`([^`\n]+)`/g, '<code class="rounded bg-oled/60 px-1 py-0.5 text-uv-bright text-xs">$1</code>');

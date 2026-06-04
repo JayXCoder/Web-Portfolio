@@ -182,6 +182,24 @@ class ChatContextService
     }
 
     /**
+     * @param  list<string>  $slugs
+     * @return Collection<int, Portfolio>
+     */
+    public function portfoliosBySlugs(array $slugs): Collection
+    {
+        $slugs = array_values(array_filter($slugs, fn ($s) => is_string($s) && $s !== ''));
+
+        if ($slugs === []) {
+            return collect();
+        }
+
+        return Portfolio::published()
+            ->whereIn('slug', $slugs)
+            ->ordered()
+            ->get();
+    }
+
+    /**
      * Hint appended to the system prompt for this turn when skills/projects match.
      */
     public function buildTurnHint(string $message): string
@@ -201,9 +219,9 @@ class ChatContextService
         }
 
         if ($projects->isNotEmpty()) {
-            $lines[] = 'Related portfolio projects (mention by name; UI will show View buttons):';
+            $lines[] = 'Relevant portfolio projects (mention each name once in **bold** only — never write "View project", URLs, or slug values):';
             foreach ($projects as $p) {
-                $lines[] = "- {$p->title} (slug: {$p->slug})";
+                $lines[] = "- {$p->title}";
             }
         }
 
@@ -265,10 +283,9 @@ TEXT;
         foreach ($items as $p) {
             $tech = $p->technologies_string ?: 'n/a';
             $lines[] = sprintf(
-                '- **%s** (%s) | slug: %s | Tech: %s | Summary: %s',
+                '- **%s** (%s) | Tech: %s | Summary: %s',
                 $p->title,
                 $p->category,
-                $p->slug,
                 $tech,
                 Str::limit($p->short_description ?: $p->description, 200)
             );

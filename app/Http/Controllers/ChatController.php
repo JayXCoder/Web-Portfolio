@@ -83,15 +83,25 @@ class ChatController extends Controller
             'temperature' => 0.35,
         ]);
 
-        $reply = $response['response'] ?? config('chat.refusal_hint');
+        $rawReply = $response['response'] ?? config('chat.refusal_hint');
 
-        if ($response['success'] && $matchedSkills !== [] && $this->replyDeniesListedSkills($reply, $matchedSkills)) {
-            $reply = $this->buildSkillAffirmation($matchedSkills, $relatedPortfolios);
+        if ($response['success'] && $matchedSkills !== [] && $this->replyDeniesListedSkills($rawReply, $matchedSkills)) {
+            $rawReply = $this->buildSkillAffirmation($matchedSkills, $relatedPortfolios);
         }
 
         if ($response['success']) {
-            $relatedPortfolios = $this->chatContext->refineRelatedPortfolios($relatedPortfolios, $reply, $message);
+            $slugsFromReply = ChatMessageFormatter::extractProjectSlugs($rawReply);
+            $relatedPortfolios = $relatedPortfolios
+                ->merge($this->chatContext->portfoliosBySlugs($slugsFromReply))
+                ->unique('id')
+                ->values();
+
+            $relatedPortfolios = $this->chatContext->refineRelatedPortfolios($relatedPortfolios, $rawReply, $message);
         }
+
+        $reply = $response['success']
+            ? ChatMessageFormatter::sanitizeReply($rawReply)
+            : $rawReply;
 
         return response()->json([
             'success' => $response['success'],
@@ -169,8 +179,8 @@ class ChatController extends Controller
         $text = "Yes. Jay has experience with {$list}, listed on his Skills page under AI/ML and related areas.";
 
         if ($relatedPortfolios->isNotEmpty()) {
-            $names = $relatedPortfolios->pluck('title')->implode(', ');
-            $text .= " Related work appears in his portfolio ({$names}). Use the buttons below to open those projects.";
+            $names = $relatedPortfolios->pluck('title')->map(fn ($t) => "**{$t}**")->implode(', ');
+            $text .= " Related portfolio work includes {$names}.";
         } else {
             $text .= ' Ask about a specific project or his AI/ML stack for more detail.';
         }
