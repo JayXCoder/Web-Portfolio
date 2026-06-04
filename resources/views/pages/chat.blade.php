@@ -7,12 +7,7 @@
     <div class="site-container max-w-2xl">
         <h1 class="section-title fade-in-view">AI assistant</h1>
         <p class="section-subtitle fade-in-view">
-            Ask about my projects, skills, and experience only. Powered by Ollama.
-            @if($isAvailable)
-                <span class="text-success">· online</span>
-            @else
-                <span class="text-warning">· offline</span>
-            @endif
+            Ask about my projects, skills, and experience.
         </p>
 
         <div class="card-surface mt-8 flex h-[min(70dvh,560px)] flex-col fade-in-view">
@@ -27,6 +22,9 @@
                 <input type="text" id="chat-input" class="input-field flex-1" placeholder="Type a message…" maxlength="2000" {{ $isAvailable ? '' : 'disabled' }} autocomplete="off">
                 <button type="submit" class="btn-primary shrink-0" {{ $isAvailable ? '' : 'disabled' }}>Send</button>
             </form>
+            @unless($isAvailable)
+            <p class="border-t border-border px-4 py-2 text-center text-xs text-warning">Assistant is temporarily unavailable. Try again later.</p>
+            @endunless
         </div>
     </div>
 </section>
@@ -42,7 +40,7 @@ document.getElementById('chat-form')?.addEventListener('submit', async (e) => {
     if (!msg) return;
     input.value = '';
     appendMsg(box, msg, 'user');
-    appendMsg(box, 'Thinking…', 'bot', true);
+    appendMsg(box, 'Thinking…', 'bot', { loading: true });
     try {
         const res = await fetch('{{ route('chat.send') }}', {
             method: 'POST',
@@ -56,17 +54,45 @@ document.getElementById('chat-form')?.addEventListener('submit', async (e) => {
         const data = await res.json();
         box.querySelector('[data-loading]')?.remove();
         if (data.context) window.chatContext = data.context;
-        appendMsg(box, data.message || data.error || 'No response', 'bot');
+        appendMsg(box, data.message || data.error || 'No response', 'bot', {
+            related_projects: data.related_projects || [],
+        });
     } catch {
         box.querySelector('[data-loading]')?.remove();
         appendMsg(box, 'Connection error.', 'bot');
     }
 });
-function appendMsg(box, text, role, loading) {
+
+function appendMsg(box, text, role, options = {}) {
     const el = document.createElement('div');
-    el.className = 'rounded-xl px-4 py-3 text-sm max-w-[90%] ' + (role === 'user' ? 'ml-auto bg-uv/20 text-text' : 'bg-surface-muted text-text-muted');
-    if (loading) el.dataset.loading = '1';
-    el.textContent = text;
+    const isUser = role === 'user';
+    el.className =
+        'rounded-xl px-4 py-3 text-sm max-w-[90%] ' +
+        (isUser ? 'ml-auto bg-uv/20 text-text' : 'bg-surface-muted text-text');
+
+    if (options.loading) {
+        el.dataset.loading = '1';
+        el.classList.add('text-text-muted');
+    }
+
+    const p = document.createElement('p');
+    p.className = 'whitespace-pre-wrap';
+    p.textContent = text;
+    el.appendChild(p);
+
+    if (!isUser && options.related_projects?.length) {
+        const actions = document.createElement('div');
+        actions.className = 'mt-3 flex flex-wrap gap-2';
+        options.related_projects.forEach((project) => {
+            const a = document.createElement('a');
+            a.href = project.url;
+            a.className = 'btn-secondary text-xs !min-h-9 !px-3 !py-1.5';
+            a.textContent = 'View project: ' + project.title;
+            actions.appendChild(a);
+        });
+        el.appendChild(actions);
+    }
+
     box.appendChild(el);
     box.scrollTop = box.scrollHeight;
 }

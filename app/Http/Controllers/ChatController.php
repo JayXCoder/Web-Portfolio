@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Services\ChatContextService;
 use App\Services\OllamaService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\View\View;
@@ -51,9 +52,17 @@ class ChatController extends Controller
         $message = $request->input('message');
         $history = $request->input('context', []);
 
+        $relatedPortfolios = $this->chatContext->findRelatedPortfolios($message);
+        $matchedSkills = $this->chatContext->findMatchingSkills($message);
+
         $system = config('chat.system_prompt')
             ."\n\n## Portfolio knowledge\n"
             .$this->chatContext->buildKnowledgeBase();
+
+        $turnHint = $this->chatContext->buildTurnHint($message);
+        if ($turnHint !== '') {
+            $system .= "\n\n".$turnHint;
+        }
 
         $messages = [
             ['role' => 'system', 'content' => $system],
@@ -73,12 +82,20 @@ class ChatController extends Controller
             'temperature' => 0.35,
         ]);
 
+        $reply = $response['response'] ?? config('chat.refusal_hint');
+
+        if ($response['success'] && $matchedSkills !== [] && $this->replyDeniesListedSkills($reply, $matchedSkills)) {
+            $reply = $this->buildSkillAffirmation($matchedSkills, $relatedPortfolios);
+        }
+
         return response()->json([
             'success' => $response['success'],
-            'message' => $response['response'] ?? config('chat.refusal_hint'),
+            'message' => $reply,
+            'related_projects' => $this->chatContext->formatProjectsForChat($relatedPortfolios),
+            'matched_skills' => $matchedSkills,
             'context' => array_merge($history, [
                 ['role' => 'user', 'content' => $message],
-                ['role' => 'assistant', 'content' => $response['response'] ?? ''],
+                ['role' => 'assistant', 'content' => $reply],
             ]),
             'timestamp' => now()->format('H:i'),
             'error' => $response['error'] ?? null,
@@ -107,6 +124,52 @@ class ChatController extends Controller
             ],
             'recommendations' => $this->getRecommendations($connectivityTest, $apiTest, $modelTest),
         ]);
+    }
+
+    /**
+     * @param  list<string>  $skills
+     */
+    private function replyDeniesListedSkills(string $reply, array $skills): bool
+    {
+        $lower = strtolower($reply);
+
+        $denyPhrases = [
+            'do not see',
+            "don't see",
+            'does not have',
+            "doesn't have",
+            'not listed',
+            'no specific experience',
+            'cannot confirm',
+            "can't confirm",
+            'not mentioned',
+        ];
+
+        foreach ($denyPhrases as $phrase) {
+            if (str_contains($lower, $phrase)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param  list<string>  $skills
+     */
+    private function buildSkillAffirmation(array $skills, Collection $relatedPortfolios): string
+    {
+        $list = implode(', ', $skills);
+        $text = "Yes. Jay has experience with {$list}, listed on his Skills page under AI/ML and related areas.";
+
+        if ($relatedPortfolios->isNotEmpty()) {
+            $names = $relatedPortfolios->pluck('title')->implode(', ');
+            $text .= " Related work appears in his portfolio ({$names}). Use the buttons below to open those projects.";
+        } else {
+            $text .= ' Ask about a specific project or his AI/ML stack for more detail.';
+        }
+
+        return $text;
     }
 
     private function testConnectivity(string $apiUrl): array
