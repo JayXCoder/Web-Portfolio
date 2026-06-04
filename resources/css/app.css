@@ -208,7 +208,20 @@
     }
 
     .skill-chip {
-        @apply flex min-h-11 items-center gap-2.5 rounded-xl border border-border bg-surface-muted/80 px-3 py-2 transition duration-200 hover:border-uv/40;
+        @apply flex min-h-10 w-full items-center gap-2 rounded-xl border border-border bg-surface-muted/80 px-2.5 py-2 transition duration-200 hover:border-uv/40;
+    }
+
+    .skill-chip--ai {
+        @apply w-auto shrink-0 px-4 py-2.5;
+    }
+
+    .skill-chip-grid {
+        @apply grid list-none gap-2 p-0 m-0;
+        grid-template-columns: repeat(auto-fill, minmax(8.75rem, 1fr));
+    }
+
+    .skill-chip-grid--dense {
+        grid-template-columns: repeat(auto-fill, minmax(7.5rem, 1fr));
     }
 
     .skill-icon-wrap {
@@ -219,12 +232,111 @@
         @apply h-[1.375rem] w-[1.375rem] object-contain;
     }
 
+    .skill-icon-img--mono {
+        filter: brightness(0) invert(1);
+        opacity: 0.92;
+    }
+
     .skill-icon-fallback {
         @apply h-5 w-5 text-uv;
     }
 
     .skill-chip-label {
-        @apply text-xs font-medium leading-tight text-text sm:text-sm;
+        @apply min-w-0 flex-1 text-xs font-medium leading-tight text-text;
+    }
+
+    .skills-ai-row {
+        @apply rounded-2xl border border-uv/25 bg-surface-elevated/80 p-5 backdrop-blur-sm;
+        box-shadow: var(--shadow-uv-sm);
+    }
+
+    .skills-ai-row__label {
+        @apply mb-4 text-center font-display text-sm font-semibold uppercase tracking-widest text-uv-bright;
+    }
+
+    .skills-ai-row__list {
+        @apply flex list-none flex-wrap items-stretch justify-center gap-3 p-0 m-0;
+    }
+
+    .skills-tree {
+        @apply relative flex flex-col items-center;
+    }
+
+    .skills-tree__node {
+        @apply w-full p-5 sm:p-6;
+    }
+
+    .skills-tree__node--apex,
+    .skills-tree__node--stacks,
+    .skills-tree__node--foundation {
+        @apply max-w-5xl;
+    }
+
+    .skills-tree__title {
+        @apply text-center font-display text-lg font-semibold text-uv-bright sm:text-xl;
+    }
+
+    .skills-tree__subtitle {
+        @apply mt-1 text-center text-xs text-text-dim sm:text-sm;
+    }
+
+    .skills-tree__node .skill-chip-grid {
+        @apply mt-5;
+    }
+
+    .skills-tree__connector {
+        @apply relative h-10 w-px shrink-0 bg-gradient-to-b from-uv/60 to-uv/20;
+    }
+
+    .skills-tree__connector--hub {
+        @apply h-8 w-full max-w-5xl bg-transparent;
+    }
+
+    .skills-tree__hub-line {
+        @apply absolute left-1/2 top-1/2 h-px w-[min(100%,48rem)] -translate-x-1/2 -translate-y-1/2;
+        background: linear-gradient(
+            90deg,
+            transparent,
+            color-mix(in srgb, var(--color-uv) 50%, transparent),
+            transparent
+        );
+    }
+
+    .skills-tree__branches {
+        @apply relative grid w-full max-w-6xl gap-4 sm:grid-cols-2 xl:grid-cols-3;
+        grid-auto-rows: 1fr;
+    }
+
+    .skills-tree__node--branch {
+        @apply flex h-full min-h-[12rem] flex-col;
+    }
+
+    .skills-tree__branch-title {
+        @apply text-center font-display text-base font-semibold text-uv-bright;
+    }
+
+    .skills-tree__node--branch .skill-chip-grid {
+        @apply mt-4 flex-1 content-start;
+    }
+
+    @media (min-width: 1024px) {
+        .skills-tree__branches::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            width: 72%;
+            max-width: 48rem;
+            height: 1px;
+            transform: translateX(-50%);
+            background: linear-gradient(
+                90deg,
+                transparent,
+                color-mix(in srgb, var(--color-uv) 35%, transparent),
+                transparent
+            );
+            pointer-events: none;
+        }
     }
 
     .journey-timeline {

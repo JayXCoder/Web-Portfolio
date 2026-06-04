@@ -3,56 +3,86 @@
 @section('title', 'Skills — Jawahar Ganesh @ Jay')
 
 @section('content')
+@php
+    $aiTools = config('skills.ai_tools', []);
+    $tree = config('skills.tree', []);
+    $apex = $tree['apex'] ?? [];
+    $stacks = $tree['stacks'] ?? [];
+    $branches = $tree['branches'] ?? [];
+    $foundation = $tree['foundation'] ?? [];
+@endphp
+
 <section class="section-pad">
     <div class="site-container">
         <h1 class="section-title fade-in-view">Skills</h1>
-        <p class="section-subtitle fade-in-view">Technologies I use to ship end-to-end — from full-stack apps to AI systems.</p>
+        <p class="section-subtitle fade-in-view">AI tooling, full-stack delivery, and the tech tree that connects it all.</p>
 
-        @php
-            $groups = config('skills.groups', []);
-            $wideGroups = config('skills.wide_groups', []);
-        @endphp
+        {{-- Horizontal AI productivity tools --}}
+        <div class="skills-ai-row fade-in-view mt-10">
+            <p class="skills-ai-row__label">Productive AI tools</p>
+            <ul class="skills-ai-row__list" role="list">
+                @foreach ($aiTools as $tool)
+                <li class="skill-chip skill-chip--ai">
+                    <x-skill-icon
+                        :slug="$tool['slug'] ?? null"
+                        :color="$tool['color'] ?? 'a855f7'"
+                        :icon="$tool['icon'] ?? null"
+                        :label="$tool['label']"
+                    />
+                    <span class="skill-chip-label">{{ $tool['label'] }}</span>
+                </li>
+                @endforeach
+            </ul>
+        </div>
 
-        <div class="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-            @foreach ($groups as $title => $skills)
-            @php $isWide = in_array($title, $wideGroups, true); @endphp
-            <article @class([
-                'card-surface fade-in-view p-6',
-                'md:col-span-2 xl:col-span-2' => $isWide,
-            ])>
-                <h2 class="font-display text-lg font-semibold text-uv-bright">{{ $title }}</h2>
-                @if ($title === 'Full Stack')
-                <p class="mt-1 text-xs text-text-dim">Stacks I build with — e.g. Next.js + FastAPI, Laravel + React, Node + Prisma.</p>
-                @elseif ($title === 'AI / ML')
-                <p class="mt-1 text-xs text-text-dim">Training, inference, vision, speech, and local LLM tooling.</p>
-                @elseif ($title === 'DevOps')
-                <p class="mt-1 text-xs text-text-dim">Containers, orchestration, and production ops.</p>
-                @elseif ($title === 'Cybersecurity')
-                <p class="mt-1 text-xs text-text-dim">Web app testing, traffic analysis, and offensive security tooling.</p>
-                @elseif ($title === 'Reverse Engineering')
-                <p class="mt-1 text-xs text-text-dim">Binary analysis, disassembly, and malware research workflows.</p>
-                @elseif ($title === 'Tools & Desktop')
-                <p class="mt-1 text-xs text-text-dim">Browsers, desktop apps, automation, and media tooling.</p>
+        {{-- Skill tree --}}
+        <div class="skills-tree fade-in-view mt-14">
+            {{-- Apex: Full Stack --}}
+            <div class="skills-tree__node skills-tree__node--apex card-surface">
+                <h2 class="skills-tree__title">{{ $apex['title'] ?? 'Full Stack' }}</h2>
+                @if (! empty($apex['subtitle']))
+                <p class="skills-tree__subtitle">{{ $apex['subtitle'] }}</p>
                 @endif
-                <ul @class([
-                    'mt-5 grid gap-2',
-                    'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4' => $isWide,
-                    'grid-cols-2' => ! $isWide,
-                ])>
-                    @foreach ($skills as $skill)
-                    <li class="skill-chip">
-                        <x-skill-icon
-                            :slug="$skill['slug'] ?? null"
-                            :color="$skill['color'] ?? 'a855f7'"
-                            :label="$skill['label']"
-                        />
-                        <span class="skill-chip-label">{{ $skill['label'] }}</span>
-                    </li>
-                    @endforeach
-                </ul>
-            </article>
-            @endforeach
+                <x-skill-chips :skills="$apex['skills'] ?? []" />
+            </div>
+
+            <div class="skills-tree__connector" aria-hidden="true"></div>
+
+            {{-- Stacks layer --}}
+            <div class="skills-tree__node skills-tree__node--stacks card-surface">
+                <h2 class="skills-tree__title">{{ $stacks['title'] ?? 'Stacks' }}</h2>
+                @if (! empty($stacks['subtitle']))
+                <p class="skills-tree__subtitle">{{ $stacks['subtitle'] }}</p>
+                @endif
+                <x-skill-chips :skills="$stacks['skills'] ?? []" />
+            </div>
+
+            <div class="skills-tree__connector skills-tree__connector--hub" aria-hidden="true">
+                <span class="skills-tree__hub-line"></span>
+            </div>
+
+            {{-- Branch grid --}}
+            <div class="skills-tree__branches">
+                @foreach ($branches as $branch)
+                <article class="skills-tree__node skills-tree__node--branch card-surface">
+                    <h3 class="skills-tree__branch-title">{{ $branch['title'] }}</h3>
+                    <x-skill-chips :skills="$branch['skills'] ?? []" dense />
+                </article>
+                @endforeach
+            </div>
+
+            <div class="skills-tree__connector" aria-hidden="true"></div>
+
+            {{-- Foundation: Languages --}}
+            <div class="skills-tree__node skills-tree__node--foundation card-surface">
+                <h2 class="skills-tree__title">{{ $foundation['title'] ?? 'Languages' }}</h2>
+                @if (! empty($foundation['subtitle']))
+                <p class="skills-tree__subtitle">{{ $foundation['subtitle'] }}</p>
+                @endif
+                <x-skill-chips :skills="$foundation['skills'] ?? []" />
+            </div>
         </div>
     </div>
 </section>
+
 @endsection

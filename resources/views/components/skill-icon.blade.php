@@ -2,23 +2,28 @@
     'slug' => null,
     'color' => 'a855f7',
     'label' => '',
+    'icon' => null,
 ])
 
 @php
     $slug = $slug ? strtolower(trim((string) $slug)) : null;
     $color = ltrim((string) $color, '#');
+    $primary = $icon ?: ($slug ? "https://cdn.simpleicons.org/{$slug}/{$color}" : null);
+    $fallback = $slug ? 'https://cdn.jsdelivr.net/npm/simple-icons@11.15.0/icons/'.$slug.'.svg' : null;
 @endphp
 
 <span {{ $attributes->merge(['class' => 'skill-icon-wrap']) }} aria-hidden="true">
-    @if ($slug)
+    @if ($primary)
         <img
-            src="https://cdn.simpleicons.org/{{ $slug }}/{{ $color }}"
+            src="{{ $primary }}"
+            @if ($fallback && ! $icon) data-fallback="{{ $fallback }}" @endif
             alt=""
             width="22"
             height="22"
             class="skill-icon-img"
             loading="lazy"
             decoding="async"
+            onerror="window.__skillIconFallback && window.__skillIconFallback(this)"
         >
     @else
         <svg class="skill-icon-fallback" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
