@@ -91,6 +91,8 @@ class AdminController extends Controller
             $request->merge(['features' => array_map('trim', explode(',', $request->features))]);
         }
 
+        $this->mergePortfolioCheckboxFields($request);
+
         $request->validate([
             'title' => 'required|string|max:255',
             'short_description' => 'required|string|max:500',
@@ -104,8 +106,8 @@ class AdminController extends Controller
             'client' => 'nullable|string|max:255',
             'challenges' => 'nullable|string',
             'solutions' => 'nullable|string',
-            'is_featured' => 'boolean',
-            'is_published' => 'boolean',
+            'is_featured' => 'required|boolean',
+            'is_published' => 'required|boolean',
             'sort_order' => 'nullable|integer|min:0',
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120',
@@ -139,6 +141,8 @@ class AdminController extends Controller
             $request->merge(['features' => array_map('trim', explode(',', $request->features))]);
         }
 
+        $this->mergePortfolioCheckboxFields($request);
+
         $request->validate([
             'title' => 'required|string|max:255',
             'short_description' => 'required|string|max:500',
@@ -152,8 +156,8 @@ class AdminController extends Controller
             'client' => 'nullable|string|max:255',
             'challenges' => 'nullable|string',
             'solutions' => 'nullable|string',
-            'is_featured' => 'boolean',
-            'is_published' => 'boolean',
+            'is_featured' => 'required|boolean',
+            'is_published' => 'required|boolean',
             'sort_order' => 'nullable|integer|min:0',
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120',
@@ -349,5 +353,16 @@ class AdminController extends Controller
         
         return redirect()->to(url(route('admin.contacts'), [], true))
             ->with('success', 'Contact deleted successfully.');
+    }
+
+    /**
+     * Unchecked HTML checkboxes are omitted from the request; normalize to false.
+     */
+    private function mergePortfolioCheckboxFields(Request $request): void
+    {
+        $request->merge([
+            'is_featured' => $request->boolean('is_featured'),
+            'is_published' => $request->boolean('is_published'),
+        ]);
     }
 }
