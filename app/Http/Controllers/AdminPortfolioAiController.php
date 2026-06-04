@@ -11,6 +11,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Throwable;
@@ -187,17 +188,29 @@ class AdminPortfolioAiController extends Controller
 
     private function saveDraftResponse(Request $request): JsonResponse
     {
-        $request->validate([
-            'portfolio' => 'required|array',
-            'portfolio.title' => 'required|string|max:255',
-            'portfolio.short_description' => 'required|string|max:500',
-            'portfolio.description' => 'required|string',
-            'portfolio.technologies' => 'required|array|min:1',
-            'portfolio.category' => 'required|string|max:100',
-            'portfolio.features' => 'required|array|min:1',
-        ]);
+        $raw = $request->input('portfolio');
 
-        $normalized = $this->portfolioAi->normalizePortfolio($request->input('portfolio'));
+        if (! is_array($raw)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid portfolio payload.',
+            ], 422);
+        }
+
+        $normalized = $this->portfolioAi->normalizePortfolio($raw);
+
+        Validator::make(
+            ['portfolio' => $normalized],
+            [
+                'portfolio' => 'required|array',
+                'portfolio.title' => 'required|string|max:255',
+                'portfolio.short_description' => 'required|string|max:500',
+                'portfolio.description' => 'required|string',
+                'portfolio.technologies' => 'required|array|min:1',
+                'portfolio.category' => 'required|string|max:100',
+                'portfolio.features' => 'required|array|min:1',
+            ]
+        )->validate();
 
         $slug = $normalized['slug'];
         if (Portfolio::where('slug', $slug)->exists()) {

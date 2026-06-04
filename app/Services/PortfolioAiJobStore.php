@@ -53,13 +53,19 @@ class PortfolioAiJobStore
             return;
         }
 
+        $portfolio = $result['portfolio'] ?? null;
+
+        if (is_array($portfolio)) {
+            $portfolio = app(PortfolioAiService::class)->normalizePortfolio($portfolio);
+        }
+
         $ttl = now()->addMinutes((int) config('portfolio-ai.job_ttl_minutes', 120));
 
         Cache::put($this->cacheKey($jobId), [
             'status' => ($result['success'] ?? false) ? 'completed' : 'failed',
             'success' => (bool) ($result['success'] ?? false),
             'message' => (string) ($result['message'] ?? ''),
-            'portfolio' => $result['portfolio'] ?? null,
+            'portfolio' => $portfolio,
             'markdown' => $existing['markdown'] ?? null,
             'updated_at' => now()->toIso8601String(),
         ], $ttl);

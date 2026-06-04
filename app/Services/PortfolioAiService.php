@@ -80,6 +80,8 @@ class PortfolioAiService
      */
     public function normalizePortfolio(array $data): array
     {
+        $data = $this->coalesceFieldAliases($data);
+
         $categories = config('portfolio-ai.categories', []);
         $category = $data['category'] ?? 'Web Development';
         if (! in_array($category, $categories, true)) {
@@ -94,7 +96,7 @@ class PortfolioAiService
             $slug = Str::slug($slug);
         }
 
-        return [
+        $portfolio = [
             'title' => Str::limit($title, 255, ''),
             'slug' => $slug,
             'short_description' => Str::limit(trim((string) ($data['short_description'] ?? '')), 500, ''),
@@ -108,11 +110,145 @@ class PortfolioAiService
             'client' => isset($data['client']) ? trim((string) $data['client']) : null,
             'challenges' => isset($data['challenges']) ? trim((string) $data['challenges']) : null,
             'solutions' => isset($data['solutions']) ? trim((string) $data['solutions']) : null,
-            'is_featured' => (bool) ($data['is_featured'] ?? false),
-            'is_published' => (bool) ($data['is_published'] ?? true),
-            'sort_order' => (int) ($data['sort_order'] ?? 0),
-            'image_urls' => $this->normalizeStringArray($data['image_urls'] ?? [], 500),
+            'is_featured' => (bool) ($data['is_featured'] ?? $data['isFeatured'] ?? false),
+            'is_published' => (bool) ($data['is_published'] ?? $data['isPublished'] ?? true),
+            'sort_order' => (int) ($data['sort_order'] ?? $data['sortOrder'] ?? 0),
+            'image_urls' => $this->normalizeStringArray($data['image_urls'] ?? $data['imageUrls'] ?? [], 500),
         ];
+
+        return $this->ensureRequiredFields($portfolio);
+    }
+
+    /**
+     * Map common model key variants (camelCase, synonyms) to schema fields.
+     *
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    private function coalesceFieldAliases(array $data): array
+    {
+        $aliases = [
+            'short_description' => ['shortDescription', 'short_desc', 'shortDesc', 'summary', 'excerpt', 'tagline', 'elevator_pitch'],
+            'description' => ['desc', 'overview', 'body', 'content', 'details', 'case_study'],
+            'technologies' => ['tech_stack', 'techStack', 'stack', 'tech', 'tools', 'skills_used'],
+            'features' => ['key_features', 'keyFeatures', 'highlights', 'capabilities', 'bullets'],
+            'duration_months' => ['durationMonths', 'duration', 'project_duration'],
+            'image_urls' => ['imageUrls', 'images', 'screenshots'],
+        ];
+
+        foreach ($aliases as $canonical => $keys) {
+            if ($this->hasMeaningfulValue($data[$canonical] ?? null)) {
+                continue;
+            }
+
+            foreach ($keys as $key) {
+                if ($this->hasMeaningfulValue($data[$key] ?? null)) {
+                    $data[$canonical] = $data[$key];
+                    break;
+                }
+            }
+        }
+
+        return $data;
+    }
+
+    private function hasMeaningfulValue(mixed $value): bool
+    {
+        if ($value === null) {
+            return false;
+        }
+
+        if (is_string($value)) {
+            return trim($value) !== '';
+        }
+
+        if (is_array($value)) {
+            return $value !== [];
+        }
+
+        return true;
+    }
+
+    /**
+     * @param  array<string, mixed>  $portfolio
+     * @return array<string, mixed>
+     */
+    private function ensureRequiredFields(array $portfolio): array
+    {
+        $description = (string) ($portfolio['description'] ?? '');
+
+        if ($description === '' && ($portfolio['short_description'] ?? '') !== '') {
+            $portfolio['description'] = (string) $portfolio['short_description'];
+            $description = $portfolio['description'];
+        }
+
+        if (($portfolio['short_description'] ?? '') === '' && $description !== '') {
+            $plain = preg_replace('/\s+/', ' ', strip_tags($description)) ?: '';
+            $portfolio['short_description'] = Str::limit($plain, 500, '');
+        }
+
+        if (($portfolio['technologies'] ?? []) === []) {
+            $portfolio['technologies'] = $this->inferTechnologies($description);
+        }
+
+        if (($portfolio['features'] ?? []) === []) {
+            $portfolio['features'] = $this->inferFeatures($description);
+        }
+
+        if (($portfolio['features'] ?? []) === [] && $description !== '') {
+            $portfolio['features'] = [
+                Str::limit(preg_replace('/\s+/', ' ', strip_tags($description)) ?: 'Project delivery', 200, ''),
+            ];
+        }
+
+        if (($portfolio['technologies'] ?? []) === []) {
+            $portfolio['technologies'] = ['General'];
+        }
+
+        return $portfolio;
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function inferTechnologies(string $description): array
+    {
+        if (preg_match_all('/`([^`]+)`|\*\*([^*]+)\*\*/', $description, $matches)) {
+            $candidates = array_merge($matches[1], $matches[2]);
+            $tech = $this->normalizeStringArray(array_filter($candidates), 100);
+
+            if ($tech !== []) {
+                return $tech;
+            }
+        }
+
+        if (preg_match('/(?:technologies?|stack|built with)[:\s]+([^\n.]+)/i', $description, $match)) {
+            $tech = $this->normalizeStringArray($match[1], 100);
+
+            if ($tech !== []) {
+                return $tech;
+            }
+        }
+
+        return [];
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function inferFeatures(string $description): array
+    {
+        $features = [];
+
+        foreach (preg_split('/\r\n|\r|\n/', $description) ?: [] as $line) {
+            $line = trim($line);
+
+            if (preg_match('/^[-*•]\s+(.+)$/u', $line, $match)) {
+                $features[] = Str::limit($match[1], 200, '');
+            }
+        }
+
+        return $this->normalizeStringArray($features, 200);
     }
 
     /**
