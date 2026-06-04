@@ -108,7 +108,7 @@ class AdminController extends Controller
             'is_published' => 'boolean',
             'sort_order' => 'nullable|integer|min:0',
             'images' => 'nullable|array',
-            'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'image_urls' => 'nullable|string',
         ]);
 
@@ -156,7 +156,7 @@ class AdminController extends Controller
             'is_published' => 'boolean',
             'sort_order' => 'nullable|integer|min:0',
             'images' => 'nullable|array',
-            'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'image_urls' => 'nullable|string',
         ]);
 

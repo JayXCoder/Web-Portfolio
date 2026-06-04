@@ -45,7 +45,13 @@ class PortfolioController extends Controller
      */
     public function projects()
     {
-        return view('pages.projects');
+        $portfolioItems = $this->portfolioService->getFeatured();
+
+        if ($portfolioItems->isEmpty()) {
+            $portfolioItems = $this->portfolioService->getAllPublished()->take(6);
+        }
+
+        return view('pages.projects', compact('portfolioItems'));
     }
 
     /**

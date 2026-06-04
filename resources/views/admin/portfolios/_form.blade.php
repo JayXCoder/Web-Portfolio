@@ -66,14 +66,26 @@ $categories = config('portfolio-ai.categories', []);
         <textarea id="solutions" name="solutions" rows="3" class="input-field">{{ old('solutions', $portfolio?->solutions) }}</textarea>
     </div>
 
+    @if($portfolio?->images && count($portfolio->images))
     <div>
-        <label for="image_urls" class="label-field">Image URLs <span class="text-text-dim font-normal">(comma-separated)</span></label>
-        <input type="text" id="image_urls" name="image_urls" value="{{ old('image_urls', $portfolio && $portfolio->images ? implode(', ', $portfolio->images) : '') }}" class="input-field">
+        <p class="label-field">Current images</p>
+        <div class="mt-2 flex flex-wrap gap-3">
+            @foreach($portfolio->images as $img)
+            <img src="{{ $portfolio->imageUrl($img) }}" alt="" class="h-20 w-28 rounded-lg border border-border object-cover" width="112" height="80">
+            @endforeach
+        </div>
+        <p class="mt-1 text-xs text-text-dim">Upload more below to add to this project (existing images are kept).</p>
+    </div>
+    @endif
+
+    <div>
+        <label for="image_urls" class="label-field">External image URLs <span class="text-text-dim font-normal">(comma-separated, optional)</span></label>
+        <input type="text" id="image_urls" name="image_urls" value="{{ old('image_urls', $portfolio && $portfolio->images ? collect($portfolio->images)->filter(fn ($path) => filter_var($path, FILTER_VALIDATE_URL))->implode(', ') : '') }}" class="input-field" placeholder="https://example.com/screenshot.png">
     </div>
 
     <div>
         <label for="images" class="label-field">Upload images</label>
-        <input type="file" id="images" name="images[]" accept="image/*" multiple class="input-field file:mr-4 file:rounded-lg file:border-0 file:bg-uv file:px-3 file:py-1.5 file:text-sm file:text-white">
+        <input type="file" id="images" name="images[]" accept="image/jpeg,image/png,image/gif,image/webp" multiple class="input-field file:mr-4 file:rounded-lg file:border-0 file:bg-uv file:px-3 file:py-1.5 file:text-sm file:text-white">
     </div>
 
     <div class="flex flex-wrap gap-6">

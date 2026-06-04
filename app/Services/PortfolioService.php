@@ -60,13 +60,11 @@ class PortfolioService
             $images = array_merge($images, $this->handleImageUploads($data['images']));
         }
         
-        // Handle image URLs
-        if (isset($data['image_urls']) && !empty($data['image_urls'])) {
-            $urls = array_map('trim', explode(',', $data['image_urls']));
-            $images = array_merge($images, $urls);
+        if (! empty($data['image_urls']) && is_string($data['image_urls'])) {
+            $images = $this->mergeExternalImageUrls($images, $data['image_urls']);
         }
-        
-        $data['images'] = $images;
+
+        $data['images'] = array_values(array_unique($images));
 
         // Clean up data
         unset($data['image_urls']);
@@ -99,22 +97,20 @@ class PortfolioService
             $finalImages = array_values($finalImages);
         }
 
-        // Handle new image uploads
-        if (isset($data['new_images']) && !empty($data['new_images'])) {
-            $newImages = $this->handleImageUploads($data['new_images']);
+        // Handle new image uploads (form field: images[] or legacy new_images[])
+        $uploads = $data['images'] ?? $data['new_images'] ?? null;
+        if (! empty($uploads) && is_array($uploads)) {
+            $newImages = $this->handleImageUploads($uploads);
             $finalImages = array_merge($finalImages, $newImages);
         }
 
-        // Handle image URLs
-        if (isset($data['image_urls']) && !empty($data['image_urls'])) {
-            $urls = array_map('trim', explode(',', $data['image_urls']));
-            $finalImages = array_merge($finalImages, $urls);
+        // External image URLs only (stored paths are kept from $finalImages)
+        if (! empty($data['image_urls']) && is_string($data['image_urls'])) {
+            $finalImages = $this->mergeExternalImageUrls($finalImages, $data['image_urls']);
         }
 
-        // Update the images array
-        $data['images'] = $finalImages;
-        
-        // Clean up data
+        $data['images'] = array_values(array_unique($finalImages));
+
         unset($data['new_images'], $data['remove_images'], $data['image_urls']);
 
         // Update slug if title changed
@@ -146,6 +142,25 @@ class PortfolioService
     public function getAllForAdmin(): Collection
     {
         return $this->portfolioRepository->getAllForAdmin();
+    }
+
+    /**
+     * @param  list<string>  $images
+     * @return list<string>
+     */
+    private function mergeExternalImageUrls(array $images, string $imageUrls): array
+    {
+        foreach (array_map('trim', explode(',', $imageUrls)) as $entry) {
+            if ($entry === '') {
+                continue;
+            }
+
+            if (filter_var($entry, FILTER_VALIDATE_URL)) {
+                $images[] = $entry;
+            }
+        }
+
+        return $images;
     }
 
     /**

@@ -41,7 +41,7 @@
                 @if($portfolio->images && count($portfolio->images) > 1)
                 <div class="mt-10 grid gap-4 sm:grid-cols-2">
                     @foreach(array_slice($portfolio->images, 1) as $image)
-                    @php $src = filter_var($image, FILTER_VALIDATE_URL) ? $image : route('portfolio.image', basename($image)); @endphp
+                    @php $src = $portfolio->imageUrl($image); @endphp
                     <img src="{{ $src }}" alt="" class="rounded-xl border border-border object-cover w-full" loading="lazy">
                     @endforeach
                 </div>
@@ -50,7 +50,7 @@
 
             <aside class="fade-in-view space-y-6">
                 @if($portfolio->main_image)
-                @php $hero = filter_var($portfolio->main_image, FILTER_VALIDATE_URL) ? $portfolio->main_image : route('portfolio.image', basename($portfolio->main_image)); @endphp
+                @php $hero = $portfolio->imageUrl($portfolio->main_image); @endphp
                 <img src="{{ $hero }}" alt="{{ $portfolio->title }}" class="rounded-2xl border border-border w-full" width="400" height="225">
                 @endif
 

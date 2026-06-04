@@ -113,7 +113,29 @@ class Portfolio extends Model
      */
     public function getMainImageAttribute(): ?string
     {
-        return $this->images ? $this->images[0] : null;
+        if (! is_array($this->images) || $this->images === []) {
+            return null;
+        }
+
+        return $this->images[0] ?? null;
+    }
+
+    /**
+     * Public URL for a stored path or external image URL.
+     */
+    public function imageUrl(?string $path): ?string
+    {
+        if ($path === null || trim($path) === '') {
+            return null;
+        }
+
+        $path = trim($path);
+
+        if (filter_var($path, FILTER_VALIDATE_URL)) {
+            return $path;
+        }
+
+        return route('portfolio.image', basename($path));
     }
 
     /**

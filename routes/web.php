@@ -57,15 +57,21 @@ Route::get('/robots.txt', function() {
 })->name('robots');
 
 // Serve portfolio images through Laravel to bypass permission issues
-Route::get('/storage/portfolios/{filename}', function($filename) {
-    $path = storage_path('app/public/portfolios/' . $filename);
-    
-    if (!file_exists($path)) {
-        abort(404);
+Route::get('/storage/portfolios/{filename}', function (string $filename) {
+    $filename = basename($filename);
+    $candidates = [
+        storage_path('app/public/portfolios/'.$filename),
+        storage_path('app/public/'.$filename),
+    ];
+
+    foreach ($candidates as $path) {
+        if (is_file($path)) {
+            return response()->file($path);
+        }
     }
-    
-    return response()->file($path);
-})->name('portfolio.image');
+
+    abort(404);
+})->where('filename', '[A-Za-z0-9._-]+')->name('portfolio.image');
 
 // Serve company logos through Laravel to bypass permission issues
 Route::get('/storage/company-logos/{filename}', function($filename) {
