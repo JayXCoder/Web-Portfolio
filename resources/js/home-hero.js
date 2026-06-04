@@ -88,7 +88,7 @@ function initHeroTerminal() {
         },
         {
             language: 'PHP',
-            text: '<?php\n\necho "JayXCoder — Laravel portfolio";\necho "\\nBuilt with Ollama + Docker";',
+            text: '<?php\n\necho "JayXCoder | Laravel portfolio";\necho "\\nBuilt with Ollama + Docker";',
             color: '#777bb4',
         },
         {

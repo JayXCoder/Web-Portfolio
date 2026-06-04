@@ -1,12 +1,12 @@
 @extends('layouts.app')
 
-@section('title', 'Contact — Jawahar Ganesh @ Jay')
+@section('title', 'Contact | Jawahar Ganesh @ Jay')
 
 @section('content')
 <section class="section-pad">
     <div class="site-container">
         <h1 class="section-title fade-in-view">Get in touch</h1>
-        <p class="section-subtitle fade-in-view">Projects, collaborations, or technical discussions — I'd love to hear from you.</p>
+        <p class="section-subtitle fade-in-view">Projects, collaborations, or technical discussions. I'd love to hear from you.</p>
 
         <div class="mt-12 grid gap-10 lg:grid-cols-2">
             <div class="fade-in-view space-y-4">

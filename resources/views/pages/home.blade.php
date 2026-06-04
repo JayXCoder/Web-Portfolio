@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Home — Jawahar Ganesh @ Jay')
-@section('description', 'Full-Stack Developer & Computer Engineer — Laravel, React, Python, AI/ML, cybersecurity, embedded systems.')
+@section('title', 'Home | Jawahar Ganesh @ Jay')
+@section('description', 'Full-Stack Developer & Computer Engineer. Laravel, React, Python, AI/ML, cybersecurity, embedded systems.')
 
 @section('structured_data')
 <script type="application/ld+json">
@@ -38,7 +38,7 @@
                     I build <span class="text-uv-bright" style="text-shadow: var(--shadow-uv-sm)">real systems</span> across web, AI & hardware.
                 </h1>
                 <p class="mt-6 max-w-xl text-base text-text-muted sm:text-lg">
-                    Jawahar Ganesh (@ Jay / JayXCoder) — Full-Stack Developer specializing in Laravel, React, Python, AI/ML, cybersecurity, and embedded systems.
+                    Jawahar Ganesh (@ Jay / JayXCoder), Full-Stack Developer specializing in Laravel, React, Python, AI/ML, cybersecurity, and embedded systems.
                 </p>
                 <div class="mt-8 flex flex-wrap gap-3">
                     <a href="{{ route('portfolio') }}" class="btn-primary">View portfolio</a>

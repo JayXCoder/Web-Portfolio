@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Experience — Jawahar Ganesh @ Jay')
+@section('title', 'Experience | Jawahar Ganesh @ Jay')
 
 @section('content')
 <section class="section-pad">
@@ -20,7 +20,7 @@
                         <h2 class="font-display text-xl font-semibold text-text">{{ $exp->position }}</h2>
                         <p class="text-uv-bright">{{ $exp->company }} · {{ $exp->employment_type }}</p>
                         <p class="mt-1 text-sm text-text-dim">
-                            {{ $exp->start_date?->format('M Y') }} —
+                            {{ $exp->start_date?->format('M Y') }} to
                             {{ $exp->is_current ? 'Present' : $exp->end_date?->format('M Y') }}
                             @if($exp->location) · {{ $exp->location }}@endif
                         </p>

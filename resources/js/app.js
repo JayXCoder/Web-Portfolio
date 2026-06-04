@@ -75,7 +75,7 @@ function initVisitorStats() {
             setText('totalPageViews', data.total_page_views ?? 0);
             setText('todayVisitors', data.today_visitors ?? 0);
         })
-        .catch(() => ids.forEach((id) => setText(id, '—')));
+        .catch(() => ids.forEach((id) => setText(id, '-')));
 }
 
 function setText(id, value) {
@@ -225,7 +225,7 @@ function renderPreview(container, portfolio) {
         <p class="mt-2 text-sm text-text-muted">${escapeHtml(portfolio.short_description || '')}</p>
         <p class="mt-3 text-sm text-text-dim line-clamp-4">${escapeHtml(portfolio.description || '')}</p>
         <div class="mt-4 flex flex-wrap gap-2">${(portfolio.technologies || []).map((t) => `<span class="badge-uv">${escapeHtml(t)}</span>`).join('')}</div>
-        <p class="mt-3 text-xs text-text-dim">Category: ${escapeHtml(portfolio.category || '—')} · Slug: ${escapeHtml(portfolio.slug || '—')}</p>
+        <p class="mt-3 text-xs text-text-dim">Category: ${escapeHtml(portfolio.category || '-')} · Slug: ${escapeHtml(portfolio.slug || '-')}</p>
         ${features ? `<ul class="mt-3 list-disc pl-5 text-sm text-text-muted space-y-1">${features}</ul>` : ''}
     `;
 }

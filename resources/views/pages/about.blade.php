@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'About — Jawahar Ganesh @ Jay')
+@section('title', 'About | Jawahar Ganesh @ Jay')
 
 @section('content')
 <section class="section-pad">
@@ -12,11 +12,11 @@
             <article class="card-surface p-6 sm:p-8">
                 <h2 class="font-display text-xl font-semibold text-uv-bright">My Journey</h2>
                 <p class="mt-4 text-text-muted leading-relaxed">
-                    My path wasn't a straight line — it was a deliberate evolution. I started as a
+                    My path wasn't a straight line. It was a deliberate evolution. I started as a
                     <strong class="text-text">Computer Engineer</strong>, grounded in hardware, systems, and the fundamentals of how machines think.
                     From there I became a <strong class="text-text">coder</strong>, then a
                     <strong class="text-text">Full-Stack Developer</strong> shipping real web products with Laravel, React, and Python.
-                    Today I'm an <strong class="text-text">AI Engineer</strong>, building intelligent systems with local LLMs, automation, and production ML — still the same builder, just operating at a higher layer of the stack.
+                    Today I'm an <strong class="text-text">AI Engineer</strong>, building intelligent systems with local LLMs, automation, and production ML. Same builder, now working higher up the stack.
                 </p>
 
                 <ol class="journey-timeline mt-8 space-y-0">
@@ -26,7 +26,7 @@
                         </span>
                         <div>
                             <h3 class="font-display font-semibold text-text">Computer Engineer</h3>
-                            <p class="mt-1 text-sm text-text-muted">UniMAP — systems, hardware, and engineering fundamentals.</p>
+                            <p class="mt-1 text-sm text-text-muted">UniMAP: systems, hardware, and engineering fundamentals.</p>
                         </div>
                     </li>
                     <li class="journey-step">
@@ -35,7 +35,7 @@
                         </span>
                         <div>
                             <h3 class="font-display font-semibold text-text">Full-Stack Developer</h3>
-                            <p class="mt-1 text-sm text-text-muted">Self-taught builder — web apps, APIs, and production deployments.</p>
+                            <p class="mt-1 text-sm text-text-muted">Self-taught builder on web apps, APIs, and production deployments.</p>
                         </div>
                     </li>
                     <li class="journey-step">
@@ -44,7 +44,7 @@
                         </span>
                         <div>
                             <h3 class="font-display font-semibold text-text">AI Engineer</h3>
-                            <p class="mt-1 text-sm text-text-muted">LLMs, ML pipelines, and intelligent tooling — where I am now.</p>
+                            <p class="mt-1 text-sm text-text-muted">LLMs, ML pipelines, and intelligent tooling. This is where I am now.</p>
                         </div>
                     </li>
                 </ol>
@@ -52,13 +52,13 @@
             <article class="card-surface p-6 sm:p-8">
                 <h2 class="font-display text-xl font-semibold text-uv-bright">Education</h2>
                 <p class="mt-4 text-text-muted leading-relaxed">
-                    <strong class="text-text">Bachelor Honours in Computer Engineering</strong> — hardware and systems foundation, extended through hands-on software across web, AI, and embedded domains.
+                    <strong class="text-text">Bachelor Honours in Computer Engineering</strong>, with a hardware and systems foundation extended through hands-on software across web, AI, and embedded domains.
                 </p>
             </article>
             <article class="card-surface p-6 sm:p-8">
                 <h2 class="font-display text-xl font-semibold text-uv-bright">Approach</h2>
                 <p class="mt-4 text-text-muted leading-relaxed">
-                    Practical, entrepreneurial, and full-stack — I care about shipping, security, and maintainability as much as the demo.
+                    Practical, entrepreneurial, and full-stack. I care about shipping, security, and maintainability as much as the demo.
                 </p>
             </article>
         </div>

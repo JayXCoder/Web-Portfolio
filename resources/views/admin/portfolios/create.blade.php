@@ -70,10 +70,10 @@ fetch('{{ route('admin.portfolios.ai.status') }}')
         const el = document.getElementById('ollama-status');
         if (d.available) {
             el.className = 'rounded-xl border border-success/30 bg-success/10 px-4 py-3 text-sm text-green-300';
-            el.textContent = `Ollama online — ${d.model} @ ${d.api_url}`;
+            el.textContent = `Ollama online: ${d.model} @ ${d.api_url}`;
         } else {
             el.className = 'rounded-xl border border-warning/30 bg-warning/10 px-4 py-3 text-sm text-yellow-200';
-            el.textContent = `Ollama offline — check OLLAMA_HOST in .env (${d.api_url})`;
+            el.textContent = `Ollama offline. Check OLLAMA_HOST in .env (${d.api_url})`;
         }
     });
 </script>

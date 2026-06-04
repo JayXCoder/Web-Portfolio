@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', $portfolio->title . ' — Portfolio')
+@section('title', $portfolio->title . ' | Portfolio')
 
 @section('content')
 <section class="section-pad">

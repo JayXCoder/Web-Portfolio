@@ -1,13 +1,13 @@
 @extends('layouts.app')
 
-@section('title', 'AI Chat — JayXCoder')
+@section('title', 'AI Chat | JayXCoder')
 
 @section('content')
 <section class="section-pad">
     <div class="site-container max-w-2xl">
         <h1 class="section-title fade-in-view">AI assistant</h1>
         <p class="section-subtitle fade-in-view">
-            Ask about my projects, skills, and experience only — powered by Ollama
+            Ask about my projects, skills, and experience only. Powered by Ollama.
             @if($isAvailable)
                 <span class="text-success">· online</span>
             @else

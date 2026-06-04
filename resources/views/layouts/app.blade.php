@@ -4,22 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google-site-verification" content="meVhqb01r1XAY5th9eDkkdckwOdorDK8IKrxiVh3DDo" />
-    <title>@yield('title', 'Jawahar Ganesh @ Jay — Portfolio')</title>
+    <title>@yield('title', 'Jawahar Ganesh @ Jay | Portfolio')</title>
 
-    <meta name="description" content="@yield('description', 'Professional portfolio of Jawahar Ganesh @ Jay — Full-Stack Developer, Software Engineer, and Technical Consultant.')">
+    <meta name="description" content="@yield('description', 'Professional portfolio of Jawahar Ganesh @ Jay. Full-Stack Developer, Software Engineer, and Technical Consultant.')">
     <meta name="keywords" content="@yield('keywords', 'Jawahar Ganesh, JayXCoder, Full-Stack Developer, Laravel, React, Python')">
     <meta name="author" content="Jawahar Ganesh @ Jay">
     <meta name="robots" content="index, follow">
     <meta name="theme-color" content="#000000">
 
     <link rel="canonical" href="{{ url()->current() }}">
-    <meta property="og:title" content="@yield('title', 'Jawahar Ganesh @ Jay — Portfolio')">
+    <meta property="og:title" content="@yield('title', 'Jawahar Ganesh @ Jay | Portfolio')">
     <meta property="og:description" content="@yield('description', 'Professional portfolio of Jawahar Ganesh @ Jay.')">
     <meta property="og:type" content="@yield('og_type', 'website')">
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:site_name" content="JayXCoder Portfolio">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="@yield('title', 'Jawahar Ganesh @ Jay — Portfolio')">
+    <meta name="twitter:title" content="@yield('title', 'Jawahar Ganesh @ Jay | Portfolio')">
     <meta name="twitter:description" content="@yield('description', 'Professional portfolio of Jawahar Ganesh @ Jay.')">
 
     @yield('structured_data')
@@ -85,9 +85,9 @@
             <div class="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
                 <p class="text-sm text-text-muted">&copy; {{ date('Y') }} Jawahar Ganesh @ Jay</p>
                 <div class="flex flex-wrap gap-4 text-sm text-text-dim" id="visitor-stats-footer">
-                    <span><strong class="text-text-muted">Visitors:</strong> <span id="totalVisitors">—</span></span>
-                    <span><strong class="text-text-muted">Views:</strong> <span id="totalPageViews">—</span></span>
-                    <span><strong class="text-text-muted">Today:</strong> <span id="todayVisitors">—</span></span>
+                    <span><strong class="text-text-muted">Visitors:</strong> <span id="totalVisitors">-</span></span>
+                    <span><strong class="text-text-muted">Views:</strong> <span id="totalPageViews">-</span></span>
+                    <span><strong class="text-text-muted">Today:</strong> <span id="todayVisitors">-</span></span>
                     <span class="inline-flex items-center gap-1.5 text-uv-bright">
                         <span class="h-2 w-2 animate-pulse rounded-full bg-uv" aria-hidden="true"></span> Live
                     </span>
