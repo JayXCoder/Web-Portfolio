@@ -66,16 +66,40 @@ $categories = config('portfolio-ai.categories', []);
         <textarea id="solutions" name="solutions" rows="3" class="input-field">{{ old('solutions', $portfolio?->solutions) }}</textarea>
     </div>
 
-    @if($portfolio?->images && count($portfolio->images))
-    <div>
-        <p class="label-field">Current images</p>
-        <div class="mt-2 flex flex-wrap gap-3">
-            @foreach($portfolio->images as $img)
-            <img src="{{ $portfolio->imageUrl($img) }}" alt="" class="h-20 w-28 rounded-lg border border-border object-cover" width="112" height="80">
+    @if($portfolio)
+    @php
+        $orderedImages = old('image_order', $portfolio->images ?? []);
+        if (! is_array($orderedImages)) {
+            $orderedImages = [];
+        }
+        $removedImages = old('remove_images', []);
+        if (! is_array($removedImages)) {
+            $removedImages = [];
+        }
+        $orderedImages = array_values(array_filter($orderedImages, fn ($path) => is_string($path) && $path !== '' && ! in_array($path, $removedImages, true)));
+    @endphp
+    @if(count($orderedImages))
+    <div id="portfolio-image-manager" class="space-y-2">
+        <p class="label-field">Images & order</p>
+        <p class="text-xs text-text-dim">Drag to reorder. The first image is the cover on portfolio cards.</p>
+        <ul id="portfolio-image-sortable" class="mt-2 flex flex-col gap-2" role="list">
+            @foreach($orderedImages as $img)
+            <li
+                class="portfolio-image-item flex items-center gap-3 rounded-xl border border-border bg-surface-muted p-2"
+                draggable="true"
+                data-path="{{ $img }}"
+            >
+                <button type="button" class="portfolio-image-drag shrink-0 cursor-grab px-1 text-text-dim hover:text-text active:cursor-grabbing" aria-label="Drag to reorder" tabindex="-1">⋮⋮</button>
+                <img src="{{ $portfolio->imageUrl($img) }}" alt="" class="h-16 w-24 shrink-0 rounded-lg border border-border object-cover" width="96" height="64">
+                <span class="portfolio-image-cover-badge badge-uv text-xs {{ $loop->first ? '' : 'hidden' }}">Cover</span>
+                <button type="button" class="portfolio-image-remove btn-ghost ml-auto min-h-9 min-w-9 shrink-0 px-2 text-sm text-danger" aria-label="Remove image">Remove</button>
+                <input type="hidden" name="image_order[]" value="{{ $img }}">
+            </li>
             @endforeach
-        </div>
-        <p class="mt-1 text-xs text-text-dim">Upload more below to add to this project (existing images are kept).</p>
+        </ul>
+        <div id="portfolio-image-remove-inputs" class="hidden" aria-hidden="true"></div>
     </div>
+    @endif
     @endif
 
     <div>
@@ -86,6 +110,9 @@ $categories = config('portfolio-ai.categories', []);
     <div>
         <label for="images" class="label-field">Upload images</label>
         <input type="file" id="images" name="images[]" accept="image/jpeg,image/png,image/gif,image/webp" multiple class="input-field file:mr-4 file:rounded-lg file:border-0 file:bg-uv file:px-3 file:py-1.5 file:text-sm file:text-white">
+        @if($portfolio)
+        <p class="mt-1 text-xs text-text-dim">New uploads are appended after your ordered images.</p>
+        @endif
     </div>
 
     <div class="flex flex-wrap gap-6">

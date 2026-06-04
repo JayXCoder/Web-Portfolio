@@ -195,6 +195,18 @@
         @apply bg-uv/15 text-uv-bright;
     }
 
+    .portfolio-image-item {
+        @apply transition duration-150;
+    }
+
+    .portfolio-image-item--dragging {
+        @apply border-uv/50 opacity-60;
+    }
+
+    .portfolio-image-item--over {
+        @apply border-uv ring-1 ring-uv/30;
+    }
+
     .stat-card {
         @apply rounded-2xl border border-border bg-surface-elevated/80 p-5 backdrop-blur-sm;
     }

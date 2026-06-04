@@ -80,22 +80,7 @@ class PortfolioService
      */
     public function updatePortfolio(Portfolio $portfolio, array $data): Portfolio
     {
-        // Start with existing images
-        $finalImages = $portfolio->images ?? [];
-        
-        // Handle image removal
-        if (isset($data['remove_images']) && is_array($data['remove_images'])) {
-            foreach ($data['remove_images'] as $index) {
-                if (isset($finalImages[$index])) {
-                    // Delete the file from storage
-                    Storage::disk('public')->delete($finalImages[$index]);
-                    // Remove from array
-                    unset($finalImages[$index]);
-                }
-            }
-            // Re-index the array
-            $finalImages = array_values($finalImages);
-        }
+        $finalImages = $this->resolveOrderedExistingImages($portfolio, $data);
 
         // Handle new image uploads (form field: images[] or legacy new_images[])
         $uploads = $data['images'] ?? $data['new_images'] ?? null;
@@ -111,7 +96,7 @@ class PortfolioService
 
         $data['images'] = array_values(array_unique($finalImages));
 
-        unset($data['new_images'], $data['remove_images'], $data['image_urls']);
+        unset($data['new_images'], $data['remove_images'], $data['image_urls'], $data['image_order']);
 
         // Update slug if title changed
         if (isset($data['title']) && $data['title'] !== $portfolio->title) {
@@ -142,6 +127,60 @@ class PortfolioService
     public function getAllForAdmin(): Collection
     {
         return $this->portfolioRepository->getAllForAdmin();
+    }
+
+    /**
+     * Apply drag-and-drop order and path-based removals from the admin form.
+     *
+     * @param  array<string, mixed>  $data
+     * @return list<string>
+     */
+    private function resolveOrderedExistingImages(Portfolio $portfolio, array $data): array
+    {
+        $existing = $portfolio->images ?? [];
+        $final = [];
+
+        if (! empty($data['image_order']) && is_array($data['image_order'])) {
+            foreach ($data['image_order'] as $path) {
+                $path = trim((string) $path);
+                if ($path !== '' && in_array($path, $existing, true) && ! in_array($path, $final, true)) {
+                    $final[] = $path;
+                }
+            }
+        } else {
+            $final = $existing;
+        }
+
+        $remove = $data['remove_images'] ?? [];
+        if (! is_array($remove)) {
+            return array_values($final);
+        }
+
+        foreach ($remove as $path) {
+            if (is_numeric($path)) {
+                $index = (int) $path;
+                $path = $final[$index] ?? $existing[$index] ?? null;
+            } else {
+                $path = trim((string) $path);
+            }
+
+            if ($path === '' || $path === null) {
+                continue;
+            }
+
+            $key = array_search($path, $final, true);
+            if ($key === false) {
+                continue;
+            }
+
+            if (! filter_var($path, FILTER_VALIDATE_URL)) {
+                Storage::disk('public')->delete($path);
+            }
+
+            unset($final[$key]);
+        }
+
+        return array_values($final);
     }
 
     /**

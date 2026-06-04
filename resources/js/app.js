@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initPortfolioFilters();
     initAdminSidebar();
     initPortfolioAi();
+    initPortfolioImageSortable();
 });
 
 function initMobileNav() {
@@ -122,6 +123,95 @@ function initAdminSidebar() {
         sidebar.classList.contains('-translate-x-full') ? open() : close();
     });
     overlay?.addEventListener('click', close);
+}
+
+function initPortfolioImageSortable() {
+    const list = document.getElementById('portfolio-image-sortable');
+    const removeContainer = document.getElementById('portfolio-image-remove-inputs');
+    if (!list || !removeContainer) return;
+
+    let dragged = null;
+
+    const syncCoverBadges = () => {
+        list.querySelectorAll('.portfolio-image-item').forEach((item, index) => {
+            const badge = item.querySelector('.portfolio-image-cover-badge');
+            if (badge) {
+                badge.classList.toggle('hidden', index !== 0);
+            }
+        });
+    };
+
+    const addRemoveInput = (path) => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'remove_images[]';
+        input.value = path;
+        input.dataset.path = path;
+        removeContainer.appendChild(input);
+    };
+
+    list.querySelectorAll('.portfolio-image-remove').forEach((btn) => {
+        btn.addEventListener('mousedown', (e) => e.stopPropagation());
+
+        btn.addEventListener('click', () => {
+            const item = btn.closest('.portfolio-image-item');
+            if (!item) return;
+
+            const path = item.dataset.path;
+            if (path) {
+                addRemoveInput(path);
+            }
+
+            item.remove();
+            syncCoverBadges();
+        });
+    });
+
+    list.querySelectorAll('.portfolio-image-item').forEach((item) => {
+        item.addEventListener('dragstart', (e) => {
+            dragged = item;
+            item.classList.add('portfolio-image-item--dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', item.dataset.path || '');
+        });
+
+        item.addEventListener('dragend', () => {
+            item.classList.remove('portfolio-image-item--dragging');
+            dragged = null;
+            list.querySelectorAll('.portfolio-image-item').forEach((el) => {
+                el.classList.remove('portfolio-image-item--over');
+            });
+            syncCoverBadges();
+        });
+
+        item.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            if (!dragged || dragged === item) return;
+
+            e.dataTransfer.dropEffect = 'move';
+            item.classList.add('portfolio-image-item--over');
+
+            const rect = item.getBoundingClientRect();
+            const after = e.clientY > rect.top + rect.height / 2;
+            if (after) {
+                item.after(dragged);
+            } else {
+                item.before(dragged);
+            }
+            syncCoverBadges();
+        });
+
+        item.addEventListener('dragleave', () => {
+            item.classList.remove('portfolio-image-item--over');
+        });
+
+        item.addEventListener('drop', (e) => {
+            e.preventDefault();
+            item.classList.remove('portfolio-image-item--over');
+        });
+    });
+
+    syncCoverBadges();
 }
 
 function initPortfolioAi() {

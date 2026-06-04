@@ -162,6 +162,10 @@ class AdminController extends Controller
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'image_urls' => 'nullable|string',
+            'image_order' => 'nullable|array',
+            'image_order.*' => 'string|max:500',
+            'remove_images' => 'nullable|array',
+            'remove_images.*' => 'string|max:500',
         ]);
 
         $this->portfolioService->updatePortfolio($portfolio, $request->all());
