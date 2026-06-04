@@ -44,6 +44,8 @@ chown -R www-data:www-data storage bootstrap/cache 2>/dev/null || true
 
 php artisan migrate --force --no-interaction
 
+php artisan admin:sync --no-interaction || true
+
 php artisan storage:link --force 2>/dev/null || true
 
 if [ "${APP_ENV}" = "production" ]; then

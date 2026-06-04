@@ -32,6 +32,9 @@ services:
       OLLAMA_PORT: ${OLLAMA_PORT:-11434}
       OLLAMA_MODEL: ${OLLAMA_MODEL:-gemma4:e4b}
       OLLAMA_TIMEOUT: ${OLLAMA_TIMEOUT:-120}
+      ADMIN_NAME: ${ADMIN_NAME:-Admin}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
     volumes:
       - app_storage:/var/www/html/storage
       - app_bootstrap_cache:/var/www/html/bootstrap/cache

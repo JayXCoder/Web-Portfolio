@@ -105,12 +105,24 @@ Open `http://localhost:8080` (or `APP_PORT`).
 ## Admin Access
 
 - Visit `/admin/login`
-- Create a user via tinker or a seed. Example:
+- Set in `.env` (Docker/Portainer environment variables):
+
+```env
+ADMIN_NAME=Admin
+ADMIN_EMAIL=you@example.com
+ADMIN_PASSWORD=your-strong-password-here
+```
+
+On container start, `admin:sync` creates or updates that user. After changing `ADMIN_PASSWORD`, restart the `app` container.
+
+Manual sync:
 
 ```bash
-php artisan tinker
->>> \App\Models\User::create(['name'=>'Admin','email'=>'admin@example.com','password'=>bcrypt('secret123'),'role'=>'admin','is_active'=>true]);
+php artisan admin:sync
+# Docker: docker compose exec app php artisan admin:sync
 ```
+
+You can still change name/email/password later in **Admin → Profile** (`/admin/profile`).
 
 ## SEO
 

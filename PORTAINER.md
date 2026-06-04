@@ -43,6 +43,9 @@ Required at minimum:
 | `OLLAMA_HOST` | `192.168.0.215` | LAN IP of Ollama server |
 | `OLLAMA_PORT` | `11434` | |
 | `OLLAMA_MODEL` | `gemma4:e4b` | Must be pulled on Ollama host |
+| `ADMIN_NAME` | `Admin` | Display name for bootstrap admin |
+| `ADMIN_EMAIL` | `you@example.com` | Admin login email |
+| `ADMIN_PASSWORD` | *(strong secret, 8+ chars)* | Admin login password; synced on each container start |
 
 Docker-specific (set in Portainer, not only locally):
 
@@ -73,17 +76,16 @@ Open: `http://<server-ip>:8080` (or your reverse proxy target port).
 
 ## 5. Post-deploy
 
-Create an admin user (once):
+1. Add `ADMIN_EMAIL` and `ADMIN_PASSWORD` to your stack environment (see table above).
+2. Restart the **app** container (or redeploy). Entrypoint runs `php artisan admin:sync` automatically.
+3. Log in at `/admin/login`.
+
+To apply a new password from `.env` later: update variables in Portainer → restart **app**.
+
+Manual sync:
 
 ```bash
-docker exec -it <stack>_app_1 php artisan tinker
->>> \App\Models\User::create(['name'=>'Admin','email'=>'you@example.com','password'=>bcrypt('your-password'),'role'=>'admin','is_active'=>true]);
-```
-
-Optional seed:
-
-```bash
-docker exec -it <stack>_app_1 php artisan db:seed
+docker exec -it <stack>_app_1 php artisan admin:sync
 ```
 
 ## 6. Reverse proxy (recommended)
