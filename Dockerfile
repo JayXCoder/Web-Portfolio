@@ -11,10 +11,34 @@ COPY vite.config.js ./
 COPY resources ./resources
 RUN npm run build
 
-FROM composer:2 AS vendor
+FROM php:8.2-fpm-alpine AS app
 
-WORKDIR /app
+# Extensions required by Laravel 12 (composer:2 image alone is missing intl, etc.)
+RUN apk add --no-cache \
+    bash \
+    fcgi \
+    git \
+    icu-dev \
+    libpng-dev \
+    libzip-dev \
+    oniguruma-dev \
+    && docker-php-ext-configure intl \
+    && docker-php-ext-install \
+    bcmath \
+    intl \
+    opcache \
+    pdo_mysql \
+    zip \
+    && rm -rf /var/cache/apk/*
 
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+ENV COMPOSER_ALLOW_SUPERUSER=1 \
+    COMPOSER_MEMORY_LIMIT=-1
+
+WORKDIR /var/www/html
+
+# Install PHP deps in the same image that runs the app (avoids composer:2 stage failures)
 COPY composer.json composer.lock ./
 RUN composer install \
     --no-dev \
@@ -23,30 +47,10 @@ RUN composer install \
     --prefer-dist \
     --optimize-autoloader
 
-FROM php:8.2-fpm-alpine AS app
-
-RUN apk add --no-cache \
-    bash \
-    fcgi \
-    libpng-dev \
-    libzip-dev \
-    oniguruma-dev \
-    && docker-php-ext-install \
-    bcmath \
-    opcache \
-    pdo_mysql \
-    zip \
-    && rm -rf /var/cache/apk/*
-
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-
-WORKDIR /var/www/html
-
 COPY . .
-COPY --from=vendor /app/vendor ./vendor
 COPY --from=frontend /app/public/build ./public/build
 
-RUN composer dump-autoload --optimize --classmap-authoritative \
+RUN composer dump-autoload --optimize --classmap-authoritative --no-interaction \
     && chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R ug+rwx storage bootstrap/cache
 

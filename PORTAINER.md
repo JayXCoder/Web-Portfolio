@@ -107,6 +107,7 @@ In Portainer: **Pull and redeploy** (or webhook) after pushing to Git. Migration
 | Issue | Check |
 |-------|--------|
 | `env file .../.env not found` | Add variables in Portainer **Environment variables** (see §3); push latest `docker-compose.yml` without `env_file` |
+| `composer install` exit code 2 | Pull latest `Dockerfile` (Composer runs on `php:8.2` with `intl`, not `composer:2` alone) |
 | 502 / blank page | `docker logs <stack>_web_1` and `<stack>_app_1` |
 | DB connection | `DB_HOST=mysql`, passwords match compose |
 | Ollama offline in admin | `OLLAMA_HOST` reachable from `app` container |
