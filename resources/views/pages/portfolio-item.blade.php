@@ -17,7 +17,7 @@
             <div class="lg:col-span-2 fade-in-view">
                 <span class="badge-uv">{{ $portfolio->category }}</span>
                 <h1 class="mt-3 font-display text-3xl font-bold text-text sm:text-4xl">{{ $portfolio->title }}</h1>
-                <p class="mt-4 whitespace-pre-line text-text-muted leading-relaxed">{{ $portfolio->description }}</p>
+                <x-formatted-text :text="$portfolio->description" class="mt-4 text-text-muted leading-relaxed space-y-3" />
 
                 @if($portfolio->features && count($portfolio->features))
                 <h2 class="mt-10 font-display text-xl font-semibold text-text">Features</h2>
@@ -30,12 +30,12 @@
 
                 @if($portfolio->challenges)
                 <h2 class="mt-10 font-display text-xl font-semibold text-text">Challenges</h2>
-                <p class="mt-3 text-text-muted leading-relaxed">{{ $portfolio->challenges }}</p>
+                <x-formatted-text :text="$portfolio->challenges" class="mt-3 text-text-muted leading-relaxed space-y-3" />
                 @endif
 
                 @if($portfolio->solutions)
                 <h2 class="mt-10 font-display text-xl font-semibold text-text">Solutions</h2>
-                <p class="mt-3 text-text-muted leading-relaxed">{{ $portfolio->solutions }}</p>
+                <x-formatted-text :text="$portfolio->solutions" class="mt-3 text-text-muted leading-relaxed space-y-3" />
                 @endif
 
                 @if($portfolio->images && count($portfolio->images) > 1)

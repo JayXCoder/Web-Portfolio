@@ -24,7 +24,7 @@
                             {{ $exp->is_current ? 'Present' : $exp->end_date?->format('M Y') }}
                             @if($exp->location) · {{ $exp->location }}@endif
                         </p>
-                        <p class="mt-4 text-text-muted leading-relaxed">{{ $exp->description }}</p>
+                        <x-formatted-text :text="$exp->description" class="mt-4 text-text-muted leading-relaxed space-y-3" />
                         @if($exp->technologies)
                         <div class="mt-4 flex flex-wrap gap-2">
                             @foreach($exp->technologies as $tech)
