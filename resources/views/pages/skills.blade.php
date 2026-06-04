@@ -24,7 +24,15 @@
                 @if ($title === 'Full Stack')
                 <p class="mt-1 text-xs text-text-dim">Stacks I build with — e.g. Next.js + FastAPI, Laravel + React, Node + Prisma.</p>
                 @elseif ($title === 'AI / ML')
-                <p class="mt-1 text-xs text-text-dim">Training, inference, vision, and local LLM tooling.</p>
+                <p class="mt-1 text-xs text-text-dim">Training, inference, vision, speech, and local LLM tooling.</p>
+                @elseif ($title === 'DevOps')
+                <p class="mt-1 text-xs text-text-dim">Containers, orchestration, and production ops.</p>
+                @elseif ($title === 'Cybersecurity')
+                <p class="mt-1 text-xs text-text-dim">Web app testing, traffic analysis, and offensive security tooling.</p>
+                @elseif ($title === 'Reverse Engineering')
+                <p class="mt-1 text-xs text-text-dim">Binary analysis, disassembly, and malware research workflows.</p>
+                @elseif ($title === 'Tools & Desktop')
+                <p class="mt-1 text-xs text-text-dim">Browsers, desktop apps, automation, and media tooling.</p>
                 @endif
                 <ul @class([
                     'mt-5 grid gap-2',

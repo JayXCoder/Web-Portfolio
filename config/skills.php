@@ -18,6 +18,8 @@ return [
         'Full Stack' => [
             ['label' => 'Next.js', 'slug' => 'nextdotjs', 'color' => 'FFFFFF'],
             ['label' => 'FastAPI', 'slug' => 'fastapi', 'color' => '009688'],
+            ['label' => 'Flask', 'slug' => 'flask', 'color' => 'FFFFFF'],
+            ['label' => 'Streamlit', 'slug' => 'streamlit', 'color' => 'FF4B4B'],
             ['label' => 'Node.js', 'slug' => 'nodedotjs', 'color' => '339933'],
             ['label' => 'Angular', 'slug' => 'angular', 'color' => 'DD0031'],
             ['label' => 'Laravel', 'slug' => 'laravel', 'color' => 'FF2D20'],
@@ -46,6 +48,7 @@ return [
             ['label' => 'TensorFlow', 'slug' => 'tensorflow', 'color' => 'FF6F00'],
             ['label' => 'Hugging Face', 'slug' => 'huggingface', 'color' => 'FFD21E'],
             ['label' => 'Qwen LLMs', 'slug' => 'qwen', 'color' => '615EFF'],
+            ['label' => 'OpenAI Whisper', 'slug' => 'openai', 'color' => '412991'],
             ['label' => 'Ollama', 'slug' => 'ollama', 'color' => 'FFFFFF'],
             ['label' => 'vLLM', 'slug' => 'vllm', 'color' => 'FFFFFF'],
             ['label' => 'SGLang', 'slug' => null, 'color' => 'a855f7'],
@@ -55,14 +58,43 @@ return [
             ['label' => 'OpenCV', 'slug' => 'opencv', 'color' => '5C3EE8'],
             ['label' => 'YOLO', 'slug' => 'ultralytics', 'color' => '00F200'],
             ['label' => 'NVIDIA CUDA', 'slug' => 'nvidia', 'color' => '76B900'],
+            ['label' => 'AMD ROCm', 'slug' => 'amd', 'color' => 'ED1C24'],
             ['label' => 'Jupyter', 'slug' => 'jupyter', 'color' => 'F37626'],
         ],
-        'DevOps & Security' => [
+        'DevOps' => [
+            ['label' => 'Kubernetes', 'slug' => 'kubernetes', 'color' => '326CE5'],
             ['label' => 'Docker', 'slug' => 'docker', 'color' => '2496ED'],
+            ['label' => 'Helm', 'slug' => 'helm', 'color' => '0F1689'],
+            ['label' => 'Portainer', 'slug' => 'portainer', 'color' => '13BEF9'],
+            ['label' => 'Nginx', 'slug' => 'nginx', 'color' => '009639'],
             ['label' => 'Linux', 'slug' => 'linux', 'color' => 'FCC624'],
             ['label' => 'Git', 'slug' => 'git', 'color' => 'F05032'],
             ['label' => 'CI/CD', 'slug' => 'githubactions', 'color' => '2088FF'],
-            ['label' => 'Penetration Testing', 'slug' => 'kalilinux', 'color' => '557C94'],
+            ['label' => 'Prometheus', 'slug' => 'prometheus', 'color' => 'E6522C'],
+        ],
+        'Cybersecurity' => [
+            ['label' => 'Web Penetration', 'slug' => 'owasp', 'color' => '000000'],
+            ['label' => 'Burp Suite', 'slug' => 'burpsuite', 'color' => 'FF6633'],
+            ['label' => 'Wireshark', 'slug' => 'wireshark', 'color' => '1679A7'],
+            ['label' => 'Kali Linux', 'slug' => 'kalilinux', 'color' => '557C94'],
+            ['label' => 'Metasploit', 'slug' => 'metasploit', 'color' => '2596CD'],
+            ['label' => 'Nmap', 'slug' => 'nmap', 'color' => '2A6041'],
+        ],
+        'Reverse Engineering' => [
+            ['label' => 'IDA Pro', 'slug' => null, 'color' => '00B0F0'],
+            ['label' => 'Ghidra', 'slug' => null, 'color' => 'a855f7'],
+            ['label' => 'x64dbg', 'slug' => null, 'color' => '4CAF50'],
+        ],
+        'Tools & Desktop' => [
+            ['label' => 'PyQt', 'slug' => 'qt', 'color' => '41CD52'],
+            ['label' => 'Google Chrome', 'slug' => 'googlechrome', 'color' => '4285F4'],
+            ['label' => 'Electron', 'slug' => 'electron', 'color' => '47848F'],
+            ['label' => 'Playwright', 'slug' => 'playwright', 'color' => '2EAD33'],
+            ['label' => 'Puppeteer', 'slug' => 'puppeteer', 'color' => '40B5A4'],
+            ['label' => 'VS Code', 'slug' => 'visualstudiocode', 'color' => '007ACC'],
+            ['label' => 'FFmpeg', 'slug' => 'ffmpeg', 'color' => '007808'],
+            ['label' => 'Vite', 'slug' => 'vite', 'color' => '646CFF'],
+            ['label' => 'npm', 'slug' => 'npm', 'color' => 'CB3837'],
         ],
         'Hardware' => [
             ['label' => 'Arduino', 'slug' => 'arduino', 'color' => '00878F'],
@@ -74,5 +106,5 @@ return [
     ],
 
     /** Group keys that use a wider card on large screens */
-    'wide_groups' => ['Full Stack', 'AI / ML'],
+    'wide_groups' => ['Full Stack', 'AI / ML', 'DevOps', 'Cybersecurity', 'Tools & Desktop'],
 ];
