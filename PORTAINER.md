@@ -88,7 +88,12 @@ docker exec -it <stack>_app_1 php artisan db:seed
 
 ## 6. Reverse proxy (recommended)
 
-Point Traefik / Nginx Proxy Manager / SWAG at `http://<host>:8080` with TLS. Set `APP_URL` to the HTTPS URL.
+Point Traefik / Nginx Proxy Manager / SWAG at `http://<host>:8080` with TLS.
+
+**Important:** `APP_URL` must be **`https://jayxcoder.duckdns.org`** (not `http://`).  
+If CSS/JS fail on the domain but work on `:8080`, the site is mixed-content blocked — fix `APP_URL` and redeploy the stack (config cache refreshes on container start).
+
+Ensure the proxy forwards: `X-Forwarded-Proto`, `X-Forwarded-For`, `X-Forwarded-Host`.
 
 ## 7. Updates
 

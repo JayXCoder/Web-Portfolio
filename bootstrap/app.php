@@ -14,12 +14,15 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Reverse proxy (Nginx Proxy Manager, Traefik, Cloudflare, etc.) terminates TLS
+        $middleware->trustProxies(at: '*');
+
         $middleware->alias([
             'force.https' => ForceHttps::class,
             'admin' => AdminMiddleware::class,
             'track.visitor' =>TrackVisitor::class,
         ]);
-        
+
         // Apply visitor tracking to all web routes except admin routes
         $middleware->web(append: [
             TrackVisitor::class,
