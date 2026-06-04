@@ -56,6 +56,7 @@ document.getElementById('chat-form')?.addEventListener('submit', async (e) => {
         if (data.context) window.chatContext = data.context;
         appendMsg(box, data.message || data.error || 'No response', 'bot', {
             related_projects: data.related_projects || [],
+            message_html: data.message_html || null,
         });
     } catch {
         box.querySelector('[data-loading]')?.remove();
@@ -75,9 +76,17 @@ function appendMsg(box, text, role, options = {}) {
         el.classList.add('text-text-muted');
     }
 
-    const p = document.createElement('p');
-    p.className = 'whitespace-pre-wrap';
-    p.textContent = text;
+    const p = document.createElement('div');
+    p.className = 'chat-message-body whitespace-pre-wrap leading-relaxed';
+
+    if (!isUser && options.message_html) {
+        p.innerHTML = options.message_html;
+    } else if (!isUser) {
+        p.innerHTML = formatChatMarkdown(text);
+    } else {
+        p.textContent = text;
+    }
+
     el.appendChild(p);
 
     if (!isUser && options.related_projects?.length) {
@@ -95,6 +104,22 @@ function appendMsg(box, text, role, options = {}) {
 
     box.appendChild(el);
     box.scrollTop = box.scrollHeight;
+}
+
+function escapeHtml(text) {
+    return text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
+
+function formatChatMarkdown(text) {
+    let safe = escapeHtml(text);
+    safe = safe.replace(/\*\*(.+?)\*\*/gs, '<strong class="font-semibold text-text">$1</strong>');
+    safe = safe.replace(/(?<!\*)\*([^*\n]+)\*(?!\*)/g, '<em class="text-text-muted">$1</em>');
+    safe = safe.replace(/`([^`\n]+)`/g, '<code class="rounded bg-oled/60 px-1 py-0.5 text-uv-bright text-xs">$1</code>');
+    return safe.replace(/\n/g, '<br>');
 }
 </script>
 @endpush

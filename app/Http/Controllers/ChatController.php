@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Services\ChatContextService;
 use App\Services\OllamaService;
+use App\Support\ChatMessageFormatter;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection;
 use Illuminate\Http\Request;
@@ -88,9 +89,14 @@ class ChatController extends Controller
             $reply = $this->buildSkillAffirmation($matchedSkills, $relatedPortfolios);
         }
 
+        if ($response['success']) {
+            $relatedPortfolios = $this->chatContext->refineRelatedPortfolios($relatedPortfolios, $reply, $message);
+        }
+
         return response()->json([
             'success' => $response['success'],
             'message' => $reply,
+            'message_html' => $response['success'] ? ChatMessageFormatter::toHtml($reply) : null,
             'related_projects' => $this->chatContext->formatProjectsForChat($relatedPortfolios),
             'matched_skills' => $matchedSkills,
             'context' => array_merge($history, [

@@ -73,6 +73,15 @@ class ChatContextService
             }
         }
 
+        if (preg_match('/\bllm?s?\b|large language model/', $haystack)) {
+            foreach ($this->allSkillLabels() as $label) {
+                $labelLower = strtolower($label);
+                if (preg_match('/(llm|langchain|ollama|vllm|qwen|hugging|pytorch|sglang|whisper|tensorflow|scikit)/', $labelLower)) {
+                    $matched[] = $label;
+                }
+            }
+        }
+
         foreach (config('chat.skill_aliases', []) as $canonical => $aliases) {
             foreach ($aliases as $alias) {
                 if (! str_contains($haystack, strtolower($alias))) {
@@ -104,38 +113,60 @@ class ChatContextService
      */
     public function findRelatedPortfolios(string $message): Collection
     {
-        $terms = $this->searchTermsFromMessage($message);
-        $skillMatches = $this->findMatchingSkills($message);
+        $weightedTerms = $this->weightedSearchTerms($message);
 
-        foreach ($skillMatches as $skill) {
-            $terms[] = strtolower($skill);
-            $terms[] = str_replace(' ', '', strtolower($skill));
-        }
-
-        $terms = array_values(array_unique(array_filter($terms, fn ($t) => strlen($t) >= 2)));
-
-        if ($terms === []) {
+        if ($weightedTerms === []) {
             return collect();
         }
 
-        return Portfolio::published()->ordered()->get()->filter(function (Portfolio $p) use ($terms) {
-            $blob = strtolower(implode(' ', array_filter([
-                $p->title,
-                $p->short_description,
-                $p->description,
-                $p->category,
-                $p->technologies_string,
-                is_array($p->features) ? implode(' ', $p->features) : '',
-            ])));
+        $minScore = (int) config('chat.project_match_min_score', 4);
 
-            foreach ($terms as $term) {
-                if (str_contains($blob, $term)) {
+        return Portfolio::published()
+            ->ordered()
+            ->get()
+            ->map(fn (Portfolio $p) => [
+                'portfolio' => $p,
+                'score' => $this->portfolioMatchScore($p, $weightedTerms),
+            ])
+            ->filter(fn (array $row) => $row['score'] >= $minScore)
+            ->sortByDesc('score')
+            ->take(3)
+            ->pluck('portfolio')
+            ->values();
+    }
+
+    /**
+     * Prefer projects the assistant named in its reply (still must meet min score).
+     *
+     * @return Collection<int, Portfolio>
+     */
+    public function refineRelatedPortfolios(Collection $portfolios, string $reply, string $userMessage): Collection
+    {
+        if ($portfolios->isEmpty()) {
+            return $portfolios;
+        }
+
+        $replyLower = strtolower($reply);
+        $mentioned = $portfolios->filter(function (Portfolio $p) use ($replyLower) {
+            $title = strtolower($p->title);
+            if (str_contains($replyLower, $title)) {
+                return true;
+            }
+
+            foreach (preg_split('/\s+/', $title) as $word) {
+                if (strlen($word) >= 5 && str_contains($replyLower, $word)) {
                     return true;
                 }
             }
 
             return false;
-        })->values()->take(4);
+        });
+
+        if ($mentioned->isNotEmpty()) {
+            return $mentioned->values()->take(3);
+        }
+
+        return $portfolios;
     }
 
     /**
@@ -290,17 +321,83 @@ TEXT;
     /**
      * @return list<string>
      */
-    private function searchTermsFromMessage(string $message): array
+    /**
+     * @return array<string, int> term => weight
+     */
+    private function weightedSearchTerms(string $message): array
     {
         $terms = [];
-        preg_match_all('/[a-z0-9][a-z0-9.+#_-]*/i', strtolower($message), $matches);
+        $haystack = strtolower($message);
+        $stopwords = array_flip(config('chat.stopwords', []));
 
-        foreach ($matches[0] ?? [] as $word) {
-            if (strlen($word) >= 2) {
-                $terms[] = $word;
+        foreach ($this->findMatchingSkills($message) as $skill) {
+            $label = strtolower($skill);
+            $terms[$label] = max($terms[$label] ?? 0, 6);
+            $compact = str_replace([' ', '.', '/'], '', $label);
+            if ($compact !== '') {
+                $terms[$compact] = max($terms[$compact] ?? 0, 5);
             }
         }
 
+        foreach (config('chat.topic_aliases', []) as $aliases) {
+            $topicHit = false;
+            foreach ($aliases as $alias) {
+                if (str_contains($haystack, strtolower($alias))) {
+                    $topicHit = true;
+                    break;
+                }
+            }
+
+            if (! $topicHit) {
+                continue;
+            }
+
+            foreach ($aliases as $alias) {
+                $alias = strtolower($alias);
+                if (strlen($alias) >= 2) {
+                    $terms[$alias] = max($terms[$alias] ?? 0, 5);
+                }
+            }
+        }
+
+        preg_match_all('/[a-z0-9][a-z0-9.+#_-]*/i', $haystack, $matches);
+        foreach ($matches[0] ?? [] as $word) {
+            $word = strtolower($word);
+            if (strlen($word) < 3 || isset($stopwords[$word])) {
+                continue;
+            }
+            $terms[$word] = max($terms[$word] ?? 0, strlen($word) >= 5 ? 3 : 2);
+        }
+
         return $terms;
+    }
+
+    /**
+     * @param  array<string, int>  $weightedTerms
+     */
+    private function portfolioMatchScore(Portfolio $portfolio, array $weightedTerms): int
+    {
+        $blob = strtolower(implode(' ', array_filter([
+            $portfolio->title,
+            $portfolio->short_description,
+            $portfolio->description,
+            $portfolio->category,
+            $portfolio->technologies_string,
+            is_array($portfolio->features) ? implode(' ', $portfolio->features) : '',
+        ])));
+
+        $score = 0;
+
+        foreach ($weightedTerms as $term => $weight) {
+            if ($term === '' || strlen($term) < 2) {
+                continue;
+            }
+
+            if (str_contains($blob, $term)) {
+                $score += $weight;
+            }
+        }
+
+        return $score;
     }
 }
