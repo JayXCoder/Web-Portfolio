@@ -15,12 +15,16 @@ Portainer clones the repository and builds from `docker-compose.yml` at the repo
 5. **Compose path**: `docker-compose.yml`
 6. Enable **Authentication** if the repo is private
 
-## 3. Environment variables
+## 3. Environment variables (required)
 
-Either:
+Git deploy **does not** include `.env` (it is gitignored). The stack no longer uses `env_file: .env`.
 
-- Paste the contents of `.env.example` into Portainer’s **Environment variables** editor and fill in values, or  
-- Use **Load variables from .env file** and upload your `.env`
+In Portainer, open your stack → **Editor** → scroll to **Environment variables** and either:
+
+1. **Advanced mode**: paste the full contents of your local `.env` file, or  
+2. **Load variables from .env file**: upload your local `.env` (Portainer stores it for this stack only)
+
+Then redeploy. Do **not** expect a `.env` file to exist inside the cloned repo.
 
 Required at minimum:
 
@@ -102,6 +106,7 @@ In Portainer: **Pull and redeploy** (or webhook) after pushing to Git. Migration
 
 | Issue | Check |
 |-------|--------|
+| `env file .../.env not found` | Add variables in Portainer **Environment variables** (see §3); push latest `docker-compose.yml` without `env_file` |
 | 502 / blank page | `docker logs <stack>_web_1` and `<stack>_app_1` |
 | DB connection | `DB_HOST=mysql`, passwords match compose |
 | Ollama offline in admin | `OLLAMA_HOST` reachable from `app` container |
