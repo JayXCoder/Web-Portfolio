@@ -145,7 +145,7 @@ function initPortfolioAi() {
         }
 
         generateBtn.disabled = true;
-        showStatus(statusEl, 'Generating portfolio with Ollama…', 'info');
+        showStatus(statusEl, 'Starting generation…', 'info');
 
         const body = new FormData(form);
         body.append('_token', document.querySelector('meta[name="csrf-token"]')?.content || '');
@@ -156,9 +156,21 @@ function initPortfolioAi() {
                 body,
                 headers: { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
             });
-            const data = await parseJsonResponse(res);
-            if (!res.ok || !data.success) {
-                throw new Error(data.message || data.error || formatValidationErrors(data) || 'Generation failed');
+            const start = await parseJsonResponse(res);
+            if (!res.ok || !start.success) {
+                throw new Error(start.message || start.error || formatValidationErrors(start) || 'Generation failed');
+            }
+
+            let data = start;
+
+            if (start.job_id) {
+                data = await pollPortfolioAiJob(form, start.job_id, (message) => {
+                    showStatus(statusEl, message || 'Generating with Ollama…', 'info');
+                });
+            }
+
+            if (!data.portfolio) {
+                throw new Error(data.message || 'Generation finished without a portfolio draft.');
             }
 
             lastDraft = data.portfolio;
@@ -201,6 +213,50 @@ function initPortfolioAi() {
             saveBtn.disabled = false;
         }
     });
+}
+
+function sleep(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function pollPortfolioAiJob(form, jobId, onProgress) {
+    const baseUrl = form.dataset.jobUrl;
+    const interval = Number(form.dataset.pollInterval || 2000);
+    const maxAttempts = Number(form.dataset.pollMax || 150);
+
+    if (!baseUrl) {
+        throw new Error('Job status URL is not configured.');
+    }
+
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+        if (attempt > 0) {
+            await sleep(interval);
+        }
+
+        const res = await fetch(`${baseUrl}/${jobId}`, {
+            headers: { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+        });
+        const data = await parseJsonResponse(res);
+
+        if (!res.ok) {
+            throw new Error(data.message || 'Could not check generation status.');
+        }
+
+        if (data.status === 'processing') {
+            onProgress?.(data.message);
+            continue;
+        }
+
+        if (data.status === 'completed' && data.success && data.portfolio) {
+            return data;
+        }
+
+        throw new Error(data.message || 'Generation failed.');
+    }
+
+    throw new Error(
+        'Generation is taking longer than expected. If Ollama is still running, wait and try again, or use less markdown.',
+    );
 }
 
 async function parseJsonResponse(res) {

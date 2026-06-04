@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Portfolio;
 use App\Services\OllamaService;
+use App\Services\PortfolioAiJobStore;
 use App\Services\PortfolioAiService;
 use App\Services\PortfolioService;
 use Illuminate\Http\JsonResponse;
@@ -18,6 +19,7 @@ class AdminPortfolioAiController extends Controller
 {
     public function __construct(
         private PortfolioAiService $portfolioAi,
+        private PortfolioAiJobStore $jobStore,
         private PortfolioService $portfolioService,
         private OllamaService $ollama
     ) {}
@@ -77,9 +79,40 @@ class AdminPortfolioAiController extends Controller
             }
 
             $combined = implode("\n\n---\n\n", $parts);
-            $result = $this->portfolioAi->generateFromMarkdown($combined);
+            $jobId = $this->jobStore->create($combined);
 
-            return response()->json($result, $result['success'] ? 200 : 422);
+            app()->terminating(function () use ($jobId): void {
+                set_time_limit((int) config('portfolio-ai.generation_time_limit', 600));
+
+                try {
+                    $markdown = $this->jobStore->getMarkdown($jobId);
+
+                    if ($markdown === null) {
+                        return;
+                    }
+
+                    $result = $this->portfolioAi->generateFromMarkdown($markdown);
+                    $this->jobStore->finish($jobId, $result);
+                } catch (Throwable $e) {
+                    Log::error('Portfolio AI background generation failed', [
+                        'job_id' => $jobId,
+                        'message' => $e->getMessage(),
+                        'exception' => $e::class,
+                    ]);
+
+                    $this->jobStore->finish($jobId, [
+                        'success' => false,
+                        'message' => 'Generation failed on the server. Check storage/logs/laravel.log.',
+                    ]);
+                }
+            });
+
+            return response()->json([
+                'success' => true,
+                'job_id' => $jobId,
+                'status' => 'processing',
+                'message' => 'Generation started. This usually takes 1–3 minutes — keep this tab open.',
+            ]);
         } catch (ValidationException $e) {
             throw $e;
         } catch (Throwable $e) {
@@ -93,6 +126,27 @@ class AdminPortfolioAiController extends Controller
                 'message' => 'Server error while generating portfolio. Check storage/logs/laravel.log on the server.',
             ], 500);
         }
+    }
+
+    public function jobStatus(string $jobId): JsonResponse
+    {
+        if (! Str::isUuid($jobId)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid job id.',
+            ], 404);
+        }
+
+        $status = $this->jobStore->publicStatus($jobId);
+
+        if ($status === null) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Job not found or expired. Start generation again.',
+            ], 404);
+        }
+
+        return response()->json($status);
     }
 
     private function readMarkdownFile(UploadedFile $file): string

@@ -16,8 +16,11 @@
     <div class="grid gap-6 lg:grid-cols-2">
         <form id="portfolio-ai-form" class="card-surface p-6 space-y-4"
               data-generate-url="{{ route('admin.portfolios.ai.generate') }}"
+              data-job-url="{{ url('/admin/portfolios/ai/jobs') }}"
               data-save-url="{{ route('admin.portfolios.ai.save') }}"
-              data-index-url="{{ route('admin.portfolios') }}">
+              data-index-url="{{ route('admin.portfolios') }}"
+              data-poll-interval="{{ config('portfolio-ai.poll_interval_ms', 2000) }}"
+              data-poll-max="{{ config('portfolio-ai.poll_max_attempts', 150) }}">
             @csrf
             <div id="ollama-status" class="rounded-xl border border-border bg-surface-muted px-4 py-3 text-sm text-text-muted">
                 Checking Ollama…

@@ -97,6 +97,19 @@ If CSS/JS fail on the domain but work on `:8080`, the site is mixed-content bloc
 
 Ensure the proxy forwards: `X-Forwarded-Proto`, `X-Forwarded-For`, `X-Forwarded-Host`.
 
+### AI portfolio generation (504 timeout)
+
+Markdown → Ollama can take **1–3+ minutes**. The app now returns immediately and runs generation in the background; the admin UI **polls** until the draft is ready.
+
+If you still see **504 Gateway Time-out** from **openresty** / Nginx Proxy Manager on other long requests, raise the proxy read timeout (example for NPM **Advanced** custom config on the proxy host):
+
+```nginx
+proxy_read_timeout 600s;
+proxy_send_timeout 600s;
+```
+
+Set `OLLAMA_TIMEOUT=300` (or higher) in Portainer if generation fails with a timeout in `storage/logs/laravel.log`.
+
 ## 7. Updates
 
 In Portainer: **Pull and redeploy** (or webhook) after pushing to Git. Migrations run automatically on container start.
@@ -118,5 +131,7 @@ In Portainer: **Pull and redeploy** (or webhook) after pushing to Git. Migration
 | 502 / blank page | `docker logs <stack>_web_1` and `<stack>_app_1` |
 | DB connection | `DB_HOST=mysql`, passwords match compose |
 | Ollama offline in admin | `OLLAMA_HOST` reachable from `app` container |
+| 504 on “Generate with Ollama” | Pull latest code (async + polling); increase NPM/openresty `proxy_read_timeout`; set `OLLAMA_TIMEOUT=300` |
+| Stuck on “Generating…” | Check `docker logs <stack>_app_1`; confirm Ollama model is pulled; try smaller markdown |
 | Assets 404 | Rebuild stack (Vite runs at image build) |
 | `APP_KEY` missing | Set in Portainer env before first deploy |

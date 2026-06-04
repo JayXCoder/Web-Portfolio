@@ -11,7 +11,7 @@ return [
     'port' => $port,
     'api_url' => rtrim($apiUrl, '/'),
     'model' => env('OLLAMA_MODEL', 'gemma4:e4b'),
-    'timeout' => (int) env('OLLAMA_TIMEOUT', 120),
+    'timeout' => (int) env('OLLAMA_TIMEOUT', 300),
     'tailscale_enabled' => env('OLLAMA_TAILSCALE_ENABLED', false),
     'tailscale_ip' => env('OLLAMA_TAILSCALE_IP'),
 ];

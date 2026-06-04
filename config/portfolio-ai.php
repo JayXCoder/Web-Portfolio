@@ -3,6 +3,16 @@
 return [
     /*
     |--------------------------------------------------------------------------
+    | Async generation (avoids reverse-proxy 504 timeouts)
+    |--------------------------------------------------------------------------
+    */
+    'job_ttl_minutes' => (int) env('PORTFOLIO_AI_JOB_TTL', 120),
+    'generation_time_limit' => (int) env('PORTFOLIO_AI_GENERATION_TIME_LIMIT', 600),
+    'poll_interval_ms' => (int) env('PORTFOLIO_AI_POLL_INTERVAL_MS', 2000),
+    'poll_max_attempts' => (int) env('PORTFOLIO_AI_POLL_MAX_ATTEMPTS', 150),
+
+    /*
+    |--------------------------------------------------------------------------
     | Portfolio AI — system instructions for Ollama
     |--------------------------------------------------------------------------
     |

@@ -107,6 +107,7 @@ Route::prefix('admin')->name('admin.')->middleware('force.https')->group(functio
         Route::post('/portfolios', [AdminController::class, 'storePortfolio'])->name('portfolios.store');
         Route::get('/portfolios/ai/status', [AdminPortfolioAiController::class, 'status'])->name('portfolios.ai.status');
         Route::post('/portfolios/ai/generate', [AdminPortfolioAiController::class, 'generate'])->name('portfolios.ai.generate');
+        Route::get('/portfolios/ai/jobs/{jobId}', [AdminPortfolioAiController::class, 'jobStatus'])->name('portfolios.ai.job');
         Route::post('/portfolios/ai/save', [AdminPortfolioAiController::class, 'saveDraft'])->name('portfolios.ai.save');
         Route::get('/portfolios/{portfolio}/edit', [AdminController::class, 'editPortfolio'])->name('portfolios.edit');
         Route::put('/portfolios/{portfolio}', [AdminController::class, 'updatePortfolio'])->name('portfolios.update');
