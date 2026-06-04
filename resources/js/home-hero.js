@@ -2,6 +2,9 @@
  * Home hero: cycling neon words, sparkles, and multi-language terminal typing.
  */
 
+import { HERO_CODE_SNIPPETS } from './hero-snippets';
+import { highlightMonokai } from './hero-monokai';
+
 export function initHomeHero() {
     initHeroWordCycle();
     initHeroTerminal();
@@ -80,50 +83,34 @@ function initHeroTerminal() {
 
     if (!typedCodeElement || !languageIndicator) return;
 
-    const codeSnippets = [
-        {
-            language: 'Python',
-            text: 'print("Hello! Welcome to my portfolio")\nprint("Full-Stack · AI/ML · IoT")\n\ndef explore():\n    return "View my projects →"',
-            color: '#3776ab',
-        },
-        {
-            language: 'PHP',
-            text: '<?php\n\necho "JayXCoder | Laravel portfolio";\necho "\\nBuilt with Ollama + Docker";',
-            color: '#777bb4',
-        },
-        {
-            language: 'JavaScript',
-            text: 'const stack = ["Laravel", "React", "Python"];\nconsole.log(`Building with ${stack.join(", ")}`);',
-            color: '#f7df1e',
-        },
-        {
-            language: 'C++',
-            text: '#include <iostream>\nint main() {\n  std::cout << "Engineer · Builder\\n";\n  return 0;\n}',
-            color: '#00599c',
-        },
-    ];
+    const codeSnippets = HERO_CODE_SNIPPETS;
 
     let currentIndex = 0;
     let isTyping = false;
+
+    function renderCode(plain, language) {
+        typedCodeElement.innerHTML = highlightMonokai(plain, language);
+    }
 
     function typeCode(snippet, callback) {
         if (isTyping) return;
         isTyping = true;
         languageIndicator.textContent = snippet.language;
-        languageIndicator.style.borderColor = snippet.color;
-        typedCodeElement.textContent = '';
+        languageIndicator.style.borderColor = '#66d9ef';
 
         let index = 0;
         const fullText = snippet.text;
+        renderCode('', snippet.language);
 
         function typeChar() {
             if (index < fullText.length) {
-                typedCodeElement.textContent += fullText[index];
+                const slice = fullText.slice(0, index + 1);
+                renderCode(slice, snippet.language);
                 index += 1;
-                setTimeout(typeChar, Math.random() * 28 + 18);
+                setTimeout(typeChar, Math.random() * 16 + 10);
             } else {
                 isTyping = false;
-                setTimeout(callback, 2200);
+                setTimeout(callback, 2600);
             }
         }
         typeChar();
@@ -136,5 +123,5 @@ function initHeroTerminal() {
         });
     }
 
-    setTimeout(cycleSnippets, 800);
+    setTimeout(cycleSnippets, 600);
 }

@@ -649,8 +649,33 @@
         }
     }
 
+    .site-logo-badge {
+        @apply inline-flex items-center rounded-lg border border-uv/40 bg-surface px-2 py-0.5 font-mono text-sm;
+    }
+
+    .site-logo-text {
+        @apply text-text;
+    }
+
+    .site-logo-cursor {
+        @apply ml-0.5 inline-block h-4 w-0.5 bg-uv-bright align-middle;
+        animation: logo-cursor-blink 1.05s step-end infinite;
+    }
+
+    @keyframes logo-cursor-blink {
+        0%,
+        45% {
+            opacity: 1;
+        }
+        50%,
+        100% {
+            opacity: 0;
+        }
+    }
+
     .hero-terminal {
-        @apply relative z-10 w-full max-w-md overflow-hidden rounded-xl border border-uv/25 bg-oled/95 p-5 font-mono text-sm;
+        @apply relative z-10 w-full max-w-md overflow-hidden rounded-xl border border-uv/25 p-5 font-mono text-sm;
+        background: #272822;
         box-shadow: var(--shadow-uv);
     }
 
@@ -675,20 +700,61 @@
     }
 
     .hero-terminal-lang {
-        @apply absolute right-4 top-4 rounded-full border border-uv/40 px-2 py-0.5 text-xs text-uv-bright;
+        @apply absolute right-4 top-4 rounded-full border border-[#66d9ef]/50 bg-[#1e1f1c] px-2 py-0.5 text-xs;
+        color: #66d9ef;
     }
 
-    .hero-terminal-prompt {
-        color: var(--color-uv-bright);
-        text-shadow: var(--shadow-uv-sm);
+    .hero-terminal-prompt-line {
+        @apply mt-1 text-xs leading-none;
     }
 
     .hero-terminal-code {
-        @apply mt-2 whitespace-pre-wrap text-left text-text-dim;
-        min-height: 6rem;
+        @apply mt-3 whitespace-pre-wrap text-left leading-relaxed;
+        min-height: 8.5rem;
+        font-size: 0.8rem;
+    }
+
+    .hero-terminal-code--monokai {
+        color: #f8f8f2;
     }
 
     .hero-terminal-cursor {
-        @apply ml-0.5 inline-block h-4 w-2 animate-pulse bg-text align-middle;
+        @apply ml-0.5 inline-block h-3.5 w-0.5 align-middle;
+        background: #a6e22e;
+        animation: logo-cursor-blink 1.05s step-end infinite;
+    }
+
+  /* Monokai token colors (hero terminal) */
+    .mk-plain {
+        color: #f8f8f2;
+    }
+
+    .mk-comment {
+        color: #75715e;
+        font-style: italic;
+    }
+
+    .mk-keyword {
+        color: #f92672;
+    }
+
+    .mk-string {
+        color: #e6db74;
+    }
+
+    .mk-number {
+        color: #ae81ff;
+    }
+
+    .mk-function {
+        color: #a6e22e;
+    }
+
+    .mk-type {
+        color: #66d9ef;
+    }
+
+    .mk-tag {
+        color: #f92672;
     }
 }

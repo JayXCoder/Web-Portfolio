@@ -36,7 +36,9 @@
     <header class="fixed inset-x-0 top-0 z-50 border-b border-border/80 bg-oled/90 backdrop-blur-md">
         <div class="site-container flex h-16 flex-wrap items-center justify-between gap-2 lg:h-[4.25rem] lg:flex-nowrap">
             <a href="{{ route('home') }}" class="group flex items-center gap-2 font-display text-lg font-bold text-uv-bright transition hover:text-uv-glow" aria-label="JayXCoder home">
-                <span class="rounded-lg border border-uv/40 bg-surface px-2 py-0.5 font-mono text-sm text-text">JXG</span>
+                <span class="site-logo-badge" data-logo-cursor>
+                    <span class="site-logo-text">JXG</span><span class="site-logo-cursor" aria-hidden="true"></span>
+                </span>
                 <span class="hidden sm:inline">JayXCoder</span>
             </a>
 

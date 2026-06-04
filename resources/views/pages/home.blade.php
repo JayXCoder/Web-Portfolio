@@ -52,11 +52,14 @@
                         <span class="hero-terminal-dot hero-terminal-dot-red" aria-hidden="true"></span>
                         <span class="hero-terminal-dot hero-terminal-dot-yellow" aria-hidden="true"></span>
                         <span class="hero-terminal-dot hero-terminal-dot-green" aria-hidden="true"></span>
-                        <span class="ml-2 text-xs text-text-muted">jay@portfolio:~</span>
+                        <span class="ml-2 text-xs text-text-muted">jay@devbox:~</span>
                     </div>
                     <span id="languageIndicator" class="hero-terminal-lang">Python</span>
-                    <p class="hero-terminal-prompt">$&gt;<span class="hero-terminal-cursor" aria-hidden="true"></span></p>
-                    <pre id="typedCode" class="hero-terminal-code" aria-live="polite"></pre>
+                    <p class="hero-terminal-prompt-line" aria-hidden="true">
+                        <span class="mk-plain">jay@devbox</span><span class="mk-type">:~</span><span class="mk-keyword">$</span>
+                        <span class="hero-terminal-cursor" aria-hidden="true"></span>
+                    </p>
+                    <pre id="typedCode" class="hero-terminal-code hero-terminal-code--monokai" aria-live="polite"></pre>
                 </div>
             </div>
         </div>
