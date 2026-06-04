@@ -80,80 +80,16 @@ npm run dev
 
 Visit `http://127.0.0.1:8000`.
 
-## Docker Setup
+## Docker / Portainer
 
-You can run the entire stack using Docker Compose. Below is a reference compose file; save as `docker-compose.yml` at the repository root.
+The Docker stack lives at the **repository root** (parent of this `laravel/` folder).
 
-```yaml
-version: "3.9"
-services:
-  app:
-    image: webdevops/php-nginx:8.2
-    working_dir: /app
-    volumes:
-      - ./:/app
-    environment:
-      - WEB_DOCUMENT_ROOT=/app/public
-      - PHP_DISPLAY_ERRORS=0
-      - PHP_MEMORY_LIMIT=512M
-    depends_on:
-      - db
-    ports:
-      - "8080:80"
+See **[../PORTAINER.md](../PORTAINER.md)** for Portainer Git Repository deployment (recommended on Unraid).
 
-  db:
-    image: mariadb:11
-    environment:
-      - MARIADB_DATABASE=portfolio
-      - MARIADB_USER=portfolio
-      - MARIADB_PASSWORD=portfolio
-      - MARIADB_ROOT_PASSWORD=root
-    volumes:
-      - db_data:/var/lib/mysql
-    ports:
-      - "3307:3306"
-
-  node:
-    image: node:20
-    working_dir: /app
-    command: sh -c "npm install && npm run build && tail -f /dev/null"
-    volumes:
-      - ./:/app
-
-volumes:
-  db_data:
-```
-
-### First-time bootstrap
-
-1) Create `.env` and set DB to match compose:
-
-```
-DB_CONNECTION=mysql
-DB_HOST=db
-DB_PORT=3306
-DB_DATABASE=portfolio
-DB_USERNAME=portfolio
-DB_PASSWORD=portfolio
-APP_URL=http://localhost:8080
-```
-
-2) Start containers:
+Quick local test from repo root:
 
 ```bash
-docker compose up -d
-```
-
-3) Install PHP deps and run artisan commands inside the app container:
-
-```bash
-docker compose exec app bash -lc "composer install && php artisan key:generate && php artisan migrate && php artisan storage:link"
-```
-
-4) Build assets (node service already runs build on start). For development HMR you can run:
-
-```bash
-docker compose exec node bash -lc "npm run dev"
+docker compose up -d --build
 ```
 
 Open `http://localhost:8080`.
@@ -162,7 +98,6 @@ Open `http://localhost:8080`.
 
 - Shell into PHP container: `docker compose exec app bash`
 - Run artisan: `docker compose exec app php artisan <cmd>`
-- Run composer: `docker compose exec app composer <cmd>`
 - Rebuild assets: `docker compose exec node npm run build`
 
 ## Admin Access

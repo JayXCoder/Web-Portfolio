@@ -5,7 +5,205 @@
 @source '../**/*.blade.php';
 @source '../**/*.js';
 
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    /* OLED black base */
+    --color-oled: #000000;
+    --color-surface: #0a0a0a;
+    --color-surface-elevated: #111111;
+    --color-surface-muted: #1a1a1a;
+    --color-border: #262626;
+    --color-border-glow: #3d1a6e;
+
+    /* UV purple accent */
+    --color-uv: #a855f7;
+    --color-uv-bright: #c084fc;
+    --color-uv-deep: #7c3aed;
+    --color-uv-glow: #bf00ff;
+
+    --color-text: #fafafa;
+    --color-text-muted: #a3a3a3;
+    --color-text-dim: #737373;
+
+    --color-success: #22c55e;
+    --color-warning: #eab308;
+    --color-danger: #ef4444;
+
+    --font-display: 'Syne', ui-sans-serif, system-ui, sans-serif;
+    --font-sans: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
+
+    --shadow-uv: 0 0 24px color-mix(in srgb, var(--color-uv-glow) 35%, transparent);
+    --shadow-uv-sm: 0 0 12px color-mix(in srgb, var(--color-uv) 25%, transparent);
+
+    --animate-fade-up: fade-up 0.5s ease-out both;
+    --animate-glow-pulse: glow-pulse 3s ease-in-out infinite;
+}
+
+@keyframes fade-up {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes glow-pulse {
+    0%,
+    100% {
+        opacity: 0.6;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+@layer base {
+    html {
+        scroll-behavior: smooth;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        html {
+            scroll-behavior: auto;
+        }
+
+        *,
+        *::before,
+        *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
+    }
+
+    body {
+        @apply bg-oled font-sans text-text antialiased;
+        min-height: 100dvh;
+    }
+
+    ::selection {
+        background: color-mix(in srgb, var(--color-uv) 40%, transparent);
+        color: #fff;
+    }
+
+    :focus-visible {
+        @apply outline-2 outline-offset-2 outline-uv;
+    }
+}
+
+@layer components {
+    .site-container {
+        @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+    }
+
+    .section-pad {
+        @apply py-16 sm:py-20 lg:py-24;
+    }
+
+    .section-title {
+        @apply font-display text-3xl font-bold tracking-tight text-text sm:text-4xl lg:text-5xl;
+    }
+
+    .section-subtitle {
+        @apply mt-3 max-w-2xl text-base text-text-muted sm:text-lg;
+    }
+
+    .card-surface {
+        @apply rounded-2xl border border-border bg-surface-elevated/80 backdrop-blur-sm;
+    }
+
+    .card-surface-hover {
+        @apply card-surface transition duration-200;
+    }
+
+    .card-surface-hover:hover {
+        @apply border-uv/40;
+        box-shadow: var(--shadow-uv-sm);
+    }
+
+    .btn-primary {
+        @apply inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-xl bg-uv px-5 py-2.5 text-sm font-semibold text-white transition duration-200 hover:bg-uv-bright focus-visible:outline-uv;
+    }
+
+    .btn-primary:disabled {
+        @apply cursor-not-allowed opacity-50;
+    }
+
+    .btn-secondary {
+        @apply inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-xl border border-border bg-surface-muted px-5 py-2.5 text-sm font-medium text-text transition duration-200 hover:border-uv/50 hover:text-uv-bright;
+    }
+
+    .btn-ghost {
+        @apply inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium text-text-muted transition duration-200 hover:bg-surface-muted hover:text-text;
+    }
+
+    .input-field {
+        @apply w-full min-h-11 rounded-xl border border-border bg-surface px-4 py-2.5 text-sm text-text placeholder:text-text-dim transition duration-200 focus:border-uv focus:ring-2 focus:ring-uv/20;
+    }
+
+    .label-field {
+        @apply mb-1.5 block text-sm font-medium text-text;
+    }
+
+    .badge-uv {
+        @apply inline-flex items-center rounded-full border border-uv/30 bg-uv/10 px-2.5 py-0.5 text-xs font-medium text-uv-bright;
+    }
+
+    .nav-link {
+        @apply rounded-lg px-3 py-2 text-sm font-medium text-text-muted transition duration-200 hover:bg-surface-muted hover:text-text;
+    }
+
+    .nav-link-active {
+        @apply bg-uv/15 text-uv-bright;
+    }
+
+    .glow-line {
+        height: 1px;
+        background: linear-gradient(
+            90deg,
+            transparent,
+            color-mix(in srgb, var(--color-uv-glow) 60%, transparent),
+            transparent
+        );
+    }
+
+    .hero-grid-bg {
+        background-image:
+            linear-gradient(color-mix(in srgb, var(--color-uv) 6%, transparent) 1px, transparent 1px),
+            linear-gradient(90deg, color-mix(in srgb, var(--color-uv) 6%, transparent) 1px, transparent 1px);
+        background-size: 48px 48px;
+        mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, black, transparent);
+    }
+
+    .fade-in-view {
+        @apply opacity-0 translate-y-3 transition duration-500;
+    }
+
+    .fade-in-view.is-visible {
+        @apply opacity-100 translate-y-0;
+    }
+
+    .admin-sidebar-link {
+        @apply flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm font-medium text-text-muted transition duration-200 hover:bg-surface-muted hover:text-text;
+    }
+
+    .admin-sidebar-link-active {
+        @apply bg-uv/15 text-uv-bright;
+    }
+
+    .stat-card {
+        @apply card-surface p-5;
+    }
+
+    .filter-chip {
+        @apply cursor-pointer rounded-full border border-border px-4 py-2 text-sm font-medium text-text-muted transition duration-200 hover:border-uv/40;
+    }
+
+    .filter-chip-active {
+        @apply border-uv bg-uv/15 text-uv-bright;
+    }
 }

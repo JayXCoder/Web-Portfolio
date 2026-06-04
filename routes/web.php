@@ -6,7 +6,8 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminAuthController;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\VisitorController;
-use App\Http\Controllers\SitemapController;
+use App\Http\Controllers\ChatController;
+use App\Http\Controllers\AdminPortfolioAiController;
 
 // Main portfolio routes
 Route::get('/', [PortfolioController::class, 'home'])->name('home');
@@ -18,20 +19,27 @@ Route::get('/experience', [PortfolioController::class, 'experience'])->name('exp
 Route::get('/contact', [PortfolioController::class, 'contact'])->name('contact');
 Route::post('/contact', [PortfolioController::class, 'submitContact'])->name('contact.submit');
 
+// AI Chat routes
+Route::get('/chat', [ChatController::class, 'index'])->name('chat');
+Route::post('/chat/send', [ChatController::class, 'sendMessage'])->name('chat.send');
+Route::get('/chat/status', [ChatController::class, 'status'])->name('chat.status');
+Route::get('/chat/debug', [ChatController::class, 'debug'])->name('chat.debug');
+
 // Public API routes for visitor stats
 Route::get('/api/visitor-stats', [VisitorController::class, 'getPublicStats'])->name('api.visitor-stats');
 
 // SEO routes
 Route::get('/sitemap.xml', function() {
+    $baseUrl = config('app.url');
     $sitemap = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
     $sitemap .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
-    $sitemap .= '<url><loc>https://jayxcoder.duckdns.org/</loc><lastmod>2025-10-20</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>' . "\n";
-    $sitemap .= '<url><loc>https://jayxcoder.duckdns.org/about</loc><lastmod>2025-10-20</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>' . "\n";
-    $sitemap .= '<url><loc>https://jayxcoder.duckdns.org/skills</loc><lastmod>2025-10-20</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>' . "\n";
-    $sitemap .= '<url><loc>https://jayxcoder.duckdns.org/projects</loc><lastmod>2025-10-20</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>' . "\n";
-    $sitemap .= '<url><loc>https://jayxcoder.duckdns.org/portfolio</loc><lastmod>2025-10-20</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>' . "\n";
-    $sitemap .= '<url><loc>https://jayxcoder.duckdns.org/experience</loc><lastmod>2025-10-20</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>' . "\n";
-    $sitemap .= '<url><loc>https://jayxcoder.duckdns.org/contact</loc><lastmod>2025-10-20</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>' . "\n";
+    $sitemap .= '<url><loc>' . $baseUrl . '/</loc><lastmod>2025-10-20</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>' . "\n";
+    $sitemap .= '<url><loc>' . $baseUrl . '/about</loc><lastmod>2025-10-20</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>' . "\n";
+    $sitemap .= '<url><loc>' . $baseUrl . '/skills</loc><lastmod>2025-10-20</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>' . "\n";
+    $sitemap .= '<url><loc>' . $baseUrl . '/projects</loc><lastmod>2025-10-20</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>' . "\n";
+    $sitemap .= '<url><loc>' . $baseUrl . '/portfolio</loc><lastmod>2025-10-20</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>' . "\n";
+    $sitemap .= '<url><loc>' . $baseUrl . '/experience</loc><lastmod>2025-10-20</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>' . "\n";
+    $sitemap .= '<url><loc>' . $baseUrl . '/contact</loc><lastmod>2025-10-20</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>' . "\n";
     $sitemap .= '</urlset>' . "\n";
     
     return response($sitemap, 200)
@@ -42,7 +50,7 @@ Route::get('/sitemap.xml', function() {
 Route::get('/robots.txt', function() {
     $robots = "User-agent: *\n";
     $robots .= "Allow: /\n\n";
-    $robots .= "Sitemap: https://jayxcoder.duckdns.org/sitemap.xml\n";
+    $robots .= "Sitemap: " . config('app.url') . "/sitemap.xml\n";
     
     return response($robots, 200)
         ->header('Content-Type', 'text/plain');
@@ -97,6 +105,9 @@ Route::prefix('admin')->name('admin.')->middleware('force.https')->group(functio
         Route::get('/portfolios', [AdminController::class, 'portfolios'])->name('portfolios');
         Route::get('/portfolios/create', [AdminController::class, 'createPortfolio'])->name('portfolios.create');
         Route::post('/portfolios', [AdminController::class, 'storePortfolio'])->name('portfolios.store');
+        Route::get('/portfolios/ai/status', [AdminPortfolioAiController::class, 'status'])->name('portfolios.ai.status');
+        Route::post('/portfolios/ai/generate', [AdminPortfolioAiController::class, 'generate'])->name('portfolios.ai.generate');
+        Route::post('/portfolios/ai/save', [AdminPortfolioAiController::class, 'saveDraft'])->name('portfolios.ai.save');
         Route::get('/portfolios/{portfolio}/edit', [AdminController::class, 'editPortfolio'])->name('portfolios.edit');
         Route::put('/portfolios/{portfolio}', [AdminController::class, 'updatePortfolio'])->name('portfolios.update');
         Route::delete('/portfolios/{portfolio}', [AdminController::class, 'deletePortfolio'])->name('portfolios.delete');
