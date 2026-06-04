@@ -57,9 +57,7 @@
                 <x-skill-chips :skills="$stacks['skills'] ?? []" />
             </div>
 
-            <div class="skills-tree__connector skills-tree__connector--hub" aria-hidden="true">
-                <span class="skills-tree__hub-line"></span>
-            </div>
+            <div class="skills-tree__junction" aria-hidden="true"></div>
 
             {{-- Branch grid --}}
             <div class="skills-tree__branches">

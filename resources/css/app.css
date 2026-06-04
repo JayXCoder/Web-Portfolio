@@ -285,30 +285,84 @@
     }
 
     .skills-tree__connector {
-        @apply relative h-10 w-px shrink-0 bg-gradient-to-b from-uv/60 to-uv/20;
-    }
-
-    .skills-tree__connector--hub {
-        @apply h-8 w-full max-w-5xl bg-transparent;
-    }
-
-    .skills-tree__hub-line {
-        @apply absolute left-1/2 top-1/2 h-px w-[min(100%,48rem)] -translate-x-1/2 -translate-y-1/2;
+        width: 2px;
+        height: 1.5rem;
+        flex-shrink: 0;
+        border-radius: 1px;
         background: linear-gradient(
-            90deg,
-            transparent,
-            color-mix(in srgb, var(--color-uv) 50%, transparent),
-            transparent
+            180deg,
+            color-mix(in srgb, var(--color-uv) 55%, transparent),
+            color-mix(in srgb, var(--color-uv) 12%, transparent)
         );
     }
 
+    .skills-tree__junction {
+        position: relative;
+        display: flex;
+        flex-shrink: 0;
+        flex-direction: column;
+        align-items: center;
+        width: 2px;
+        height: 1.75rem;
+        background: linear-gradient(
+            180deg,
+            color-mix(in srgb, var(--color-uv) 45%, transparent),
+            color-mix(in srgb, var(--color-uv) 20%, transparent)
+        );
+    }
+
+    .skills-tree__junction::after {
+        content: '';
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        width: 0.5rem;
+        height: 0.5rem;
+        transform: translate(-50%, -50%);
+        border-radius: 9999px;
+        border: 1px solid color-mix(in srgb, var(--color-uv-bright) 55%, transparent);
+        background: color-mix(in srgb, var(--color-uv) 75%, var(--color-surface));
+        box-shadow:
+            0 0 10px color-mix(in srgb, var(--color-uv-glow) 35%, transparent),
+            0 0 20px color-mix(in srgb, var(--color-uv) 15%, transparent);
+    }
+
     .skills-tree__branches {
-        @apply relative grid w-full max-w-6xl gap-4 sm:grid-cols-2 xl:grid-cols-3;
+        @apply relative mt-1 grid w-full max-w-6xl gap-4 pt-2 sm:grid-cols-2 xl:grid-cols-3;
         grid-auto-rows: 1fr;
     }
 
+    .skills-tree__branches::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 50%;
+        width: min(92%, 42rem);
+        height: 1px;
+        transform: translateX(-50%);
+        background: linear-gradient(
+            90deg,
+            transparent 0%,
+            color-mix(in srgb, var(--color-uv) 22%, transparent) 20%,
+            color-mix(in srgb, var(--color-uv) 22%, transparent) 80%,
+            transparent 100%
+        );
+        pointer-events: none;
+    }
+
     .skills-tree__node--branch {
-        @apply flex h-full min-h-[12rem] flex-col;
+        @apply relative flex h-full min-h-[12rem] flex-col overflow-hidden;
+    }
+
+    .skills-tree__node--branch::before {
+        content: '';
+        @apply pointer-events-none absolute inset-x-0 top-0 h-px;
+        background: linear-gradient(
+            90deg,
+            transparent,
+            color-mix(in srgb, var(--color-uv) 35%, transparent),
+            transparent
+        );
     }
 
     .skills-tree__branch-title {
@@ -317,26 +371,6 @@
 
     .skills-tree__node--branch .skill-chip-grid {
         @apply mt-4 flex-1 content-start;
-    }
-
-    @media (min-width: 1024px) {
-        .skills-tree__branches::before {
-            content: '';
-            position: absolute;
-            left: 50%;
-            top: 0;
-            width: 72%;
-            max-width: 48rem;
-            height: 1px;
-            transform: translateX(-50%);
-            background: linear-gradient(
-                90deg,
-                transparent,
-                color-mix(in srgb, var(--color-uv) 35%, transparent),
-                transparent
-            );
-            pointer-events: none;
-        }
     }
 
     .journey-timeline {
