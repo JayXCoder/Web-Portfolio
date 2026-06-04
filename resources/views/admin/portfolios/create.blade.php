@@ -25,7 +25,7 @@
             <div>
                 <label for="markdown_files" class="label-field">Upload markdown files (.md)</label>
                 <input type="file" id="markdown_files" name="markdown_files[]" accept=".md,.txt" multiple class="input-field file:mr-4 file:rounded-lg file:border-0 file:bg-uv file:px-4 file:py-2 file:text-sm file:text-white">
-                <p class="mt-1 text-xs text-text-dim">One project per file, or combine notes in one file.</p>
+                <p class="mt-1 text-xs text-text-dim">Select multiple .md files to merge into one portfolio entry, or paste combined notes below.</p>
             </div>
             <div>
                 <label for="markdown_paste" class="label-field">Or paste markdown</label>

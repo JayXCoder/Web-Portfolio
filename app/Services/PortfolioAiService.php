@@ -24,7 +24,7 @@ class PortfolioAiService
         }
 
         $system = config('portfolio-ai.system_prompt');
-        $userContent = "Convert the following project markdown into one portfolio JSON object:\n\n---\n".$markdown."\n---";
+        $userContent = "Convert the following markdown (possibly from multiple files merged) into exactly ONE portfolio JSON object:\n\n---\n".$markdown."\n---";
 
         $result = $this->ollama->chat([
             ['role' => 'system', 'content' => $system],

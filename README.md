@@ -82,23 +82,25 @@ Visit `http://127.0.0.1:8000`.
 
 ## Docker / Portainer
 
-The Docker stack lives at the **repository root** (parent of this `laravel/` folder).
+The stack (`docker-compose.yml`, `Dockerfile`) is at the **repository root**.
 
-See **[../PORTAINER.md](../PORTAINER.md)** for Portainer Git Repository deployment (recommended on Unraid).
+See **[PORTAINER.md](PORTAINER.md)** for deploying via **Portainer → Stacks → Git repository** with your `.env`.
 
-Quick local test from repo root:
+Quick local test:
 
 ```bash
+cp .env.example .env
+# Set APP_KEY, DB_PASSWORD, OLLAMA_HOST, etc.
 docker compose up -d --build
 ```
 
-Open `http://localhost:8080`.
+Open `http://localhost:8080` (or `APP_PORT`).
 
 ### Useful container commands
 
-- Shell into PHP container: `docker compose exec app bash`
+- Shell into PHP container: `docker compose exec app sh`
 - Run artisan: `docker compose exec app php artisan <cmd>`
-- Rebuild assets: `docker compose exec node npm run build`
+- Assets are built inside the image (`npm run build` at build time)
 
 ## Admin Access
 

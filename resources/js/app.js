@@ -1,7 +1,9 @@
 import './bootstrap';
+import { initHomeHero } from './home-hero';
 
 document.addEventListener('DOMContentLoaded', () => {
     initMobileNav();
+    initHomeHero();
     initScrollReveal();
     initVisitorStats();
     initPortfolioFilters();

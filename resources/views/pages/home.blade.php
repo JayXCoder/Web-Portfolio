@@ -10,9 +10,27 @@
 @endsection
 
 @section('content')
-<section class="relative overflow-hidden section-pad">
+<section class="hero-home section-pad">
     <div class="hero-grid-bg pointer-events-none absolute inset-0" aria-hidden="true"></div>
-    <div class="site-container relative">
+
+    <div class="animated-text-container" aria-hidden="true">
+        <div class="animated-text-wrap">
+            <span id="animatedText" class="animated-text">Code</span>
+            <img
+                id="animatedFavicon"
+                class="animated-favicon"
+                src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23000' rx='8'/%3E%3Crect x='8' y='8' width='84' height='84' fill='none' stroke='%23bf00ff' stroke-width='2' rx='6'/%3E%3Ctext x='50' y='42' font-family='monospace' font-size='20' font-weight='bold' text-anchor='middle' fill='%23fff'%3EJXG%3C/text%3E%3C/svg%3E"
+                alt=""
+                width="48"
+                height="48"
+            >
+            <div id="shapeCircle" class="animated-shape shape-circle"></div>
+            <div id="shapeTriangle" class="animated-shape shape-triangle"></div>
+            <div id="shapeSquare" class="animated-shape shape-square"></div>
+        </div>
+    </div>
+
+    <div class="site-container relative z-10">
         <div class="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
             <div class="fade-in-view">
                 <p class="badge-uv mb-4 w-fit">Computer Engineer · UniMAP · Self-taught builder</p>
@@ -27,16 +45,18 @@
                     <a href="{{ route('contact') }}" class="btn-secondary">Get in touch</a>
                 </div>
             </div>
+
             <div class="fade-in-view flex justify-center lg:justify-end" style="transition-delay: 120ms">
-                <div class="card-surface w-full max-w-md overflow-hidden border-uv/20 p-1" style="box-shadow: var(--shadow-uv)">
-                    <div class="rounded-xl bg-oled p-5 font-mono text-sm">
-                        <p class="text-uv-bright">jay@portfolio:~$</p>
-                        <p class="mt-2 text-text-muted">whoami</p>
-                        <p class="mt-1 text-text">Jawahar Ganesh — Full-Stack Dev</p>
-                        <p class="mt-4 text-text-muted">stack --list</p>
-                        <p class="mt-1 text-text-dim">Laravel · React · Python · AI/ML · IoT</p>
-                        <p class="mt-4 animate-pulse text-uv">_</p>
+                <div class="hero-terminal">
+                    <div class="hero-terminal-header">
+                        <span class="hero-terminal-dot hero-terminal-dot-red" aria-hidden="true"></span>
+                        <span class="hero-terminal-dot hero-terminal-dot-yellow" aria-hidden="true"></span>
+                        <span class="hero-terminal-dot hero-terminal-dot-green" aria-hidden="true"></span>
+                        <span class="ml-2 text-xs text-text-muted">jay@portfolio:~</span>
                     </div>
+                    <span id="languageIndicator" class="hero-terminal-lang">Python</span>
+                    <p class="hero-terminal-prompt">$&gt;<span class="hero-terminal-cursor" aria-hidden="true"></span></p>
+                    <pre id="typedCode" class="hero-terminal-code" aria-live="polite"></pre>
                 </div>
             </div>
         </div>

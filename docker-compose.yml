@@ -1,0 +1,69 @@
+# Portainer: Stacks → Add stack → Git repository → Compose path: docker-compose.yml
+# Set environment variables in Portainer (or upload .env) — see PORTAINER.md
+
+services:
+  app:
+    build:
+      context: .
+      target: app
+    image: ${STACK_NAME:-portfolio}-app:${IMAGE_TAG:-latest}
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      APP_ENV: ${APP_ENV:-production}
+      APP_DEBUG: ${APP_DEBUG:-false}
+    volumes:
+      - app_storage:/var/www/html/storage
+      - app_bootstrap_cache:/var/www/html/bootstrap/cache
+    networks:
+      - portfolio
+    depends_on:
+      mysql:
+        condition: service_healthy
+    extra_hosts:
+      # Reach Ollama on the LAN host from containers (adjust IP in .env / Portainer)
+      - "host.docker.internal:host-gateway"
+
+  web:
+    build:
+      context: .
+      target: web
+    image: ${STACK_NAME:-portfolio}-web:${IMAGE_TAG:-latest}
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-8080}:80"
+    volumes:
+      - app_storage:/var/www/html/storage:ro
+    networks:
+      - portfolio
+    depends_on:
+      - app
+
+  mysql:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-portfolio}
+      MYSQL_USER: ${DB_USERNAME:-laravel}
+      MYSQL_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in Portainer or .env}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-${DB_PASSWORD}}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - portfolio
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+volumes:
+  mysql_data:
+  app_storage:
+  app_bootstrap_cache:
+
+networks:
+  portfolio:
+    driver: bridge

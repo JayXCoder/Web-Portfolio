@@ -7,7 +7,7 @@
     <div class="site-container max-w-2xl">
         <h1 class="section-title fade-in-view">AI assistant</h1>
         <p class="section-subtitle fade-in-view">
-            Powered by Ollama
+            Ask about my projects, skills, and experience only — powered by Ollama
             @if($isAvailable)
                 <span class="text-success">· online</span>
             @else
@@ -18,7 +18,7 @@
         <div class="card-surface mt-8 flex h-[min(70dvh,560px)] flex-col fade-in-view">
             <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-3" aria-live="polite">
                 <div class="rounded-xl bg-surface-muted px-4 py-3 text-sm text-text-muted">
-                    Ask about my skills, projects, or experience.
+                    Ask about a portfolio project, technology I use, or my work experience.
                 </div>
             </div>
             <form id="chat-form" class="border-t border-border p-4 flex gap-2">
@@ -33,6 +33,7 @@
 
 @push('scripts')
 <script>
+window.chatContext = [];
 document.getElementById('chat-form')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const input = document.getElementById('chat-input');
@@ -50,10 +51,11 @@ document.getElementById('chat-form')?.addEventListener('submit', async (e) => {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                 Accept: 'application/json',
             },
-            body: JSON.stringify({ message: msg }),
+            body: JSON.stringify({ message: msg, context: window.chatContext || [] }),
         });
         const data = await res.json();
         box.querySelector('[data-loading]')?.remove();
+        if (data.context) window.chatContext = data.context;
         appendMsg(box, data.message || data.error || 'No response', 'bot');
     } catch {
         box.querySelector('[data-loading]')?.remove();

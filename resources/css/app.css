@@ -117,7 +117,7 @@
     }
 
     .card-surface-hover {
-        @apply card-surface transition duration-200;
+        @apply rounded-2xl border border-border bg-surface-elevated/80 backdrop-blur-sm transition duration-200;
     }
 
     .card-surface-hover:hover {
@@ -196,7 +196,7 @@
     }
 
     .stat-card {
-        @apply card-surface p-5;
+        @apply rounded-2xl border border-border bg-surface-elevated/80 p-5 backdrop-blur-sm;
     }
 
     .filter-chip {
@@ -205,5 +205,296 @@
 
     .filter-chip-active {
         @apply border-uv bg-uv/15 text-uv-bright;
+    }
+
+    /* Home hero — animated neon words + terminal */
+    .hero-home {
+        @apply relative min-h-[32rem] overflow-hidden;
+    }
+
+    .animated-text-container {
+        @apply pointer-events-none absolute inset-0 z-0 flex items-center justify-center;
+        mask-image: radial-gradient(ellipse 65% 55% at 70% 40%, black, transparent);
+    }
+
+    .animated-text-wrap {
+        @apply relative;
+    }
+
+    .animated-text {
+        font-family: var(--font-display);
+        font-size: clamp(3rem, 7vw, 6.5rem);
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--color-uv-bright);
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%) scale(0.5);
+        opacity: 0;
+        text-shadow:
+            0 0 8px color-mix(in srgb, var(--color-uv-glow) 70%, transparent),
+            0 0 20px color-mix(in srgb, var(--color-uv) 50%, transparent),
+            0 0 40px color-mix(in srgb, var(--color-uv-glow) 35%, transparent);
+        white-space: nowrap;
+    }
+
+    .animated-favicon {
+        position: absolute;
+        top: -1.25rem;
+        right: -1.25rem;
+        width: 3rem;
+        height: 3rem;
+        opacity: 0;
+        transform: scale(0.3);
+        transition: all 0.3s ease;
+        border-radius: 8px;
+        filter: drop-shadow(0 0 10px var(--color-uv));
+    }
+
+    .animated-favicon.show {
+        opacity: 1;
+        transform: scale(1) rotate(360deg);
+        animation: favicon-pulse 0.6s ease-in-out;
+    }
+
+    @keyframes favicon-pulse {
+        50% {
+            transform: scale(1.15) rotate(180deg);
+        }
+    }
+
+    .animated-shape {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+    }
+
+    .animated-shape.show {
+        opacity: 0.55;
+        animation: shape-float 2s ease-in-out infinite;
+    }
+
+    @keyframes shape-float {
+        50% {
+            transform: translateY(-8px) rotate(180deg);
+        }
+    }
+
+    .shape-circle {
+        width: 18px;
+        height: 18px;
+        border: 2px solid var(--color-uv);
+        border-radius: 50%;
+        top: -2.5rem;
+        left: -2.5rem;
+    }
+
+    .shape-triangle {
+        width: 0;
+        height: 0;
+        border-left: 12px solid transparent;
+        border-right: 12px solid transparent;
+        border-bottom: 20px solid var(--color-uv-bright);
+        bottom: -2rem;
+        right: -2.5rem;
+    }
+
+    .shape-square {
+        width: 16px;
+        height: 16px;
+        border: 2px solid var(--color-uv-deep);
+        transform: rotate(45deg);
+        bottom: -2rem;
+        left: -2rem;
+    }
+
+    .hero-sparkle {
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        background: var(--color-uv-bright);
+        box-shadow: 0 0 10px var(--color-uv-glow);
+        animation: sparkle-fade 1.5s ease-out forwards;
+        pointer-events: none;
+    }
+
+    @keyframes sparkle-fade {
+        0% {
+            opacity: 0.9;
+            transform: scale(0);
+        }
+        50% {
+            opacity: 1;
+            transform: scale(1);
+        }
+        100% {
+            opacity: 0;
+            transform: scale(0);
+        }
+    }
+
+    .animated-text.zoom-in {
+        animation: hero-zoom-in 0.45s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards,
+            hero-text-pulse 1.2s ease-in-out infinite 0.45s;
+    }
+
+    .animated-text.dash-left-in {
+        animation: hero-dash-in 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards,
+            hero-text-pulse 1.2s ease-in-out infinite 0.4s;
+    }
+
+    .animated-text.spin-in {
+        animation: hero-spin-in 0.45s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards,
+            hero-text-pulse 1.2s ease-in-out infinite 0.45s;
+    }
+
+    .animated-text.bounce-in {
+        animation: hero-bounce-in 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards,
+            hero-text-pulse 1.2s ease-in-out infinite 0.5s;
+    }
+
+    .animated-text.zoom-out {
+        animation: hero-zoom-out 0.3s ease-in forwards;
+    }
+
+    .animated-text.dash-right-out {
+        animation: hero-dash-out 0.3s ease-out forwards;
+    }
+
+    .animated-text.flip-out {
+        animation: hero-flip-out 0.3s ease-in forwards;
+    }
+
+    .animated-text.slide-up-out {
+        animation: hero-slide-out 0.3s ease-in forwards;
+    }
+
+    @keyframes hero-zoom-in {
+        from {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.25) rotate(8deg);
+        }
+        to {
+            opacity: 0.35;
+            transform: translate(-50%, -50%) scale(1) rotate(0);
+        }
+    }
+
+    @keyframes hero-zoom-out {
+        to {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.2) rotate(-12deg);
+        }
+    }
+
+    @keyframes hero-dash-in {
+        from {
+            opacity: 0;
+            transform: translate(calc(-50% - 120px), -50%) scale(0.4) rotate(-15deg);
+        }
+        to {
+            opacity: 0.35;
+            transform: translate(-50%, -50%) scale(1) rotate(0);
+        }
+    }
+
+    @keyframes hero-dash-out {
+        to {
+            opacity: 0;
+            transform: translate(calc(-50% + 120px), -50%) scale(0.25) rotate(15deg);
+        }
+    }
+
+    @keyframes hero-spin-in {
+        from {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.2) rotate(360deg);
+        }
+        to {
+            opacity: 0.35;
+            transform: translate(-50%, -50%) scale(1) rotate(0);
+        }
+    }
+
+    @keyframes hero-flip-out {
+        to {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.3) rotateY(90deg);
+        }
+    }
+
+    @keyframes hero-bounce-in {
+        0% {
+            opacity: 0;
+            transform: translate(-50%, calc(-50% - 80px)) scale(0.3);
+        }
+        70% {
+            opacity: 0.35;
+            transform: translate(-50%, calc(-50% + 12px)) scale(1.05);
+        }
+        100% {
+            opacity: 0.35;
+            transform: translate(-50%, -50%) scale(1);
+        }
+    }
+
+    @keyframes hero-slide-out {
+        to {
+            opacity: 0;
+            transform: translate(-50%, calc(-50% - 80px)) scale(0.3);
+        }
+    }
+
+    @keyframes hero-text-pulse {
+        50% {
+            opacity: 0.45;
+        }
+    }
+
+    .hero-terminal {
+        @apply relative z-10 w-full max-w-md overflow-hidden rounded-xl border border-uv/25 bg-oled/95 p-5 font-mono text-sm;
+        box-shadow: var(--shadow-uv);
+    }
+
+    .hero-terminal-header {
+        @apply mb-4 flex items-center gap-2 border-b border-border pb-3;
+    }
+
+    .hero-terminal-dot {
+        @apply h-3 w-3 rounded-full;
+    }
+
+    .hero-terminal-dot-red {
+        background: #ff5f56;
+    }
+
+    .hero-terminal-dot-yellow {
+        background: #ffbd2e;
+    }
+
+    .hero-terminal-dot-green {
+        background: #27ca3f;
+    }
+
+    .hero-terminal-lang {
+        @apply absolute right-4 top-4 rounded-full border border-uv/40 px-2 py-0.5 text-xs text-uv-bright;
+    }
+
+    .hero-terminal-prompt {
+        color: var(--color-uv-bright);
+        text-shadow: var(--shadow-uv-sm);
+    }
+
+    .hero-terminal-code {
+        @apply mt-2 whitespace-pre-wrap text-left text-text-dim;
+        min-height: 6rem;
+    }
+
+    .hero-terminal-cursor {
+        @apply ml-0.5 inline-block h-4 w-2 animate-pulse bg-text align-middle;
     }
 }
