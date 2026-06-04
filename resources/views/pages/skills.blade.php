@@ -9,22 +9,23 @@
         <p class="section-subtitle fade-in-view">Technologies I use to ship end-to-end.</p>
 
         @php
-        $groups = [
-            'Languages' => ['PHP', 'JavaScript', 'TypeScript', 'Python', 'C/C++', 'SQL'],
-            'Web' => ['Laravel', 'React', 'Vue', 'REST APIs', 'Tailwind', 'Bootstrap'],
-            'AI / Data' => ['Machine Learning', 'Ollama', 'TensorFlow', 'Pandas', 'OpenCV'],
-            'DevOps & Security' => ['Docker', 'Linux', 'Git', 'CI/CD', 'Penetration Testing'],
-            'Hardware' => ['Arduino', 'Raspberry Pi', 'ESP32', 'IoT', 'Embedded C'],
-        ];
+            $groups = config('skills.groups', []);
         @endphp
 
         <div class="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-            @foreach($groups as $title => $skills)
+            @foreach ($groups as $title => $skills)
             <article class="card-surface fade-in-view p-6">
                 <h2 class="font-display text-lg font-semibold text-uv-bright">{{ $title }}</h2>
-                <ul class="mt-4 flex flex-wrap gap-2">
-                    @foreach($skills as $skill)
-                    <li class="badge-uv">{{ $skill }}</li>
+                <ul class="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-2">
+                    @foreach ($skills as $skill)
+                    <li class="skill-chip">
+                        <x-skill-icon
+                            :slug="$skill['slug'] ?? null"
+                            :color="$skill['color'] ?? 'a855f7'"
+                            :label="$skill['label']"
+                        />
+                        <span class="skill-chip-label">{{ $skill['label'] }}</span>
+                    </li>
                     @endforeach
                 </ul>
             </article>

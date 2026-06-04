@@ -207,6 +207,42 @@
         @apply border-uv bg-uv/15 text-uv-bright;
     }
 
+    .skill-chip {
+        @apply flex min-h-11 items-center gap-2.5 rounded-xl border border-border bg-surface-muted/80 px-3 py-2 transition duration-200 hover:border-uv/40;
+    }
+
+    .skill-icon-wrap {
+        @apply flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-oled p-1;
+    }
+
+    .skill-icon-img {
+        @apply h-[1.375rem] w-[1.375rem] object-contain;
+    }
+
+    .skill-icon-fallback {
+        @apply h-5 w-5 text-uv;
+    }
+
+    .skill-chip-label {
+        @apply text-xs font-medium leading-tight text-text sm:text-sm;
+    }
+
+    .journey-timeline {
+        @apply relative border-l border-uv/30 pl-6;
+    }
+
+    .journey-step {
+        @apply relative pb-8 last:pb-0;
+    }
+
+    .journey-step-icon {
+        @apply absolute -left-6 top-0 flex h-9 w-9 -translate-x-1/2 items-center justify-center rounded-full border border-uv/40 bg-surface text-uv;
+    }
+
+    .journey-step-icon svg {
+        @apply h-4 w-4;
+    }
+
     /* Home hero — animated neon words + terminal */
     .hero-home {
         @apply relative min-h-[32rem] overflow-hidden;
