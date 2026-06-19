@@ -15,6 +15,7 @@ class AchievementSeeder extends Seeder
         $achievements = [
             [
                 'organization' => 'IBM SkillsBuild',
+                'type' => 'certificate',
                 'title' => 'Cloud Computing Fundamentals',
                 'issued_date' => '2026-02-25',
                 'credly_url' => 'https://www.credly.com/org/ibm-skillsbuild/badge/cloud-computing-fundamentals',
@@ -27,6 +28,7 @@ class AchievementSeeder extends Seeder
             ],
             [
                 'organization' => 'IBM SkillsBuild',
+                'type' => 'certificate',
                 'title' => 'Cybersecurity Fundamentals',
                 'issued_date' => '2025-08-19',
                 'credly_url' => 'https://www.credly.com/org/ibm-skillsbuild/badge/cybersecurity-fundamentals',
@@ -39,6 +41,7 @@ class AchievementSeeder extends Seeder
             ],
             [
                 'organization' => 'IBM SkillsBuild',
+                'type' => 'certificate',
                 'title' => 'Getting Started with Cybersecurity',
                 'issued_date' => '2025-08-19',
                 'credly_url' => 'https://www.credly.com/org/ibm-skillsbuild/badge/getting-started-with-cybersecurity',
@@ -51,6 +54,7 @@ class AchievementSeeder extends Seeder
             ],
             [
                 'organization' => 'IBM SkillsBuild',
+                'type' => 'certificate',
                 'title' => 'Project Management Fundamentals',
                 'issued_date' => '2025-08-19',
                 'credly_url' => 'https://www.credly.com/org/ibm-skillsbuild/badge/project-management-fundamentals.4',
@@ -63,6 +67,7 @@ class AchievementSeeder extends Seeder
             ],
             [
                 'organization' => 'IBM SkillsBuild',
+                'type' => 'certificate',
                 'title' => 'Web Development Fundamentals',
                 'issued_date' => '2025-08-19',
                 'credly_url' => 'https://www.credly.com/org/ibm-skillsbuild/badge/web-development-fundamentals',

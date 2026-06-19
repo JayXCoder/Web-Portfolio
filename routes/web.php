@@ -68,6 +68,14 @@ Route::get('/storage/company-logos/{filename}', [StorageAssetController::class, 
     ->where('filename', '[A-Za-z0-9._-]+')
     ->name('company.logo');
 
+Route::get('/storage/achievement-badges/{filename}', [StorageAssetController::class, 'achievementBadge'])
+    ->where('filename', '[A-Za-z0-9._-]+')
+    ->name('achievement.badge');
+
+Route::get('/storage/achievement-photos/{filename}', [StorageAssetController::class, 'achievementPhoto'])
+    ->where('filename', '[A-Za-z0-9._-]+')
+    ->name('achievement.photo');
+
 // Individual portfolio item routes
 Route::get('/portfolio/{slug}', [PortfolioController::class, 'portfolioItem'])->name('portfolio.item');
 

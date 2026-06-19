@@ -414,6 +414,26 @@
         box-shadow: var(--shadow-uv-sm);
     }
 
+    .achievement-type-badge {
+        @apply inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium;
+    }
+
+    .achievement-type-badge--certificate {
+        @apply border-uv/30 bg-uv/10 text-uv-bright;
+    }
+
+    .achievement-type-badge--award {
+        @apply border-warning/30 bg-warning/10 text-warning;
+    }
+
+    .achievement-type-badge--competition {
+        @apply border-success/30 bg-success/10 text-green-300;
+    }
+
+    .achievement-type-badge--stage {
+        @apply border-pink-400/30 bg-pink-500/10 text-pink-300;
+    }
+
     .journey-timeline {
         @apply relative border-l border-uv/30 pl-6;
     }

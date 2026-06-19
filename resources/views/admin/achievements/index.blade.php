@@ -4,7 +4,7 @@
 @section('page_heading', 'Achievements')
 
 @section('content')
-<x-admin.page-header title="Achievements" description="Manage certificates and credentials shown on the public page.">
+<x-admin.page-header title="Achievements" description="Manage certificates, awards, competition wins, stage moments, and other milestones.">
     <x-slot:actions>
         <a href="{{ route('admin.achievements.create') }}" class="btn-primary">+ Create</a>
     </x-slot:actions>
@@ -16,6 +16,7 @@
             <thead class="border-b border-border bg-surface-muted/50 text-text-dim">
                 <tr>
                     <th class="px-4 py-3 font-medium w-16">Order</th>
+                    <th class="px-4 py-3 font-medium">Type</th>
                     <th class="px-4 py-3 font-medium">Title</th>
                     <th class="px-4 py-3 font-medium">Organization</th>
                     <th class="px-4 py-3 font-medium">Status</th>
@@ -26,6 +27,7 @@
                 @forelse($achievements as $achievement)
                 <tr class="hover:bg-surface-muted/30 transition">
                     <td class="px-4 py-3 font-mono text-text-dim">{{ $achievement->sort_order }}</td>
+                    <td class="px-4 py-3"><span class="achievement-type-badge achievement-type-badge--{{ $achievement->type }}">{{ $achievement->typeLabel() }}</span></td>
                     <td class="px-4 py-3">
                         <p class="font-medium text-text">{{ $achievement->title }}</p>
                         @if($achievement->issued_date)
@@ -45,7 +47,7 @@
                     </td>
                 </tr>
                 @empty
-                <tr><td colspan="5" class="px-4 py-8 text-center text-text-muted">No achievements. <a href="{{ route('admin.achievements.create') }}" class="text-uv-bright">Create one</a>.</td></tr>
+                <tr><td colspan="6" class="px-4 py-8 text-center text-text-muted">No achievements. <a href="{{ route('admin.achievements.create') }}" class="text-uv-bright">Create one</a>.</td></tr>
                 @endforelse
             </tbody>
         </table>

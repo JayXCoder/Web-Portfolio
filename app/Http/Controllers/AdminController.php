@@ -218,13 +218,18 @@ class AdminController extends Controller
         $this->mergeAchievementCheckboxFields($request);
 
         $request->validate([
+            'type' => 'required|string|in:'.implode(',', array_keys(config('achievements.types', []))),
             'organization' => 'required|string|max:255',
+            'location' => 'nullable|string|max:255',
             'title' => 'required|string|max:255',
+            'placement' => 'nullable|string|max:255',
             'story' => 'required|string',
             'project' => 'nullable|string',
             'issued_date' => 'nullable|date',
             'credly_url' => 'nullable|url|max:500',
             'image_url' => 'nullable|url|max:500',
+            'badge_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'award_photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:8192',
             'skills' => 'nullable|array',
             'skills.*' => 'string|max:100',
             'sort_order' => 'nullable|integer|min:0',
@@ -257,13 +262,20 @@ class AdminController extends Controller
         $this->mergeAchievementCheckboxFields($request);
 
         $request->validate([
+            'type' => 'required|string|in:'.implode(',', array_keys(config('achievements.types', []))),
             'organization' => 'required|string|max:255',
+            'location' => 'nullable|string|max:255',
             'title' => 'required|string|max:255',
+            'placement' => 'nullable|string|max:255',
             'story' => 'required|string',
             'project' => 'nullable|string',
             'issued_date' => 'nullable|date',
             'credly_url' => 'nullable|url|max:500',
             'image_url' => 'nullable|url|max:500',
+            'badge_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'award_photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:8192',
+            'remove_badge_image' => 'nullable|boolean',
+            'remove_award_photo' => 'nullable|boolean',
             'skills' => 'nullable|array',
             'skills.*' => 'string|max:100',
             'sort_order' => 'nullable|integer|min:0',
@@ -476,6 +488,8 @@ class AdminController extends Controller
     {
         $request->merge([
             'is_published' => $request->boolean('is_published'),
+            'remove_badge_image' => $request->boolean('remove_badge_image'),
+            'remove_award_photo' => $request->boolean('remove_award_photo'),
         ]);
     }
 }

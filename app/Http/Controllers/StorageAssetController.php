@@ -35,4 +35,26 @@ class StorageAssetController extends Controller
 
         return response()->file($path);
     }
+
+    public function achievementBadge(string $filename): BinaryFileResponse|Response
+    {
+        return $this->servePublicFile('achievement-badges', $filename);
+    }
+
+    public function achievementPhoto(string $filename): BinaryFileResponse|Response
+    {
+        return $this->servePublicFile('achievement-photos', $filename);
+    }
+
+    private function servePublicFile(string $directory, string $filename): BinaryFileResponse|Response
+    {
+        $filename = basename($filename);
+        $path = storage_path('app/public/'.$directory.'/'.$filename);
+
+        if (! is_file($path)) {
+            abort(404);
+        }
+
+        return response()->file($path);
+    }
 }

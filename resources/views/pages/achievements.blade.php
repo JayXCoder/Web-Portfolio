@@ -1,13 +1,13 @@
 @extends('layouts.app')
 
 @section('title', 'Achievements | Jawahar Ganesh @ Jay')
-@section('description', 'Verified certificates and professional achievements from IBM SkillsBuild and other organizations.')
+@section('description', 'Certificates, awards, competition wins, and stage achievements — the credentials and moments that shaped my journey.')
 
 @section('content')
 <section class="section-pad">
     <div class="site-container max-w-4xl">
         <h1 class="section-title fade-in-view">Achievements</h1>
-        <p class="section-subtitle fade-in-view">Verified certificates, credentials, and the work behind them.</p>
+        <p class="section-subtitle fade-in-view">Professional certificates, awards, competition wins, and stage moments — verified credentials and real stories behind them.</p>
 
         @if ($credlyProfile)
         <div class="credly-banner fade-in-view mt-10">
@@ -18,8 +18,8 @@
                     </svg>
                 </div>
                 <div>
-                    <p class="credly-banner__label">Verified on Credly</p>
-                    <p class="credly-banner__text">All badges are publicly verifiable on my Credly profile.</p>
+                    <p class="credly-banner__label">Verified certificates on Credly</p>
+                    <p class="credly-banner__text">Professional credentials are publicly verifiable on my Credly profile.</p>
                 </div>
             </div>
             <a href="{{ $credlyProfile }}" target="_blank" rel="noopener noreferrer" class="btn-primary shrink-0">
@@ -31,26 +31,34 @@
 
         <div class="mt-12 space-y-6">
             @forelse ($achievements as $achievement)
+            @php $typeConfig = $achievement->typeConfig(); @endphp
             <article class="achievement-card fade-in-view card-surface p-6 sm:p-8">
                 <div class="flex flex-col gap-5 sm:flex-row sm:items-start">
                     @if ($achievement->badgeUrl())
                     <img src="{{ $achievement->badgeUrl() }}"
-                         alt="{{ $achievement->title }} badge"
-                         class="achievement-card__badge h-20 w-20 shrink-0 rounded-xl border border-border object-contain bg-surface-muted p-2"
-                         width="80"
-                         height="80"
+                         alt="{{ $achievement->title }}"
+                         class="achievement-card__badge h-20 w-20 shrink-0 rounded-xl border border-border object-contain bg-surface-muted p-2 sm:h-24 sm:w-24"
+                         width="96"
+                         height="96"
                          loading="lazy">
                     @endif
                     <div class="min-w-0 flex-1">
                         <div class="flex flex-wrap items-start justify-between gap-3">
                             <div>
-                                <h2 class="font-display text-xl font-semibold text-text">{{ $achievement->title }}</h2>
+                                <span class="achievement-type-badge achievement-type-badge--{{ $achievement->type }}">{{ $achievement->typeLabel() }}</span>
+                                <h2 class="mt-2 font-display text-xl font-semibold text-text">{{ $achievement->title }}</h2>
+                                @if ($achievement->placement)
+                                <p class="mt-1 text-sm font-medium text-uv-bright">{{ $achievement->placement }}</p>
+                                @endif
                                 <p class="mt-1 text-uv-bright">{{ $achievement->organization }}</p>
+                                @if ($achievement->location)
+                                <p class="mt-1 text-sm text-text-muted">{{ $achievement->location }}</p>
+                                @endif
                                 @if ($achievement->issued_date)
-                                <p class="mt-1 text-sm text-text-dim">Issued {{ $achievement->issued_date->format('M Y') }}</p>
+                                <p class="mt-1 text-sm text-text-dim">{{ $typeConfig['date_label'] ?? 'Date' }} {{ $achievement->issued_date->format('M Y') }}</p>
                                 @endif
                             </div>
-                            @if ($achievement->credly_url)
+                            @if ($achievement->credly_url && $achievement->showsCredly())
                             <a href="{{ $achievement->credly_url }}" target="_blank" rel="noopener noreferrer" class="btn-secondary text-xs">
                                 Verify badge
                                 <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
@@ -60,14 +68,14 @@
 
                         @if ($achievement->story)
                         <div class="mt-5">
-                            <h3 class="text-sm font-semibold uppercase tracking-wide text-text-muted">What I did</h3>
+                            <h3 class="text-sm font-semibold uppercase tracking-wide text-text-muted">{{ $typeConfig['story_label'] ?? 'Story' }}</h3>
                             <p class="mt-2 text-text-muted leading-relaxed">{{ $achievement->story }}</p>
                         </div>
                         @endif
 
                         @if ($achievement->project)
                         <div class="mt-4 rounded-xl border border-border/60 bg-surface-muted/50 px-4 py-3">
-                            <h3 class="text-sm font-semibold text-uv-bright">Related project</h3>
+                            <h3 class="text-sm font-semibold text-uv-bright">{{ $typeConfig['project_label'] ?? 'Related work' }}</h3>
                             <p class="mt-1 text-sm text-text-muted leading-relaxed">{{ $achievement->project }}</p>
                         </div>
                         @endif
@@ -78,6 +86,16 @@
                             <span class="badge-uv">{{ $skill }}</span>
                             @endforeach
                         </div>
+                        @endif
+
+                        @if ($achievement->awardPhotoUrl())
+                        <figure class="mt-6">
+                            <figcaption class="text-sm font-semibold uppercase tracking-wide text-text-muted">{{ $typeConfig['photo_label'] ?? 'Highlight' }}</figcaption>
+                            <img src="{{ $achievement->awardPhotoUrl() }}"
+                                 alt="{{ $achievement->title }} highlight"
+                                 class="mt-3 max-h-80 w-full rounded-xl border border-border object-cover sm:max-w-lg"
+                                 loading="lazy">
+                        </figure>
                         @endif
                     </div>
                 </div>

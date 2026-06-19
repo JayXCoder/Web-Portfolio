@@ -13,13 +13,18 @@ class Achievement extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'type',
         'organization',
+        'location',
         'title',
+        'placement',
         'story',
         'project',
         'issued_date',
         'credly_url',
         'image_url',
+        'badge_image',
+        'award_photo',
         'skills',
         'sort_order',
         'is_published',
@@ -50,14 +55,56 @@ class Achievement extends Model
         return $this->skills ? implode(', ', $this->skills) : '';
     }
 
+    /**
+     * @return array<string, mixed>
+     */
+    public function typeConfig(): array
+    {
+        $types = config('achievements.types', []);
+
+        return $types[$this->type] ?? $types['certificate'] ?? [];
+    }
+
+    public function typeLabel(): string
+    {
+        return $this->typeConfig()['label'] ?? 'Achievement';
+    }
+
+    public function showsCredly(): bool
+    {
+        return (bool) ($this->typeConfig()['show_credly'] ?? false);
+    }
+
     public function badgeUrl(): ?string
     {
-        $url = $this->image_url;
+        return $this->resolveImageUrl($this->badge_image) ?? $this->resolveImageUrl($this->image_url);
+    }
 
-        if ($url === null || trim($url) === '') {
+    public function awardPhotoUrl(): ?string
+    {
+        return $this->resolveImageUrl($this->award_photo);
+    }
+
+    public function resolveImageUrl(?string $path): ?string
+    {
+        if ($path === null || trim($path) === '') {
             return null;
         }
 
-        return trim($url);
+        $path = trim($path);
+
+        if (filter_var($path, FILTER_VALIDATE_URL)) {
+            return $path;
+        }
+
+        if (str_starts_with($path, 'achievement-badges/')) {
+            return route('achievement.badge', basename($path));
+        }
+
+        if (str_starts_with($path, 'achievement-photos/')) {
+            return route('achievement.photo', basename($path));
+        }
+
+        return route('achievement.badge', basename($path));
     }
 }
