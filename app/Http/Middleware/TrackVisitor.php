@@ -192,6 +192,7 @@ class TrackVisitor
         $titles = [
             'about' => 'About',
             'skills' => 'Skills',
+            'achievements' => 'Achievements',
             'projects' => 'Projects',
             'portfolio' => 'Portfolio',
             'contact' => 'Contact',

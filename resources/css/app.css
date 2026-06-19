@@ -385,6 +385,35 @@
         @apply mt-4 flex-1 content-start;
     }
 
+    .credly-banner {
+        @apply flex flex-col gap-4 rounded-2xl border border-uv/30 bg-uv/5 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6;
+        box-shadow: var(--shadow-uv-sm);
+    }
+
+    .credly-banner--compact {
+        @apply max-w-3xl;
+    }
+
+    .credly-banner__content {
+        @apply flex items-start gap-4;
+    }
+
+    .credly-banner__icon {
+        @apply flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-uv/30 bg-uv/10 text-uv-bright;
+    }
+
+    .credly-banner__label {
+        @apply text-sm font-semibold text-uv-bright;
+    }
+
+    .credly-banner__text {
+        @apply mt-1 text-sm text-text-muted;
+    }
+
+    .achievement-card__badge {
+        box-shadow: var(--shadow-uv-sm);
+    }
+
     .journey-timeline {
         @apply relative border-l border-uv/30 pl-6;
     }

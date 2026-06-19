@@ -40,6 +40,12 @@ class SitemapController extends Controller
                 'priority' => '0.7'
             ],
             [
+                'url' => url('/achievements'),
+                'lastmod' => now()->format('Y-m-d'),
+                'changefreq' => 'monthly',
+                'priority' => '0.7'
+            ],
+            [
                 'url' => url('/projects'),
                 'lastmod' => now()->format('Y-m-d'),
                 'changefreq' => 'weekly',

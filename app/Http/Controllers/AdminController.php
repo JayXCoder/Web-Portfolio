@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Achievement;
 use App\Models\Contact;
 use App\Models\Visitor;
 use App\Models\Portfolio;
 use App\Models\WorkExperience;
 use Illuminate\View\View;
 use Illuminate\Http\Request;
+use App\Services\AchievementService;
 use App\Services\ContactService;
 use App\Services\PortfolioService;
 use App\Services\WorkExperienceService;
@@ -18,6 +20,7 @@ class AdminController extends Controller
 {
     public function __construct(
         private PortfolioService $portfolioService,
+        private AchievementService $achievementService,
         private ContactService $contactService,
         private WorkExperienceService $workExperienceService
     ) {
@@ -183,6 +186,105 @@ class AdminController extends Controller
 
         return redirect()->to(url(route('admin.portfolios'), [], true))
             ->with('success', 'Portfolio deleted successfully!');
+    }
+
+    /**
+     * Show all achievements for admin management
+     */
+    public function achievements(): View
+    {
+        $achievements = $this->achievementService->getAllForAdmin();
+
+        return view('admin.achievements.index', compact('achievements'));
+    }
+
+    /**
+     * Show create achievement form
+     */
+    public function createAchievement(): View
+    {
+        return view('admin.achievements.create');
+    }
+
+    /**
+     * Store new achievement
+     */
+    public function storeAchievement(Request $request): RedirectResponse
+    {
+        if ($request->has('skills') && is_string($request->skills)) {
+            $request->merge(['skills' => array_values(array_filter(array_map('trim', explode(',', $request->skills))))]);
+        }
+
+        $this->mergeAchievementCheckboxFields($request);
+
+        $request->validate([
+            'organization' => 'required|string|max:255',
+            'title' => 'required|string|max:255',
+            'story' => 'required|string',
+            'project' => 'nullable|string',
+            'issued_date' => 'nullable|date',
+            'credly_url' => 'nullable|url|max:500',
+            'image_url' => 'nullable|url|max:500',
+            'skills' => 'nullable|array',
+            'skills.*' => 'string|max:100',
+            'sort_order' => 'nullable|integer|min:0',
+            'is_published' => 'required|boolean',
+        ]);
+
+        $this->achievementService->createAchievement($request->all());
+
+        return redirect()->to(url(route('admin.achievements'), [], true))
+            ->with('success', 'Achievement created successfully!');
+    }
+
+    /**
+     * Show edit achievement form
+     */
+    public function editAchievement(Achievement $achievement): View
+    {
+        return view('admin.achievements.edit', compact('achievement'));
+    }
+
+    /**
+     * Update achievement
+     */
+    public function updateAchievement(Request $request, Achievement $achievement): RedirectResponse
+    {
+        if ($request->has('skills') && is_string($request->skills)) {
+            $request->merge(['skills' => array_values(array_filter(array_map('trim', explode(',', $request->skills))))]);
+        }
+
+        $this->mergeAchievementCheckboxFields($request);
+
+        $request->validate([
+            'organization' => 'required|string|max:255',
+            'title' => 'required|string|max:255',
+            'story' => 'required|string',
+            'project' => 'nullable|string',
+            'issued_date' => 'nullable|date',
+            'credly_url' => 'nullable|url|max:500',
+            'image_url' => 'nullable|url|max:500',
+            'skills' => 'nullable|array',
+            'skills.*' => 'string|max:100',
+            'sort_order' => 'nullable|integer|min:0',
+            'is_published' => 'required|boolean',
+        ]);
+
+        $this->achievementService->updateAchievement($achievement, $request->all());
+
+        return redirect()->to(url(route('admin.achievements'), [], true))
+            ->with('success', 'Achievement updated successfully!');
+    }
+
+    /**
+     * Delete achievement
+     */
+    public function deleteAchievement(Achievement $achievement): RedirectResponse
+    {
+        $this->achievementService->deleteAchievement($achievement);
+
+        return redirect()->to(url(route('admin.achievements'), [], true))
+            ->with('success', 'Achievement deleted successfully!');
     }
 
     /**
@@ -366,6 +468,13 @@ class AdminController extends Controller
     {
         $request->merge([
             'is_featured' => $request->boolean('is_featured'),
+            'is_published' => $request->boolean('is_published'),
+        ]);
+    }
+
+    private function mergeAchievementCheckboxFields(Request $request): void
+    {
+        $request->merge([
             'is_published' => $request->boolean('is_published'),
         ]);
     }

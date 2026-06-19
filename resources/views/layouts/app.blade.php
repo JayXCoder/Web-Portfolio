@@ -52,6 +52,7 @@
                         ['route' => 'home', 'label' => 'Home'],
                         ['route' => 'about', 'label' => 'About'],
                         ['route' => 'skills', 'label' => 'Skills'],
+                        ['route' => 'achievements', 'label' => 'Achievements'],
                         ['route' => 'projects', 'label' => 'Projects'],
                         ['route' => 'portfolio', 'label' => 'Portfolio'],
                         ['route' => 'experience', 'label' => 'Experience'],

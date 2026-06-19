@@ -14,6 +14,7 @@ use App\Http\Controllers\StorageAssetController;
 Route::get('/', [PortfolioController::class, 'home'])->name('home');
 Route::get('/about', [PortfolioController::class, 'about'])->name('about');
 Route::get('/skills', [PortfolioController::class, 'skills'])->name('skills');
+Route::get('/achievements', [PortfolioController::class, 'achievements'])->name('achievements');
 Route::get('/projects', [PortfolioController::class, 'projects'])->name('projects');
 Route::get('/portfolio', [PortfolioController::class, 'portfolio'])->name('portfolio');
 Route::get('/experience', [PortfolioController::class, 'experience'])->name('experience');
@@ -37,6 +38,7 @@ Route::get('/sitemap.xml', function() {
     $sitemap .= '<url><loc>' . $baseUrl . '/</loc><lastmod>2025-10-20</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>' . "\n";
     $sitemap .= '<url><loc>' . $baseUrl . '/about</loc><lastmod>2025-10-20</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>' . "\n";
     $sitemap .= '<url><loc>' . $baseUrl . '/skills</loc><lastmod>2025-10-20</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>' . "\n";
+    $sitemap .= '<url><loc>' . $baseUrl . '/achievements</loc><lastmod>2025-10-20</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>' . "\n";
     $sitemap .= '<url><loc>' . $baseUrl . '/projects</loc><lastmod>2025-10-20</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>' . "\n";
     $sitemap .= '<url><loc>' . $baseUrl . '/portfolio</loc><lastmod>2025-10-20</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>' . "\n";
     $sitemap .= '<url><loc>' . $baseUrl . '/experience</loc><lastmod>2025-10-20</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>' . "\n";
@@ -100,6 +102,14 @@ Route::prefix('admin')->name('admin.')->middleware('force.https')->group(functio
         Route::get('/portfolios/{portfolio}/edit', [AdminController::class, 'editPortfolio'])->name('portfolios.edit');
         Route::put('/portfolios/{portfolio}', [AdminController::class, 'updatePortfolio'])->name('portfolios.update');
         Route::delete('/portfolios/{portfolio}', [AdminController::class, 'deletePortfolio'])->name('portfolios.delete');
+
+        // Achievements management
+        Route::get('/achievements', [AdminController::class, 'achievements'])->name('achievements');
+        Route::get('/achievements/create', [AdminController::class, 'createAchievement'])->name('achievements.create');
+        Route::post('/achievements', [AdminController::class, 'storeAchievement'])->name('achievements.store');
+        Route::get('/achievements/{achievement}/edit', [AdminController::class, 'editAchievement'])->name('achievements.edit');
+        Route::put('/achievements/{achievement}', [AdminController::class, 'updateAchievement'])->name('achievements.update');
+        Route::delete('/achievements/{achievement}', [AdminController::class, 'deleteAchievement'])->name('achievements.delete');
         
         // Work Experience management
         Route::get('/work-experiences', [AdminController::class, 'workExperiences'])->name('work-experiences');

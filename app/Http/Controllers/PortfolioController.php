@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Portfolio;
+use App\Services\AchievementService;
 use App\Services\PortfolioService;
 use App\Services\ContactService;
 use App\Services\WorkExperienceService;
@@ -12,6 +13,7 @@ class PortfolioController extends Controller
 {
     public function __construct(
         private PortfolioService $portfolioService,
+        private AchievementService $achievementService,
         private ContactService $contactService,
         private WorkExperienceService $workExperienceService
     ) {}
@@ -38,6 +40,17 @@ class PortfolioController extends Controller
     public function skills()
     {
         return view('pages.skills');
+    }
+
+    /**
+     * Display the achievements page.
+     */
+    public function achievements()
+    {
+        $achievements = $this->achievementService->getAllPublished();
+        $credlyProfile = config('achievements.credly_profile');
+
+        return view('pages.achievements', compact('achievements', 'credlyProfile'));
     }
 
     /**
