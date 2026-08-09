@@ -117,6 +117,7 @@ class RagChatService
             ['role' => 'user', 'content' => $message],
         ], ['format' => $format, 'think' => false, 'temperature' => 0.1, 'num_predict' => (int) config('ai.planner_max_tokens', 256)]);
 
+        $hints = $this->sourceHints($message);
         if ($result['success']) {
             try {
                 $decoded = json_decode((string) $result['content'], true, 512, JSON_THROW_ON_ERROR);
@@ -125,7 +126,11 @@ class RagChatService
                     fn ($query) => is_string($query) && trim($query) !== ''
                 )), 0, 3);
                 $types = array_values(array_intersect($allowed, $decoded['source_types'] ?? []));
-                $types = array_values(array_unique(array_merge($types, $this->sourceHints($message))));
+                $types = array_values(array_unique(array_merge($types, $hints)));
+                if (in_array('achievement', $hints, true)) {
+                    array_unshift($queries, 'Jay achievements awards certificates credentials');
+                    $queries = array_values(array_unique(array_slice($queries, 0, 3)));
+                }
                 if ($queries !== []) {
                     return ['queries' => $queries, 'source_types' => $types];
                 }
@@ -134,7 +139,12 @@ class RagChatService
             }
         }
 
-        return ['queries' => [$message], 'source_types' => $this->sourceHints($message)];
+        $fallbackQueries = [$message];
+        if (in_array('achievement', $hints, true)) {
+            array_unshift($fallbackQueries, 'Jay achievements awards certificates credentials');
+        }
+
+        return ['queries' => array_values(array_unique($fallbackQueries)), 'source_types' => $hints];
     }
 
     /**
@@ -257,9 +267,14 @@ PROMPT;
     private function sourceHints(string $message): array
     {
         $text = mb_strtolower($message);
+        $text = str_replace(
+            ['achivements', 'achivement', 'acheivements', 'acheivement', 'achievments', 'achievment'],
+            'achievement',
+            $text,
+        );
         $rules = [
             'portfolio' => ['project', 'portfolio', 'built', 'build', 'shipped', 'made'],
-            'achievement' => ['achievement', 'award', 'certificate', 'certification', 'cert', 'badge', 'credly', 'won', 'invention', 'competition'],
+            'achievement' => ['achievement', 'award', 'certificate', 'certification', 'cert', 'badge', 'credly', 'won', 'invention', 'competition', 'trophy'],
             'skills' => ['skill', 'skills', 'technology', 'technologies', 'stack', 'framework', 'language', 'tool', 'tools'],
             'experience' => ['experience', 'work', 'job', 'company', 'role', 'employer', 'internship'],
             'linkedin_post' => ['linkedin', 'post', 'article', 'shared'],

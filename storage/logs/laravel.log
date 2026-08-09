@@ -253,3 +253,5 @@
 #42 {main}
 "} 
 [2026-08-09 04:34:17] testing.INFO: RAG chat completed {"duration_ms":7,"query_count":1,"chunk_count":1,"source_types":["portfolio"]} 
+[2026-08-09 04:38:54] testing.WARNING: Unauthorized admin access attempt {"user_id":1,"email":"schulist.onie@example.org","role":"viewer","ip":"127.0.0.1","url":"http://localhost:8081/admin/knowledge","user_agent":"Symfony","timestamp":"2026-08-09 04:38:54"} 
+[2026-08-09 04:38:54] testing.INFO: RAG chat completed {"duration_ms":1,"query_count":1,"chunk_count":1,"source_types":["portfolio"]} 

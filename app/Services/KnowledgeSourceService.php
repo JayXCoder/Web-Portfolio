@@ -129,7 +129,7 @@ class KnowledgeSourceService
             'profile' => [$this->profileDocument()],
             'skills' => [$this->skillsDocument()],
             'portfolio' => Portfolio::published()->ordered()->get()->map(fn (Portfolio $p) => $this->portfolioDocument($p))->all(),
-            'achievement' => Achievement::published()->ordered()->get()->map(fn (Achievement $a) => $this->achievementDocument($a))->all(),
+            'achievement' => $this->achievementDocuments(),
             'experience' => WorkExperience::published()->ordered()->get()->map(fn (WorkExperience $w) => $this->experienceDocument($w))->all(),
             default => [],
         };
@@ -200,20 +200,59 @@ class KnowledgeSourceService
         ];
     }
 
+    /** @return list<array<string, mixed>> */
+    private function achievementDocuments(): array
+    {
+        $achievements = Achievement::published()->ordered()->get();
+        if ($achievements->isEmpty()) {
+            return [];
+        }
+
+        $lines = [
+            'Jay\'s published achievements, awards, certificates, and credentials are listed below.',
+            'These come from the Achievements page on the portfolio site.',
+        ];
+        foreach ($achievements as $achievement) {
+            $lines[] = sprintf(
+                '- %s (%s) from %s%s',
+                $achievement->title,
+                $achievement->typeLabel(),
+                $achievement->organization ?: 'unspecified organization',
+                $achievement->issued_date ? ' on '.$achievement->issued_date->format('Y-m-d') : '',
+            );
+        }
+
+        $documents = [[
+            'source_key' => 'achievements-overview',
+            'title' => 'Achievements, awards, and certificates',
+            'content' => implode("\n", $lines),
+            'url' => route('achievements'),
+            'metadata' => ['label' => 'Achievements overview'],
+        ]];
+
+        foreach ($achievements as $achievement) {
+            $documents[] = $this->achievementDocument($achievement);
+        }
+
+        return $documents;
+    }
+
     private function achievementDocument(Achievement $a): array
     {
         return [
             'source_key' => (string) $a->id,
             'title' => $a->title,
             'content' => implode("\n", array_filter([
-                'Achievement: '.$a->title,
+                'Achievement / award / certificate / credential title: '.$a->title,
                 'Type: '.$a->typeLabel(),
-                'Organization: '.$a->organization,
-                $a->placement ? 'Placement: '.$a->placement : null,
+                'Organization / issuer: '.$a->organization,
+                $a->placement ? 'Placement / result: '.$a->placement : null,
                 $a->location ? 'Location: '.$a->location : null,
+                $a->issued_date ? 'Issued date: '.$a->issued_date->format('Y-m-d') : null,
                 'Story: '.$a->story,
-                $a->project ? 'Project: '.$a->project : null,
+                $a->project ? 'Related project: '.$a->project : null,
                 'Skills: '.implode(', ', $a->skills ?? []),
+                $a->credly_url ? 'Credly verification available for this credential.' : null,
             ])),
             'url' => route('achievements'),
             'published_at' => $a->issued_date,
