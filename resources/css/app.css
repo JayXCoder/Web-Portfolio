@@ -806,4 +806,353 @@
     .mk-tag {
         color: #f92672;
     }
+
+    /* —— Home scroll story (Seasats-inspired) —— */
+    .home-scroll {
+        @apply relative overflow-x-clip;
+    }
+
+    .home-kicker {
+        @apply mb-3 font-mono text-xs uppercase tracking-[0.22em] text-uv-bright;
+    }
+
+    .home-section-title {
+        @apply font-display text-3xl font-bold tracking-tight text-text sm:text-4xl lg:text-5xl;
+    }
+
+    .home-hero {
+        @apply relative min-h-[100dvh] overflow-hidden border-b border-border/60;
+    }
+
+    .home-hero-field {
+        @apply pointer-events-none absolute inset-0;
+        background:
+            radial-gradient(ellipse 80% 55% at 50% 115%, color-mix(in srgb, var(--color-uv) 22%, transparent), transparent 55%),
+            linear-gradient(180deg, #000 0%, #050505 55%, #0a0a0a 100%);
+    }
+
+    .home-hero-grid {
+        @apply absolute inset-0 opacity-40;
+        background-image:
+            linear-gradient(color-mix(in srgb, var(--color-uv) 18%, transparent) 1px, transparent 1px),
+            linear-gradient(90deg, color-mix(in srgb, var(--color-uv) 18%, transparent) 1px, transparent 1px);
+        background-size: 72px 72px;
+        mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, black, transparent 75%);
+    }
+
+    .home-hero-orb {
+        @apply absolute rounded-full blur-3xl;
+        animation: home-orb-drift 14s ease-in-out infinite;
+    }
+
+    .home-hero-orb--a {
+        @apply -left-24 top-16 h-72 w-72;
+        background: color-mix(in srgb, var(--color-uv-glow) 28%, transparent);
+    }
+
+    .home-hero-orb--b {
+        @apply -right-16 bottom-24 h-80 w-80;
+        background: color-mix(in srgb, var(--color-uv-deep) 35%, transparent);
+        animation-delay: -6s;
+    }
+
+    @keyframes home-orb-drift {
+        0%,
+        100% {
+            transform: translate3d(0, 0, 0) scale(1);
+        }
+        50% {
+            transform: translate3d(2%, -3%, 0) scale(1.08);
+        }
+    }
+
+    .home-hero-scan {
+        @apply absolute inset-x-0 top-0 h-px opacity-70;
+        background: linear-gradient(90deg, transparent, var(--color-uv-bright), transparent);
+        animation: home-scan 5.5s linear infinite;
+    }
+
+    @keyframes home-scan {
+        0% {
+            transform: translateY(0);
+            opacity: 0;
+        }
+        8% {
+            opacity: 0.8;
+        }
+        100% {
+            transform: translateY(100dvh);
+            opacity: 0;
+        }
+    }
+
+    .home-hero-brand {
+        @apply font-display text-5xl font-extrabold tracking-tight text-uv-bright sm:text-6xl lg:text-7xl;
+        text-shadow: var(--shadow-uv);
+    }
+
+    .home-hero-title {
+        @apply mt-5 max-w-4xl font-display text-4xl font-extrabold leading-[1.05] tracking-tight text-text sm:text-5xl lg:text-7xl;
+    }
+
+    .home-hero-lede {
+        @apply mt-6 max-w-xl text-base text-text-muted sm:text-lg;
+    }
+
+    .home-hero-cta {
+        @apply mt-8 flex flex-wrap gap-3;
+    }
+
+    .home-hero-scroll-hint {
+        @apply mt-16 flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.2em] text-text-dim;
+    }
+
+    .home-hero-scroll-line {
+        @apply block h-10 w-px bg-gradient-to-b from-uv-bright to-transparent;
+        animation: home-scroll-pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes home-scroll-pulse {
+        0%,
+        100% {
+            opacity: 0.35;
+            transform: scaleY(0.85);
+        }
+        50% {
+            opacity: 1;
+            transform: scaleY(1);
+        }
+    }
+
+    .home-signals {
+        @apply relative py-24 sm:py-32;
+        background:
+            radial-gradient(ellipse 50% 40% at 20% 20%, color-mix(in srgb, var(--color-uv) 12%, transparent), transparent 60%),
+            var(--color-oled);
+    }
+
+    .home-signal-list {
+        @apply mt-10 space-y-5 sm:space-y-7;
+    }
+
+    .home-signal {
+        @apply font-display text-2xl font-semibold tracking-tight text-text-dim transition duration-500 sm:text-4xl lg:text-5xl;
+    }
+
+    .home-signal.is-lit {
+        @apply text-text;
+        text-shadow: 0 0 24px color-mix(in srgb, var(--color-uv-glow) 35%, transparent);
+    }
+
+    .home-signal-close {
+        @apply mt-14 max-w-2xl font-display text-xl font-semibold text-uv-bright sm:text-2xl;
+    }
+
+    .home-chapters {
+        @apply relative;
+        min-height: 280vh;
+    }
+
+    .home-chapters-sticky {
+        @apply sticky top-0 flex min-h-[100dvh] flex-col justify-center overflow-hidden border-y border-border bg-surface;
+    }
+
+    .home-chapters-spacer {
+        @apply pointer-events-none absolute inset-0;
+    }
+
+    .home-chapters-frame {
+        @apply grid items-center gap-10 lg:grid-cols-2 lg:gap-16;
+    }
+
+    .home-chapter-title {
+        @apply font-display text-3xl font-bold tracking-tight text-text sm:text-4xl lg:text-5xl;
+    }
+
+    .home-chapter-body {
+        @apply mt-4 max-w-xl text-base leading-relaxed text-text-muted sm:text-lg;
+    }
+
+    .home-chapter-points {
+        @apply mt-6 space-y-2 text-sm text-text;
+    }
+
+    .home-chapter-points li {
+        @apply relative pl-5;
+    }
+
+    .home-chapter-points li::before {
+        content: '';
+        @apply absolute left-0 top-2 h-1.5 w-1.5 rounded-full bg-uv-bright;
+        box-shadow: 0 0 10px var(--color-uv-glow);
+    }
+
+    .home-chapter-tabs {
+        @apply mt-8 flex flex-wrap gap-2;
+    }
+
+    .home-chapter-tab,
+    .home-domain-tab {
+        @apply cursor-pointer rounded-xl border border-border bg-oled/50 px-4 py-2 font-mono text-xs uppercase tracking-[0.16em] text-text-dim transition hover:border-uv/50 hover:text-text;
+    }
+
+    .home-chapter-tab.is-active,
+    .home-domain-tab.is-active {
+        @apply border-uv/60 text-uv-bright;
+        box-shadow: var(--shadow-uv-sm);
+    }
+
+    .home-chapters-visual {
+        @apply relative mx-auto flex h-64 w-full max-w-md items-center justify-center sm:h-80;
+    }
+
+    .home-chapter-stage {
+        @apply relative flex h-56 w-56 items-center justify-center sm:h-72 sm:w-72;
+    }
+
+    .home-chapter-stage-ring {
+        @apply absolute inset-0 rounded-full border border-uv/30;
+        box-shadow: inset 0 0 40px color-mix(in srgb, var(--color-uv) 20%, transparent), var(--shadow-uv);
+        animation: home-ring-spin 18s linear infinite;
+    }
+
+    .home-chapter-stage-core {
+        @apply h-28 w-28 rounded-full sm:h-36 sm:w-36;
+        background:
+            radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--color-uv-bright) 55%, white), transparent 45%),
+            radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--color-uv) 50%, transparent), #050505 70%);
+        box-shadow: var(--shadow-uv);
+    }
+
+    .home-chapter-stage-code {
+        @apply absolute -top-2 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap font-mono text-[11px] uppercase tracking-[0.2em] text-uv-bright;
+    }
+
+    @keyframes home-ring-spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    .home-chapters-progress {
+        @apply absolute inset-x-0 bottom-0 h-0.5 bg-border;
+    }
+
+    .home-chapters-progress span {
+        @apply block h-full bg-uv-bright transition-[width] duration-200;
+        box-shadow: 0 0 12px var(--color-uv-glow);
+        width: 33%;
+    }
+
+    .home-missions {
+        @apply overflow-hidden bg-oled;
+    }
+
+    .home-mission-rail {
+        @apply cursor-grab overflow-x-auto px-4 pb-4 sm:px-6 lg:px-8;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+    }
+
+    .home-mission-rail.is-dragging {
+        @apply cursor-grabbing;
+        scroll-snap-type: none;
+    }
+
+    .home-mission-track {
+        @apply flex w-max gap-4;
+    }
+
+    .home-mission-card {
+        @apply flex w-[min(86vw,22rem)] shrink-0 snap-start flex-col border border-border bg-surface-elevated p-6 transition;
+        min-height: 16rem;
+    }
+
+    .home-mission-card:hover {
+        @apply border-uv/50;
+        box-shadow: var(--shadow-uv-sm);
+    }
+
+    .home-mission-card--accent {
+        background:
+            linear-gradient(160deg, color-mix(in srgb, var(--color-uv) 18%, transparent), transparent 55%),
+            var(--color-surface-elevated);
+    }
+
+    .home-mission-meta {
+        @apply font-mono text-[11px] uppercase tracking-[0.18em] text-uv-bright;
+    }
+
+    .home-mission-title {
+        @apply mt-4 font-display text-xl font-semibold leading-snug text-text;
+    }
+
+    .home-mission-desc {
+        @apply mt-3 flex-1 text-sm leading-relaxed text-text-muted;
+    }
+
+    .home-mission-cta {
+        @apply mt-6 text-sm text-uv-bright;
+    }
+
+    .home-domains {
+        @apply bg-surface;
+    }
+
+    .home-domain-stats {
+        @apply mt-8 space-y-3 border-t border-border pt-6 text-sm;
+    }
+
+    .home-domain-stats li {
+        @apply grid gap-1 sm:grid-cols-[7rem_1fr] sm:gap-4;
+    }
+
+    .home-domain-stats span {
+        @apply font-mono text-[11px] uppercase tracking-[0.16em] text-text-dim;
+    }
+
+    .home-domain-panel {
+        @apply border border-border bg-oled/40 p-6 sm:p-8;
+    }
+
+    .home-close {
+        @apply relative overflow-hidden;
+        background:
+            radial-gradient(ellipse 60% 50% at 70% 20%, color-mix(in srgb, var(--color-uv) 16%, transparent), transparent 55%),
+            var(--color-oled);
+    }
+
+    .home-close-title {
+        @apply mt-3 font-display text-4xl font-extrabold leading-[1.08] tracking-tight text-text sm:text-5xl lg:text-6xl;
+    }
+
+    .home-telemetry {
+        @apply mt-16 grid gap-6 border-t border-border pt-8 sm:grid-cols-3 sm:items-end;
+    }
+
+    .home-telemetry-label {
+        @apply font-mono text-[11px] uppercase tracking-[0.18em] text-text-dim;
+    }
+
+    .home-telemetry-value {
+        @apply mt-2 font-display text-3xl font-bold text-text;
+    }
+
+    .home-telemetry-unit {
+        @apply ml-2 text-base font-normal text-text-dim;
+    }
+
+    .home-telemetry-note {
+        @apply text-sm text-text-muted sm:text-right;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .home-hero-orb,
+        .home-hero-scan,
+        .home-hero-scroll-line,
+        .home-chapter-stage-ring {
+            animation: none !important;
+        }
+    }
 }

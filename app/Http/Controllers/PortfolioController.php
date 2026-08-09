@@ -23,7 +23,14 @@ class PortfolioController extends Controller
      */
     public function home()
     {
-        return view('pages.home');
+        $featuredProjects = $this->portfolioService->getFeatured();
+        if ($featuredProjects->isEmpty()) {
+            $featuredProjects = $this->portfolioService->getAllPublished()->take(6);
+        } else {
+            $featuredProjects = $featuredProjects->take(8);
+        }
+
+        return view('pages.home', compact('featuredProjects'));
     }
 
     /**

@@ -1,5 +1,6 @@
 import './bootstrap';
 import { initHomeHero } from './home-hero';
+import { initHomeScroll } from './home-scroll';
 
 window.__skillIconFallback = function (img) {
     const fallback = img.dataset.fallback;
@@ -18,6 +19,7 @@ window.__skillIconFallback = function (img) {
 document.addEventListener('DOMContentLoaded', () => {
     initMobileNav();
     initHomeHero();
+    initHomeScroll();
     initScrollReveal();
     initVisitorStats();
     initPortfolioFilters();
