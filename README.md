@@ -16,6 +16,9 @@ Visit Here: jayxcoder.duckdns.org
 - Admin authentication, profile management, and role-based access
 - Portfolio and Work Experience CRUD (publish, feature, sort order)
 - Visitor analytics API and admin dashboards (unique visitors, page views, devices, browsers, countries)
+- Agentic RAG chat grounded in portfolio, skills, achievements, experience, and LinkedIn posts
+- Local Ollama inference with separate qwen chat/reasoning and embedding models
+- Admin knowledge console for health, reindexing, LinkedIn OAuth sync, and LinkedIn export import
 - SEO: sitemap, robots, Open Graph, Twitter cards, structured data slots
 - Asset pipeline via Vite; modern, responsive Bootstrap 5 UI
 - Secure route grouping for admin with HTTPS enforcement
@@ -28,6 +31,7 @@ Visit Here: jayxcoder.duckdns.org
 - Bootstrap 5, Font Awesome, Google Fonts
 - Vite for asset bundling
 - Docker and Docker Compose (optional)
+- Ollama with `qwen3.5:2b` and `qwen3-embedding:0.6b`
 
 ## Repository Structure (high level)
 
@@ -137,6 +141,11 @@ Key variables you may need:
 - `DB_*` — database configuration
 - `SESSION_DRIVER`, `CACHE_DRIVER`, `QUEUE_CONNECTION`
 - `LOG_CHANNEL`, `LOG_LEVEL`
+- `OLLAMA_HOST`, `OLLAMA_MODEL`, `OLLAMA_EMBEDDING_MODEL`
+- `RAG_ENABLED`, `RAG_TOP_K`, `RAG_MIN_SEMANTIC_SCORE`
+- `LINKEDIN_CLIENT_ID`, `LINKEDIN_CLIENT_SECRET`, `LINKEDIN_REDIRECT_URI` (optional)
+
+See **[docs/RAG.md](docs/RAG.md)** for indexing, LinkedIn ingestion, verification, and operations.
 
 ## Testing
 

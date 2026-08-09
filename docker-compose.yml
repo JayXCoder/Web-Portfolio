@@ -1,5 +1,47 @@
-# Portainer Git stack: set ALL variables in the stack "Environment variables" UI
-# (do not rely on a .env file in the repo — it is gitignored and not cloned)
+x-app-environment: &app-environment
+  APP_NAME: ${APP_NAME:-JayXCoder Portfolio}
+  APP_ENV: ${APP_ENV:-production}
+  APP_KEY: ${APP_KEY:?Set APP_KEY in Portainer stack Environment variables}
+  APP_DEBUG: ${APP_DEBUG:-false}
+  APP_URL: ${APP_URL:-http://localhost}
+  LOG_CHANNEL: ${LOG_CHANNEL:-stack}
+  LOG_LEVEL: ${LOG_LEVEL:-warning}
+  DB_CONNECTION: ${DB_CONNECTION:-mysql}
+  DB_HOST: ${DB_HOST:-mysql}
+  DB_PORT: ${DB_PORT:-3306}
+  DB_DATABASE: ${DB_DATABASE:-portfolio}
+  DB_USERNAME: ${DB_USERNAME:-laravel}
+  DB_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in Portainer stack Environment variables}
+  SESSION_DRIVER: ${SESSION_DRIVER:-database}
+  SESSION_LIFETIME: ${SESSION_LIFETIME:-120}
+  CACHE_STORE: ${CACHE_STORE:-database}
+  QUEUE_CONNECTION: ${QUEUE_CONNECTION:-database}
+  DB_QUEUE_RETRY_AFTER: ${DB_QUEUE_RETRY_AFTER:-600}
+  FILESYSTEM_DISK: ${FILESYSTEM_DISK:-local}
+  MAIL_MAILER: ${MAIL_MAILER:-log}
+  OLLAMA_HOST: ${OLLAMA_HOST:-192.168.100.100}
+  OLLAMA_PORT: ${OLLAMA_PORT:-11434}
+  OLLAMA_MODEL: ${OLLAMA_MODEL:-qwen3.5:2b}
+  OLLAMA_EMBEDDING_MODEL: ${OLLAMA_EMBEDDING_MODEL:-qwen3-embedding:0.6b}
+  OLLAMA_THINK: ${OLLAMA_THINK:-true}
+  OLLAMA_PLANNER_MAX_TOKENS: ${OLLAMA_PLANNER_MAX_TOKENS:-256}
+  OLLAMA_ANALYSIS_MAX_TOKENS: ${OLLAMA_ANALYSIS_MAX_TOKENS:-1536}
+  OLLAMA_ANSWER_MAX_TOKENS: ${OLLAMA_ANSWER_MAX_TOKENS:-768}
+  OLLAMA_TIMEOUT: ${OLLAMA_TIMEOUT:-300}
+  RAG_ENABLED: ${RAG_ENABLED:-true}
+  RAG_TOP_K: ${RAG_TOP_K:-8}
+  RAG_MIN_SEMANTIC_SCORE: ${RAG_MIN_SEMANTIC_SCORE:-0.35}
+  LINKEDIN_CLIENT_ID: ${LINKEDIN_CLIENT_ID:-}
+  LINKEDIN_CLIENT_SECRET: ${LINKEDIN_CLIENT_SECRET:-}
+  LINKEDIN_REDIRECT_URI: ${LINKEDIN_REDIRECT_URI:-}
+  LINKEDIN_API_VERSION: ${LINKEDIN_API_VERSION:-202607}
+  ADMIN_NAME: ${ADMIN_NAME:-Admin}
+  ADMIN_EMAIL: ${ADMIN_EMAIL:-}
+  ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+
+x-app-volumes: &app-volumes
+  - app_storage:/var/www/html/storage
+  - app_bootstrap_cache:/var/www/html/bootstrap/cache
 
 services:
   app:
@@ -8,41 +50,47 @@ services:
       target: app
     image: ${STACK_NAME:-portfolio}-app:${IMAGE_TAG:-latest}
     restart: unless-stopped
-    environment:
-      APP_NAME: ${APP_NAME:-JayXCoder Portfolio}
-      APP_ENV: ${APP_ENV:-production}
-      APP_KEY: ${APP_KEY:?Set APP_KEY in Portainer stack Environment variables}
-      APP_DEBUG: ${APP_DEBUG:-false}
-      APP_URL: ${APP_URL:-http://localhost}
-      LOG_CHANNEL: ${LOG_CHANNEL:-stack}
-      LOG_LEVEL: ${LOG_LEVEL:-warning}
-      DB_CONNECTION: ${DB_CONNECTION:-mysql}
-      DB_HOST: ${DB_HOST:-mysql}
-      DB_PORT: ${DB_PORT:-3306}
-      DB_DATABASE: ${DB_DATABASE:-portfolio}
-      DB_USERNAME: ${DB_USERNAME:-laravel}
-      DB_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in Portainer stack Environment variables}
-      SESSION_DRIVER: ${SESSION_DRIVER:-database}
-      SESSION_LIFETIME: ${SESSION_LIFETIME:-120}
-      CACHE_STORE: ${CACHE_STORE:-database}
-      QUEUE_CONNECTION: ${QUEUE_CONNECTION:-database}
-      FILESYSTEM_DISK: ${FILESYSTEM_DISK:-local}
-      MAIL_MAILER: ${MAIL_MAILER:-log}
-      OLLAMA_HOST: ${OLLAMA_HOST:-192.168.0.215}
-      OLLAMA_PORT: ${OLLAMA_PORT:-11434}
-      OLLAMA_MODEL: ${OLLAMA_MODEL:-gemma4:e4b}
-      OLLAMA_TIMEOUT: ${OLLAMA_TIMEOUT:-120}
-      ADMIN_NAME: ${ADMIN_NAME:-Admin}
-      ADMIN_EMAIL: ${ADMIN_EMAIL:-}
-      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
-    volumes:
-      - app_storage:/var/www/html/storage
-      - app_bootstrap_cache:/var/www/html/bootstrap/cache
+    environment: *app-environment
+    volumes: *app-volumes
     networks:
       - portfolio
     depends_on:
       mysql:
         condition: service_healthy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  worker:
+    image: ${STACK_NAME:-portfolio}-app:${IMAGE_TAG:-latest}
+    restart: unless-stopped
+    entrypoint: ["/usr/local/bin/php"]
+    command: ["artisan", "queue:work", "database", "--queue=rag,default", "--sleep=3", "--tries=3", "--timeout=360", "--max-time=3600"]
+    environment: *app-environment
+    volumes: *app-volumes
+    networks:
+      - portfolio
+    depends_on:
+      mysql:
+        condition: service_healthy
+      app:
+        condition: service_started
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  scheduler:
+    image: ${STACK_NAME:-portfolio}-app:${IMAGE_TAG:-latest}
+    restart: unless-stopped
+    entrypoint: ["/usr/local/bin/php"]
+    command: ["artisan", "schedule:work"]
+    environment: *app-environment
+    volumes: *app-volumes
+    networks:
+      - portfolio
+    depends_on:
+      mysql:
+        condition: service_healthy
+      app:
+        condition: service_started
     extra_hosts:
       - "host.docker.internal:host-gateway"
 

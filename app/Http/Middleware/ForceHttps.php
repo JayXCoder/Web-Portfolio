@@ -16,12 +16,15 @@ class ForceHttps
     public function handle(Request $request, Closure $next): Response
     {
         // Check if we're behind a proxy (like Cloudflare, load balancer, etc.)
-        $isSecure = $request->secure() || 
+        $isSecure = $request->secure() ||
                     $request->header('x-forwarded-proto') === 'https' ||
                     $request->header('x-forwarded-scheme') === 'https';
-        
+
         // Force HTTPS for admin routes only if not already secure
-        if ($request->is('admin*') && !$isSecure) {
+        if (app()->environment(['local', 'testing'])) {
+            return $next($request);
+        }
+        if ($request->is('admin*') && ! $isSecure) {
             return redirect()->secure($request->getRequestUri());
         }
 

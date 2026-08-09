@@ -40,9 +40,15 @@ Required at minimum:
 | `DB_PASSWORD` | *(strong secret)* | Required — compose fails without it |
 | `DB_ROOT_PASSWORD` | *(optional)* | Defaults to `DB_PASSWORD` |
 | `APP_PORT` | `8080` | Host port for the site |
-| `OLLAMA_HOST` | `192.168.0.215` | LAN IP of Ollama server |
+| `OLLAMA_HOST` | `192.168.100.100` | LAN IP of Ollama server |
 | `OLLAMA_PORT` | `11434` | |
-| `OLLAMA_MODEL` | `gemma4:e4b` | Must be pulled on Ollama host |
+| `OLLAMA_MODEL` | `qwen3.5:2b` | Reasoning and response model; must be pulled on Ollama host |
+| `OLLAMA_EMBEDDING_MODEL` | `qwen3-embedding:0.6b` | Knowledge and query embedding model |
+| `OLLAMA_PLANNER_MAX_TOKENS` | `256` | Bounded agent query planner |
+| `OLLAMA_ANALYSIS_MAX_TOKENS` | `1536` | Private reasoning budget |
+| `OLLAMA_ANSWER_MAX_TOKENS` | `768` | Final synthesis budget |
+| `RAG_ENABLED` | `true` | Enables grounded chat orchestration |
+| `RAG_MIN_SEMANTIC_SCORE` | `0.35` | Tuned for the configured embedding model |
 | `ADMIN_NAME` | `Admin` | Display name for bootstrap admin |
 | `ADMIN_EMAIL` | `you@example.com` | Admin login email |
 | `ADMIN_PASSWORD` | *(strong secret, 8+ chars)* | Admin login password; synced on each container start |
@@ -65,7 +71,7 @@ Containers must reach your Ollama host on the LAN. Use the host’s **LAN IP** i
 Verify from the `app` container after deploy:
 
 ```bash
-docker exec -it <stack>_app_1 wget -qO- http://192.168.0.215:11434/api/tags
+docker exec -it <stack>_app_1 wget -qO- http://192.168.100.100:11434/api/tags
 ```
 
 ## 4. Deploy
@@ -79,6 +85,9 @@ Open: `http://<server-ip>:8080` (or your reverse proxy target port).
 1. Add `ADMIN_EMAIL` and `ADMIN_PASSWORD` to your stack environment (see table above).
 2. Restart the **app** container (or redeploy). Entrypoint runs `php artisan admin:sync` automatically.
 3. Log in at `/admin/login`.
+4. Open `/admin/knowledge` and run **Reindex all**, or run `php artisan rag:reindex --force` in the app container.
+
+The `worker` service processes indexing jobs and the `scheduler` service performs the daily LinkedIn sync. Keep both services running.
 
 To apply a new password from `.env` later: update variables in Portainer → restart **app**.
 
