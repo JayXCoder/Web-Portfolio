@@ -25,12 +25,37 @@ class PortfolioController extends Controller
     {
         $featuredProjects = $this->portfolioService->getFeatured();
         if ($featuredProjects->isEmpty()) {
-            $featuredProjects = $this->portfolioService->getAllPublished()->take(6);
+            $featuredProjects = $this->portfolioService->getAllPublished()->take(8);
         } else {
             $featuredProjects = $featuredProjects->take(8);
         }
 
-        return view('pages.home', compact('featuredProjects'));
+        $achievements = $this->achievementService->getAllPublished()->take(4);
+        $experiences = $this->workExperienceService->getAllPublished()->take(3);
+        $allProjects = $this->portfolioService->getAllPublished();
+
+        $marqueeSkills = collect(config('skills.tree.apex.skills', []))
+            ->merge(collect(config('skills.tree.branches', []))->flatMap(fn ($b) => $b['skills'] ?? []))
+            ->pluck('label')
+            ->unique()
+            ->take(24)
+            ->values()
+            ->all();
+
+        $stats = [
+            'projects' => $allProjects->count(),
+            'achievements' => $this->achievementService->getAllPublished()->count(),
+            'roles' => $this->workExperienceService->getAllPublished()->count(),
+            'skills' => count($marqueeSkills),
+        ];
+
+        return view('pages.home', compact(
+            'featuredProjects',
+            'achievements',
+            'experiences',
+            'marqueeSkills',
+            'stats',
+        ));
     }
 
     /**

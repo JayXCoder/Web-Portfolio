@@ -10,36 +10,89 @@
 @endsection
 
 @section('content')
+@php
+    $fallbackMissions = [
+        ['meta' => 'AI / ML', 'title' => 'OpenChat', 'desc' => 'Self-hosted streaming chat with multi-provider routing and persistent sessions.', 'url' => route('portfolio')],
+        ['meta' => 'Security', 'title' => 'SentinelX', 'desc' => 'Enterprise intelligence agents turning public signals into risk scores and alerts.', 'url' => route('portfolio')],
+        ['meta' => 'Hardware', 'title' => 'ATV Pesticide Sprayer', 'desc' => 'Award-backed automation for smallholder farms — from field hardware to ops software.', 'url' => route('achievements')],
+    ];
+@endphp
+
 <div class="home-scroll" data-home-scroll>
-    {{-- 01 / Full-bleed hero --}}
-    <section class="home-hero" aria-label="Introduction">
+    {{-- 01 / Cinematic HUD hero --}}
+    <section class="home-hero" aria-label="Introduction" data-home-hero>
         <div class="home-hero-field" aria-hidden="true">
+            <canvas class="home-hero-canvas" data-hero-canvas width="1200" height="800"></canvas>
             <div class="home-hero-grid"></div>
             <div class="home-hero-orb home-hero-orb--a"></div>
             <div class="home-hero-orb home-hero-orb--b"></div>
+            <div class="home-hero-orb home-hero-orb--c"></div>
             <div class="home-hero-scan"></div>
+            <div class="home-hero-vignette"></div>
         </div>
 
-        <div class="site-container relative z-10 flex min-h-[100dvh] flex-col justify-end pb-16 pt-28 sm:pb-20 lg:justify-center lg:pb-24">
-            <p class="home-hero-brand fade-in-view">JayXCoder</p>
-            <h1 class="home-hero-title fade-in-view">
-                Systems that<br class="hidden sm:block"> actually ship.
+        <div class="home-hero-hud site-container" aria-hidden="true">
+            <div class="home-hud-chip"><span class="home-hud-dot"></span> SYS · ONLINE</div>
+            <div class="home-hud-chip home-hud-chip--right">LAT 5.41 · LNG 100.33 · MY</div>
+        </div>
+
+        <div class="site-container relative z-10 flex min-h-[100dvh] flex-col justify-end pb-14 pt-28 sm:pb-20 lg:justify-center lg:pb-24">
+            <div class="home-hero-topline fade-in-view">
+                <span>Computer Engineer</span>
+                <span class="home-hero-sep" aria-hidden="true"></span>
+                <span>AI Builder</span>
+                <span class="home-hero-sep" aria-hidden="true"></span>
+                <span>UniMAP</span>
+            </div>
+            <p class="home-hero-brand fade-in-view" data-parallax="0.12">JayXCoder</p>
+            <h1 class="home-hero-title fade-in-view" data-parallax="0.06">
+                Ocean-scale ambition.<br class="hidden sm:block">
+                <span class="home-hero-title-accent">Laptop-scale shipping.</span>
             </h1>
             <p class="home-hero-lede fade-in-view">
-                Web, AI, and hardware — built end to end by Jawahar Ganesh @ Jay.
+                Jawahar Ganesh @ Jay designs and ships real systems across web, agentic AI, cybersecurity, and hardware — then grounds an on-site assistant in that same work.
             </p>
             <div class="home-hero-cta fade-in-view">
-                <a href="{{ route('portfolio') }}" class="btn-primary">Explore the work</a>
-                <a href="{{ route('chat') }}" class="btn-secondary">Ask the agent</a>
+                <a href="{{ route('portfolio') }}" class="btn-primary">Explore the missions</a>
+                <a href="{{ route('chat') }}" class="btn-secondary">Interrogate the agent</a>
             </div>
+
+            <dl class="home-hero-stats fade-in-view" data-counters>
+                <div>
+                    <dt>Shipped systems</dt>
+                    <dd><span data-count="{{ $stats['projects'] }}">0</span>+</dd>
+                </div>
+                <div>
+                    <dt>Proof & awards</dt>
+                    <dd><span data-count="{{ max($stats['achievements'], 1) }}">0</span></dd>
+                </div>
+                <div>
+                    <dt>Stack depth</dt>
+                    <dd><span data-count="{{ $stats['skills'] }}">0</span></dd>
+                </div>
+                <div>
+                    <dt>Roles in field</dt>
+                    <dd><span data-count="{{ max($stats['roles'], 1) }}">0</span></dd>
+                </div>
+            </dl>
+
             <p class="home-hero-scroll-hint fade-in-view" aria-hidden="true">
                 <span class="home-hero-scroll-line"></span>
-                Scroll the mission
+                Descend the stack
             </p>
         </div>
     </section>
 
-    {{-- 02 / Signal statements (scroll-lit) --}}
+    {{-- Infinite skill marquee --}}
+    <div class="home-marquee" aria-hidden="true" data-marquee>
+        <div class="home-marquee-track">
+            @foreach(array_merge($marqueeSkills, $marqueeSkills) as $skill)
+                <span class="home-marquee-item">{{ $skill }}</span>
+            @endforeach
+        </div>
+    </div>
+
+    {{-- 02 / Signal statements --}}
     <section class="home-signals" aria-label="Focus areas">
         <div class="site-container">
             <p class="home-kicker fade-in-view">No matter the unknown</p>
@@ -49,12 +102,13 @@
                 <li class="home-signal" data-signal>The sensor that made it real.</li>
                 <li class="home-signal" data-signal>The exploit that never shipped.</li>
                 <li class="home-signal" data-signal>The deploy that held under load.</li>
+                <li class="home-signal" data-signal>The award that proved the field build.</li>
             </ul>
-            <p class="home-signal-close fade-in-view">I find it. Then I build it.</p>
+            <p class="home-signal-close fade-in-view">I find it. Then I build it. Then I index it for the agent.</p>
         </div>
     </section>
 
-    {{-- 03 / Sticky capability chapters --}}
+    {{-- 03 / Sticky chapters with richer stage --}}
     <section class="home-chapters" data-chapters aria-label="How I work">
         <div class="home-chapters-sticky">
             <div class="site-container home-chapters-frame">
@@ -63,30 +117,33 @@
                     <div class="home-chapter-panels" data-chapter-panels>
                         <article class="home-chapter is-active" data-chapter="0">
                             <h2 class="home-chapter-title">Build in public depth.</h2>
-                            <p class="home-chapter-body">Laravel, React, Python, and local LLMs — full systems with admin, auth, queues, and deployment, not just demos.</p>
+                            <p class="home-chapter-body">Laravel, React, Python, and local LLMs — full systems with admin, auth, queues, and deployment, not slide-deck demos.</p>
                             <ul class="home-chapter-points">
-                                <li>Production web apps & APIs</li>
-                                <li>Agentic RAG chat on this site</li>
-                                <li>Dashboards operators can use</li>
+                                <li>Production web apps & APIs with real operators</li>
+                                <li>Agentic RAG chat grounded in this portfolio</li>
+                                <li>Dashboards, OCR pipelines, and SaaS assessments</li>
                             </ul>
+                            <a href="{{ route('portfolio') }}" class="home-chapter-cta">Browse shipped work →</a>
                         </article>
                         <article class="home-chapter" data-chapter="1" hidden>
                             <h2 class="home-chapter-title">Detect before it breaks.</h2>
-                            <p class="home-chapter-body">Security and reliability are part of the build: CSRF, HTTPS, access control, and threat-aware defaults on every surface that faces the network.</p>
+                            <p class="home-chapter-body">Security is a build requirement: CSRF, HTTPS, role gates, and threat-aware defaults on every public surface.</p>
                             <ul class="home-chapter-points">
-                                <li>Web pentest mindset</li>
-                                <li>Hardened admin & auth flows</li>
-                                <li>Observability & visitor analytics</li>
+                                <li>Web pentest mindset on forms & admin</li>
+                                <li>Hardened auth and access control</li>
+                                <li>Live visitor analytics without selling souls</li>
                             </ul>
+                            <a href="{{ route('about') }}" class="home-chapter-cta">Read the approach →</a>
                         </article>
                         <article class="home-chapter" data-chapter="2" hidden>
                             <h2 class="home-chapter-title">Ship to the edge.</h2>
-                            <p class="home-chapter-body">From Docker on Portainer to Arduino and Raspberry Pi — software that meets hardware when the problem leaves the browser.</p>
+                            <p class="home-chapter-body">Docker on Portainer, Arduino in the field, FPGA in the lab — software that still works when the problem leaves the browser.</p>
                             <ul class="home-chapter-points">
-                                <li>Containers & CI-friendly deploys</li>
+                                <li>Containerized production deploys</li>
                                 <li>IoT sensing & embedded control</li>
-                                <li>FPGA / crypto experiments</li>
+                                <li>Award-backed hardware innovations</li>
                             </ul>
+                            <a href="{{ route('achievements') }}" class="home-chapter-cta">See field proof →</a>
                         </article>
                     </div>
                     <div class="home-chapter-tabs" role="tablist" aria-label="Capability chapters">
@@ -96,10 +153,14 @@
                     </div>
                 </div>
                 <div class="home-chapters-visual" aria-hidden="true">
-                    <div class="home-chapter-stage" data-chapter-stage>
+                    <div class="home-chapter-stage" data-chapter-stage data-stage="0">
                         <span class="home-chapter-stage-code" data-stage-label>01 / BUILD</span>
                         <div class="home-chapter-stage-ring"></div>
+                        <div class="home-chapter-stage-ring home-chapter-stage-ring--outer"></div>
                         <div class="home-chapter-stage-core"></div>
+                        <ul class="home-chapter-stage-tags" data-stage-tags>
+                            <li>Laravel</li><li>React</li><li>Ollama</li><li>Queues</li>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -108,7 +169,7 @@
         <div class="home-chapters-spacer" data-chapter-spacer aria-hidden="true"></div>
     </section>
 
-    {{-- 04 / Horizontal mission rail --}}
+    {{-- 04 / Mission rail with tech chips --}}
     <section class="home-missions section-pad" aria-label="Selected projects">
         <div class="site-container">
             <div class="fade-in-view flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
@@ -116,43 +177,141 @@
                     <p class="home-kicker">Mission after mission</p>
                     <h2 class="home-section-title">Work proven in the wild.</h2>
                 </div>
-                <p class="max-w-sm text-sm text-text-muted">Drag or scroll sideways. Each card is a shipped system — AI, web, security, or hardware.</p>
+                <a href="{{ route('portfolio') }}" class="text-sm text-uv-bright hover:text-uv-glow">Full archive →</a>
             </div>
         </div>
 
         <div class="home-mission-rail mt-10" data-mission-rail>
             <div class="home-mission-track" data-mission-track>
-                @forelse($featuredProjects as $project)
-                    <a href="{{ route('portfolio.item', $project) }}" class="home-mission-card">
-                        <span class="home-mission-meta">{{ $project->category ?: 'Project' }}</span>
+                @forelse($featuredProjects as $i => $project)
+                    <a href="{{ route('portfolio.item', $project) }}" class="home-mission-card" style="--delay: {{ $i * 40 }}ms">
+                        <div class="home-mission-card-top">
+                            <span class="home-mission-meta">{{ $project->category ?: 'Project' }}</span>
+                            <span class="home-mission-index">{{ str_pad((string) ($i + 1), 2, '0', STR_PAD_LEFT) }}</span>
+                        </div>
                         <h3 class="home-mission-title">{{ $project->title }}</h3>
-                        <p class="home-mission-desc">{{ Str::limit($project->short_description ?: $project->description, 110) }}</p>
+                        <p class="home-mission-desc">{{ Str::limit($project->short_description ?: $project->description, 120) }}</p>
+                        @if(!empty($project->technologies))
+                            <div class="home-mission-tags">
+                                @foreach(array_slice($project->technologies ?? [], 0, 4) as $tech)
+                                    <span>{{ $tech }}</span>
+                                @endforeach
+                            </div>
+                        @endif
                         <span class="home-mission-cta">Open mission →</span>
                     </a>
                 @empty
-                    <a href="{{ route('portfolio') }}" class="home-mission-card">
-                        <span class="home-mission-meta">Portfolio</span>
-                        <h3 class="home-mission-title">Explore the full archive</h3>
-                        <p class="home-mission-desc">AI/ML, cybersecurity, full-stack, hardware, and infrastructure — all in one place.</p>
-                        <span class="home-mission-cta">View portfolio →</span>
-                    </a>
+                    @foreach($fallbackMissions as $i => $mission)
+                        <a href="{{ $mission['url'] }}" class="home-mission-card">
+                            <div class="home-mission-card-top">
+                                <span class="home-mission-meta">{{ $mission['meta'] }}</span>
+                                <span class="home-mission-index">{{ str_pad((string) ($i + 1), 2, '0', STR_PAD_LEFT) }}</span>
+                            </div>
+                            <h3 class="home-mission-title">{{ $mission['title'] }}</h3>
+                            <p class="home-mission-desc">{{ $mission['desc'] }}</p>
+                            <span class="home-mission-cta">Open mission →</span>
+                        </a>
+                    @endforeach
                 @endforelse
                 <a href="{{ route('skills') }}" class="home-mission-card home-mission-card--accent">
-                    <span class="home-mission-meta">Stack</span>
-                    <h3 class="home-mission-title">The tech tree</h3>
-                    <p class="home-mission-desc">Languages, frameworks, AI tooling, security, DevOps, and hardware — mapped end to end.</p>
-                    <span class="home-mission-cta">View skills →</span>
+                    <div class="home-mission-card-top">
+                        <span class="home-mission-meta">Stack map</span>
+                        <span class="home-mission-index">∞</span>
+                    </div>
+                    <h3 class="home-mission-title">The living tech tree</h3>
+                    <p class="home-mission-desc">Languages, frameworks, AI tooling, security, DevOps, and hardware — connected like a constellation.</p>
+                    <span class="home-mission-cta">Enter the tree →</span>
                 </a>
             </div>
         </div>
     </section>
 
-    {{-- 05 / Domain platforms --}}
+    {{-- 05 / Proof: awards + roles --}}
+    <section class="home-proof section-pad border-t border-border" aria-label="Proof">
+        <div class="site-container">
+            <div class="grid gap-12 lg:grid-cols-2">
+                <div class="fade-in-view">
+                    <p class="home-kicker">Field credentials</p>
+                    <h2 class="home-section-title">Awards & certificates.</h2>
+                    <p class="mt-3 text-sm text-text-muted">Pulled live from the achievements archive — not marketing filler.</p>
+                    <ul class="home-proof-list mt-8">
+                        @forelse($achievements as $achievement)
+                            <li>
+                                <a href="{{ route('achievements') }}" class="home-proof-item">
+                                    <span class="home-proof-type">{{ $achievement->typeLabel() }}</span>
+                                    <span class="home-proof-title">{{ $achievement->title }}</span>
+                                    <span class="home-proof-meta">{{ $achievement->organization }}@if($achievement->issued_date) · {{ $achievement->issued_date->format('Y') }}@endif</span>
+                                </a>
+                            </li>
+                        @empty
+                            <li>
+                                <a href="{{ route('achievements') }}" class="home-proof-item">
+                                    <span class="home-proof-type">Stage win</span>
+                                    <span class="home-proof-title">Thailand Award for Best International Invention & Innovation</span>
+                                    <span class="home-proof-meta">NRCT · MTE 2026 · ATV pesticide sprayer</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('achievements') }}" class="home-proof-item">
+                                    <span class="home-proof-type">Credly</span>
+                                    <span class="home-proof-title">IBM SkillsBuild cybersecurity & cloud credentials</span>
+                                    <span class="home-proof-meta">Verified badges on Credly</span>
+                                </a>
+                            </li>
+                        @endforelse
+                    </ul>
+                    <a href="{{ route('achievements') }}" class="btn-secondary mt-6 inline-flex">All achievements</a>
+                </div>
+                <div class="fade-in-view" style="transition-delay:80ms">
+                    <p class="home-kicker">In the arena</p>
+                    <h2 class="home-section-title">Roles that ship.</h2>
+                    <p class="mt-3 text-sm text-text-muted">Current and recent work — AI engineering and full-stack delivery.</p>
+                    <ul class="home-timeline mt-8">
+                        @forelse($experiences as $exp)
+                            <li class="home-timeline-item">
+                                <span class="home-timeline-dot" aria-hidden="true"></span>
+                                <div>
+                                    <p class="home-timeline-role">{{ $exp->position }}</p>
+                                    <p class="home-timeline-company">{{ $exp->company }}</p>
+                                    <p class="home-timeline-meta">
+                                        {{ $exp->start_date?->format('M Y') }}
+                                        –
+                                        {{ $exp->is_current ? 'Present' : $exp->end_date?->format('M Y') }}
+                                        @if($exp->location) · {{ $exp->location }}@endif
+                                    </p>
+                                </div>
+                            </li>
+                        @empty
+                            <li class="home-timeline-item">
+                                <span class="home-timeline-dot" aria-hidden="true"></span>
+                                <div>
+                                    <p class="home-timeline-role">AI Engineer (Solution)</p>
+                                    <p class="home-timeline-company">Maistorage Technology Sdn Bhd</p>
+                                    <p class="home-timeline-meta">Aug 2026 – Present · Puchong</p>
+                                </div>
+                            </li>
+                            <li class="home-timeline-item">
+                                <span class="home-timeline-dot" aria-hidden="true"></span>
+                                <div>
+                                    <p class="home-timeline-role">Full-stack & AI Developer</p>
+                                    <p class="home-timeline-company">Biztory Cloud Accounting</p>
+                                    <p class="home-timeline-meta">Oct 2025 – May 2026</p>
+                                </div>
+                            </li>
+                        @endforelse
+                    </ul>
+                    <a href="{{ route('experience') }}" class="btn-secondary mt-6 inline-flex">Full experience</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {{-- 06 / Domains --}}
     <section class="home-domains section-pad border-t border-border" data-domains aria-label="Domains">
         <div class="site-container">
             <p class="home-kicker fade-in-view">Engineered for every need</p>
             <h2 class="home-section-title fade-in-view">Three surfaces. One builder.</h2>
-            <p class="mt-4 max-w-2xl text-text-muted fade-in-view">Pick a lane — the stack changes, the shipping habit does not.</p>
+            <p class="mt-4 max-w-2xl text-text-muted fade-in-view">Like fleet platforms with different mission profiles — pick a lane and the stack reconfigures.</p>
 
             <div class="home-domain-tabs mt-10 fade-in-view" role="tablist" aria-label="Domains">
                 <button type="button" class="home-domain-tab is-active" data-domain-tab="web" role="tab" aria-selected="true">Web</button>
@@ -162,31 +321,34 @@
 
             <div class="home-domain-panels mt-8">
                 <article class="home-domain-panel is-active fade-in-view" data-domain-panel="web">
+                    <div class="home-domain-glow" aria-hidden="true"></div>
                     <h3 class="font-display text-3xl font-bold text-text sm:text-4xl">Web & APIs</h3>
                     <p class="mt-4 max-w-xl text-text-muted">Laravel backends, React and Angular UIs, secure admin panels, and cloud-ready APIs that survive real users.</p>
                     <ul class="home-domain-stats">
-                        <li><span>Stack</span>Laravel · React · Next.js · MySQL</li>
-                        <li><span>Focus</span>Auth, CRUD, queues, dashboards</li>
-                        <li><span>Ship</span>Docker · Nginx · Portainer</li>
+                        <li><span>Stack</span>Laravel · React · Next.js · MySQL · Redis</li>
+                        <li><span>Focus</span>Auth, CRUD, queues, dashboards, SaaS</li>
+                        <li><span>Ship</span>Docker · Nginx · Portainer · CI</li>
                     </ul>
                     <a href="{{ route('portfolio') }}" class="btn-secondary mt-8 inline-flex">See web projects</a>
                 </article>
                 <article class="home-domain-panel fade-in-view" data-domain-panel="ai" hidden>
+                    <div class="home-domain-glow home-domain-glow--ai" aria-hidden="true"></div>
                     <h3 class="font-display text-3xl font-bold text-text sm:text-4xl">AI / ML</h3>
-                    <p class="mt-4 max-w-xl text-text-muted">Local LLMs, RAG pipelines, OCR, and agent workflows — intelligence that stays grounded in your data.</p>
+                    <p class="mt-4 max-w-xl text-text-muted">Local LLMs, RAG pipelines, OCR, and agent workflows — intelligence grounded in your documents, not vibes.</p>
                     <ul class="home-domain-stats">
-                        <li><span>Stack</span>Ollama · PyTorch · LangChain · Qwen</li>
-                        <li><span>Focus</span>Retrieval, reasoning, automation</li>
-                        <li><span>Ship</span>Self-hosted · GPU-aware · queued jobs</li>
+                        <li><span>Stack</span>Ollama · Qwen · PyTorch · LangChain</li>
+                        <li><span>Focus</span>Retrieval, reasoning, automation, OCR</li>
+                        <li><span>Ship</span>Self-hosted · queued jobs · GPU-aware</li>
                     </ul>
                     <a href="{{ route('chat') }}" class="btn-secondary mt-8 inline-flex">Talk to the agent</a>
                 </article>
                 <article class="home-domain-panel fade-in-view" data-domain-panel="hw" hidden>
+                    <div class="home-domain-glow home-domain-glow--hw" aria-hidden="true"></div>
                     <h3 class="font-display text-3xl font-bold text-text sm:text-4xl">Hardware & IoT</h3>
                     <p class="mt-4 max-w-xl text-text-muted">Sensors, embedded control, and FPGA experiments — when the product has to live outside the laptop.</p>
                     <ul class="home-domain-stats">
                         <li><span>Stack</span>Arduino · Pi · ESP32 · Verilog</li>
-                        <li><span>Focus</span>Sensing, control, edge links</li>
+                        <li><span>Focus</span>Sensing, control, edge links, crypto engines</li>
                         <li><span>Ship</span>Field demos · award-backed builds</li>
                     </ul>
                     <a href="{{ route('portfolio') }}" class="btn-secondary mt-8 inline-flex">See hardware work</a>
@@ -195,15 +357,17 @@
         </div>
     </section>
 
-    {{-- 06 / Closing CTA + scroll telemetry --}}
+    {{-- 07 / Climax CTA --}}
     <section class="home-close section-pad" aria-label="Next step">
         <div class="site-container">
             <div class="home-close-panel fade-in-view">
                 <p class="home-kicker">Take action</p>
-                <h2 class="home-close-title">Make contact.<br>Plan the build.<br>Ship the unknown.</h2>
+                <h2 class="home-close-title">Make contact.<br>Plan the build.<br><span class="text-uv-bright">Ship the unknown.</span></h2>
+                <p class="mt-5 max-w-lg text-text-muted">Whether you need a full-stack product, an on-prem AI assistant, or hardware that talks to software — start a conversation.</p>
                 <div class="mt-8 flex flex-wrap gap-3">
                     <a href="{{ route('contact') }}" class="btn-primary">Contact Jay</a>
-                    <a href="{{ route('experience') }}" class="btn-secondary">View experience</a>
+                    <a href="{{ route('chat') }}" class="btn-secondary">Ask the portfolio agent</a>
+                    <a href="{{ route('experience') }}" class="btn-ghost">Experience</a>
                 </div>
             </div>
 
