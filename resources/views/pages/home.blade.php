@@ -36,50 +36,85 @@
             <div class="home-hud-chip home-hud-chip--right">LAT 5.41 · LNG 100.33 · MY</div>
         </div>
 
-        <div class="site-container relative z-10 flex min-h-[100dvh] flex-col justify-end pb-14 pt-28 sm:pb-20 lg:justify-center lg:pb-24">
-            <div class="home-hero-topline fade-in-view">
-                <span>Computer Engineer</span>
-                <span class="home-hero-sep" aria-hidden="true"></span>
-                <span>AI Builder</span>
-                <span class="home-hero-sep" aria-hidden="true"></span>
-                <span>UniMAP</span>
+        <div class="animated-text-container home-hero-words" aria-hidden="true">
+            <div class="animated-text-wrap">
+                <span id="animatedText" class="animated-text">Code</span>
+                <img
+                    id="animatedFavicon"
+                    class="animated-favicon"
+                    src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23000' rx='8'/%3E%3Crect x='8' y='8' width='84' height='84' fill='none' stroke='%23bf00ff' stroke-width='2' rx='6'/%3E%3Ctext x='50' y='42' font-family='monospace' font-size='20' font-weight='bold' text-anchor='middle' fill='%23fff'%3EJXG%3C/text%3E%3C/svg%3E"
+                    alt=""
+                    width="48"
+                    height="48"
+                >
+                <div id="shapeCircle" class="animated-shape shape-circle"></div>
+                <div id="shapeTriangle" class="animated-shape shape-triangle"></div>
+                <div id="shapeSquare" class="animated-shape shape-square"></div>
             </div>
-            <p class="home-hero-brand fade-in-view" data-parallax="0.12">JayXCoder</p>
-            <h1 class="home-hero-title fade-in-view" data-parallax="0.06">
-                Ocean-scale ambition.<br class="hidden sm:block">
-                <span class="home-hero-title-accent">Laptop-scale shipping.</span>
-            </h1>
-            <p class="home-hero-lede fade-in-view">
-                Jawahar Ganesh @ Jay designs and ships real systems across web, agentic AI, cybersecurity, and hardware — then grounds an on-site assistant in that same work.
-            </p>
-            <div class="home-hero-cta fade-in-view">
-                <a href="{{ route('portfolio') }}" class="btn-primary">Explore the missions</a>
-                <a href="{{ route('chat') }}" class="btn-secondary">Interrogate the agent</a>
+        </div>
+
+        <div class="site-container relative z-10 flex min-h-[100dvh] flex-col justify-center gap-10 pb-14 pt-28 lg:grid lg:grid-cols-2 lg:items-center lg:gap-14 lg:pb-20">
+            <div>
+                <div class="home-hero-topline fade-in-view">
+                    <span>Computer Engineer</span>
+                    <span class="home-hero-sep" aria-hidden="true"></span>
+                    <span>AI Builder</span>
+                    <span class="home-hero-sep" aria-hidden="true"></span>
+                    <span>UniMAP</span>
+                </div>
+                <p class="home-hero-brand fade-in-view" data-parallax="0.12">JayXCoder</p>
+                <h1 class="home-hero-title fade-in-view" data-parallax="0.06">
+                    Ocean-scale ambition.<br class="hidden sm:block">
+                    <span class="home-hero-title-accent">Laptop-scale shipping.</span>
+                </h1>
+                <p class="home-hero-lede fade-in-view">
+                    Jawahar Ganesh @ Jay designs and ships real systems across web, agentic AI, cybersecurity, and hardware — then grounds an on-site assistant in that same work.
+                </p>
+                <div class="home-hero-cta fade-in-view">
+                    <a href="{{ route('portfolio') }}" class="btn-primary">Explore the missions</a>
+                    <a href="{{ route('chat') }}" class="btn-secondary">Interrogate the agent</a>
+                </div>
+
+                <dl class="home-hero-stats fade-in-view" data-counters>
+                    <div>
+                        <dt>Shipped systems</dt>
+                        <dd><span data-count="{{ $stats['projects'] }}">0</span>+</dd>
+                    </div>
+                    <div>
+                        <dt>Proof & awards</dt>
+                        <dd><span data-count="{{ max($stats['achievements'], 1) }}">0</span></dd>
+                    </div>
+                    <div>
+                        <dt>Stack depth</dt>
+                        <dd><span data-count="{{ $stats['skills'] }}">0</span></dd>
+                    </div>
+                    <div>
+                        <dt>Roles in field</dt>
+                        <dd><span data-count="{{ max($stats['roles'], 1) }}">0</span></dd>
+                    </div>
+                </dl>
             </div>
 
-            <dl class="home-hero-stats fade-in-view" data-counters>
-                <div>
-                    <dt>Shipped systems</dt>
-                    <dd><span data-count="{{ $stats['projects'] }}">0</span>+</dd>
+            <div class="fade-in-view home-hero-terminal-wrap" style="transition-delay: 120ms">
+                <div class="hero-terminal home-hero-terminal">
+                    <div class="hero-terminal-header">
+                        <span class="hero-terminal-dot hero-terminal-dot-red" aria-hidden="true"></span>
+                        <span class="hero-terminal-dot hero-terminal-dot-yellow" aria-hidden="true"></span>
+                        <span class="hero-terminal-dot hero-terminal-dot-green" aria-hidden="true"></span>
+                        <span class="ml-2 text-xs text-text-muted">jay@devbox:~</span>
+                    </div>
+                    <span id="languageIndicator" class="hero-terminal-lang">Python</span>
+                    <p class="hero-terminal-prompt-line" aria-hidden="true">
+                        <span class="mk-plain">jay@devbox</span><span class="mk-type">:~</span><span class="mk-keyword">$</span>
+                        <span class="hero-terminal-cursor" aria-hidden="true"></span>
+                    </p>
+                    <pre id="typedCode" class="hero-terminal-code hero-terminal-code--monokai" aria-live="polite"></pre>
                 </div>
-                <div>
-                    <dt>Proof & awards</dt>
-                    <dd><span data-count="{{ max($stats['achievements'], 1) }}">0</span></dd>
-                </div>
-                <div>
-                    <dt>Stack depth</dt>
-                    <dd><span data-count="{{ $stats['skills'] }}">0</span></dd>
-                </div>
-                <div>
-                    <dt>Roles in field</dt>
-                    <dd><span data-count="{{ max($stats['roles'], 1) }}">0</span></dd>
-                </div>
-            </dl>
-
-            <p class="home-hero-scroll-hint fade-in-view" aria-hidden="true">
-                <span class="home-hero-scroll-line"></span>
-                Descend the stack
-            </p>
+                <p class="home-hero-scroll-hint mt-8 lg:mt-10" aria-hidden="true">
+                    <span class="home-hero-scroll-line"></span>
+                    Descend the stack
+                </p>
+            </div>
         </div>
     </section>
 
