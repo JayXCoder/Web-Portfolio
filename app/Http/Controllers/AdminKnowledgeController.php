@@ -22,6 +22,12 @@ class AdminKnowledgeController extends Controller
     public function index(RagOllamaService $ollama): View
     {
         $connection = LinkedinConnection::where('user_id', auth()->id())->first();
+        $failedDocuments = KnowledgeDocument::query()
+            ->whereNotNull('last_error')
+            ->orderByDesc('updated_at')
+            ->limit(20)
+            ->get(['id', 'title', 'source_type', 'last_error', 'updated_at']);
+
         $stats = [
             'documents' => KnowledgeDocument::where('is_active', true)->count(),
             'chunks' => KnowledgeChunk::count(),
@@ -32,6 +38,7 @@ class AdminKnowledgeController extends Controller
         return view('admin.knowledge.index', [
             'connection' => $connection,
             'stats' => $stats,
+            'failedDocuments' => $failedDocuments,
             'health' => $ollama->health(),
             'chatModel' => $ollama->chatModel(),
             'embeddingModel' => $ollama->embeddingModel(),

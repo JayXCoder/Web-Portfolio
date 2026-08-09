@@ -77,6 +77,16 @@
             <span>{{ $stats['failed_documents'] }} indexing errors</span>
             <span>Last sync: {{ $stats['last_sync']?->finished_at?->diffForHumans() ?? 'never' }}</span>
         </div>
+        @if($failedDocuments->isNotEmpty())
+            <div class="mt-4 max-h-48 space-y-2 overflow-y-auto rounded-xl border border-danger/30 bg-danger/5 p-3">
+                @foreach($failedDocuments as $failed)
+                    <div class="text-xs">
+                        <p class="font-medium text-text">{{ $failed->title }} <span class="text-text-dim">({{ $failed->source_type }})</span></p>
+                        <p class="mt-0.5 break-words text-danger">{{ $failed->last_error }}</p>
+                    </div>
+                @endforeach
+            </div>
+        @endif
     </section>
 
     <section class="card-surface p-5 sm:p-6">

@@ -29,6 +29,25 @@ class RagStatus extends Command
             ['Last sync', $lastSync?->finished_at?->toIso8601String() ?? 'never'],
         ]);
 
+        $failures = KnowledgeDocument::query()
+            ->whereNotNull('last_error')
+            ->orderByDesc('updated_at')
+            ->limit(10)
+            ->get(['title', 'source_type', 'last_error']);
+
+        if ($failures->isNotEmpty()) {
+            $this->newLine();
+            $this->warn('Recent indexing errors:');
+            $this->table(
+                ['Title', 'Type', 'Error'],
+                $failures->map(fn ($doc) => [
+                    $doc->title,
+                    $doc->source_type,
+                    mb_substr((string) $doc->last_error, 0, 120),
+                ])->all(),
+            );
+        }
+
         return ($health['available'] && $health['chat_model'] && $health['embedding_model'])
             ? self::SUCCESS
             : self::FAILURE;
