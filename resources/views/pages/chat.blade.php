@@ -15,9 +15,13 @@
                 <h1 class="section-title">Ask the work itself.</h1>
                 <p class="section-subtitle">Projects, skills, achievements, experience, and published LinkedIn insights—retrieved before every answer.</p>
             </div>
-            <div class="hidden items-center gap-2 rounded-full border border-border bg-surface/80 px-3 py-2 text-xs text-text-dim sm:flex">
-                <span class="font-mono text-uv-bright">RAG</span>
-                <span>sources attached</span>
+            <div class="hidden items-center gap-3 border border-border/80 bg-oled/70 px-3.5 py-2 font-mono text-[11px] uppercase tracking-[0.16em] text-text-dim sm:flex" title="Plans the search, retrieves portfolio evidence, then answers from sources">
+                <span class="inline-flex items-center gap-1.5 text-uv-bright">
+                    <span class="h-1.5 w-1.5 animate-pulse rounded-full bg-uv-bright shadow-[0_0_10px_rgba(192,132,252,.7)]" aria-hidden="true"></span>
+                    Agentic
+                </span>
+                <span class="text-border" aria-hidden="true">/</span>
+                <span class="text-text-muted">RAG grounded</span>
             </div>
         </div>
 

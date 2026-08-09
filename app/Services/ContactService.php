@@ -68,6 +68,19 @@ class ContactService
     }
 
     /**
+     * @param  list<int|string>  $ids
+     */
+    public function deleteContactsByIds(array $ids): int
+    {
+        $ids = array_values(array_unique(array_filter(
+            array_map('intval', $ids),
+            fn (int $id) => $id > 0,
+        )));
+
+        return $this->contactRepository->deleteByIds($ids);
+    }
+
+    /**
      * Get contact statistics
      */
     public function getStatistics(): array

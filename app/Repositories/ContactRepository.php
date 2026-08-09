@@ -68,4 +68,16 @@ class ContactRepository implements ContactRepositoryInterface
     {
         return $contact->delete();
     }
+
+    /**
+     * @param  list<int>  $ids
+     */
+    public function deleteByIds(array $ids): int
+    {
+        if ($ids === []) {
+            return 0;
+        }
+
+        return $this->model->whereIn('id', $ids)->delete();
+    }
 }

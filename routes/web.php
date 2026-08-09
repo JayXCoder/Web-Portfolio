@@ -143,6 +143,7 @@ Route::prefix('admin')->name('admin.')->middleware('force.https')->group(functio
 
         // Contact management
         Route::get('/contacts', [AdminController::class, 'contacts'])->name('contacts');
+        Route::delete('/contacts/bulk-delete', [AdminController::class, 'bulkDeleteContacts'])->name('contacts.bulk-delete');
         Route::get('/contacts/{contact}', [AdminController::class, 'showContact'])->name('contacts.show');
         Route::patch('/contacts/{contact}/read', [AdminController::class, 'markContactAsRead'])->name('contacts.mark-read');
         Route::delete('/contacts/{contact}', [AdminController::class, 'deleteContact'])->name('contacts.delete');

@@ -474,6 +474,24 @@ class AdminController extends Controller
     }
 
     /**
+     * Delete multiple contacts
+     */
+    public function bulkDeleteContacts(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'ids' => 'required|array|min:1|max:200',
+            'ids.*' => 'integer|distinct|exists:contacts,id',
+        ]);
+
+        $deleted = $this->contactService->deleteContactsByIds($validated['ids']);
+
+        return redirect()->to(url(route('admin.contacts'), [], true))
+            ->with('success', $deleted === 1
+                ? '1 contact deleted.'
+                : "{$deleted} contacts deleted.");
+    }
+
+    /**
      * Unchecked HTML checkboxes are omitted from the request; normalize to false.
      */
     private function mergePortfolioCheckboxFields(Request $request): void

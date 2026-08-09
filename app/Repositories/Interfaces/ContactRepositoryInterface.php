@@ -36,4 +36,11 @@ interface ContactRepositoryInterface
      * Delete a contact
      */
     public function delete(Contact $contact): bool;
+
+    /**
+     * Delete contacts by id.
+     *
+     * @param  list<int>  $ids
+     */
+    public function deleteByIds(array $ids): int;
 }
