@@ -20,18 +20,73 @@ class KnowledgeSourceService
     public function refresh(string $source = 'all', bool $queue = true, bool $force = false): array
     {
         $types = $source === 'all'
-            ? ['profile', 'skills', 'portfolio', 'achievement', 'experience']
+            ? ['profile', 'skills', 'portfolio', 'achievement', 'experience', 'linkedin_post']
             : [$source];
         $totals = ['seen' => 0, 'changed' => 0, 'deactivated' => 0];
 
         foreach ($types as $type) {
-            $result = $this->syncDocuments($type, $this->documentsFor($type), true, $queue, $force);
+            // LinkedIn posts come from OAuth/export imports, not portfolio tables.
+            // Reindex existing rows; never full-reconcile from an empty documentsFor().
+            $result = $type === 'linkedin_post'
+                ? $this->reindexExisting($type, $queue, $force)
+                : $this->syncDocuments($type, $this->documentsFor($type), true, $queue, $force);
             foreach ($totals as $key => $value) {
                 $totals[$key] += $result[$key];
             }
         }
 
         return $totals;
+    }
+
+    /**
+     * Force-index already imported documents without reconciling source keys away.
+     *
+     * @return array{seen: int, changed: int, deactivated: int}
+     */
+    public function reindexExisting(string $sourceType, bool $queue = true, bool $force = false): array
+    {
+        $run = KnowledgeSyncRun::create([
+            'source_type' => $sourceType,
+            'status' => 'running',
+            'started_at' => now(),
+        ]);
+
+        try {
+            $documents = KnowledgeDocument::query()
+                ->where('source_type', $sourceType)
+                ->where('is_active', true)
+                ->get();
+            $changed = 0;
+            foreach ($documents as $document) {
+                $needsIndex = $force
+                    || ! $document->last_indexed_at
+                    || $document->last_error;
+                if (! $needsIndex) {
+                    continue;
+                }
+                $changed++;
+                $queue
+                    ? IndexKnowledgeDocument::dispatch($document->id)
+                    : $this->indexer->index($document);
+            }
+
+            $run->update([
+                'status' => 'completed',
+                'documents_seen' => $documents->count(),
+                'documents_changed' => $changed,
+                'documents_deactivated' => 0,
+                'finished_at' => now(),
+            ]);
+
+            return ['seen' => $documents->count(), 'changed' => $changed, 'deactivated' => 0];
+        } catch (\Throwable $e) {
+            $run->update([
+                'status' => 'failed',
+                'error' => mb_substr($e->getMessage(), 0, 2000),
+                'finished_at' => now(),
+            ]);
+            throw $e;
+        }
     }
 
     /**

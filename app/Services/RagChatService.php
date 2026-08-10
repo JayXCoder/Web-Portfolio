@@ -274,10 +274,10 @@ PROMPT;
         );
         $rules = [
             'portfolio' => ['project', 'portfolio', 'built', 'build', 'shipped', 'made'],
-            'achievement' => ['achievement', 'award', 'certificate', 'certification', 'cert', 'badge', 'credly', 'won', 'invention', 'competition', 'trophy'],
+            'achievement' => ['achievement', 'award', 'certificate', 'certification', 'cert', 'badge', 'credly', 'won', 'invention', 'competition', 'trophy', 'upex', 'exhibition', 'expo', 'medal'],
             'skills' => ['skill', 'skills', 'technology', 'technologies', 'stack', 'framework', 'language', 'tool', 'tools'],
             'experience' => ['experience', 'work', 'job', 'company', 'role', 'employer', 'internship'],
-            'linkedin_post' => ['linkedin', 'post', 'article', 'shared'],
+            'linkedin_post' => ['linkedin', 'post', 'article', 'shared', 'upex'],
             'profile' => ['profile', 'about', 'who is', 'who\'s', 'education', 'location', 'malaysia', 'unimap'],
         ];
         $hints = [];
@@ -285,6 +285,11 @@ PROMPT;
             if (collect($needles)->contains(fn ($needle) => str_contains($text, $needle))) {
                 $hints[] = $type;
             }
+        }
+
+        // Competition wins often live in LinkedIn posts before they are mirrored as achievements.
+        if (in_array('achievement', $hints, true) && ! in_array('linkedin_post', $hints, true)) {
+            $hints[] = 'linkedin_post';
         }
 
         return $hints;
