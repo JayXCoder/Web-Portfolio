@@ -1,6 +1,11 @@
 import './bootstrap';
 import { initHomeHero } from './home-hero';
 import { initHomeScroll } from './home-scroll';
+import {
+    initMarkdownPreviews,
+    initAdminMarkdownEditor,
+    initBlogShare,
+} from './markdown-preview';
 
 window.__skillIconFallback = function (img) {
     const fallback = img.dataset.fallback;
@@ -26,6 +31,9 @@ document.addEventListener('DOMContentLoaded', () => {
     initAdminSidebar();
     initPortfolioAi();
     initPortfolioImageSortable();
+    initMarkdownPreviews();
+    initAdminMarkdownEditor();
+    initBlogShare();
 });
 
 function initMobileNav() {

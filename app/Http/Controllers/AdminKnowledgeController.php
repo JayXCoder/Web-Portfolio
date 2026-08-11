@@ -49,7 +49,7 @@ class AdminKnowledgeController extends Controller
     public function reindex(Request $request): RedirectResponse
     {
         $source = $request->validate([
-            'source' => 'required|in:all,profile,skills,portfolio,achievement,experience,linkedin_post',
+            'source' => 'required|in:all,profile,skills,portfolio,achievement,experience,blog,linkedin_post',
         ])['source'];
         RefreshKnowledgeSource::dispatch($source, true);
 

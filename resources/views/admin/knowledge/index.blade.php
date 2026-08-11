@@ -70,6 +70,7 @@
                 <option value="portfolio">Projects</option>
                 <option value="achievement">Achievements</option>
                 <option value="experience">Experience</option>
+                <option value="blog">Blog</option>
                 <option value="linkedin_post">LinkedIn posts</option>
             </select>
             <button class="btn-primary shrink-0" type="submit">Queue reindex</button>

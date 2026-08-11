@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Jobs\IndexKnowledgeDocument;
 use App\Models\Achievement;
+use App\Models\BlogPost;
 use App\Models\KnowledgeDocument;
 use App\Models\KnowledgeSyncRun;
 use App\Models\Portfolio;
@@ -20,7 +21,7 @@ class KnowledgeSourceService
     public function refresh(string $source = 'all', bool $queue = true, bool $force = false): array
     {
         $types = $source === 'all'
-            ? ['profile', 'skills', 'portfolio', 'achievement', 'experience', 'linkedin_post']
+            ? ['profile', 'skills', 'portfolio', 'achievement', 'experience', 'blog', 'linkedin_post']
             : [$source];
         $totals = ['seen' => 0, 'changed' => 0, 'deactivated' => 0];
 
@@ -186,6 +187,7 @@ class KnowledgeSourceService
             'portfolio' => Portfolio::published()->ordered()->get()->map(fn (Portfolio $p) => $this->portfolioDocument($p))->all(),
             'achievement' => $this->achievementDocuments(),
             'experience' => WorkExperience::published()->ordered()->get()->map(fn (WorkExperience $w) => $this->experienceDocument($w))->all(),
+            'blog' => BlogPost::published()->ordered()->get()->map(fn (BlogPost $p) => $this->blogDocument($p))->all(),
             default => [],
         };
     }
@@ -335,6 +337,24 @@ class KnowledgeSourceService
             'url' => route('experience'),
             'published_at' => $w->start_date,
             'metadata' => ['company' => $w->company, 'current' => $w->is_current],
+        ];
+    }
+
+    private function blogDocument(BlogPost $post): array
+    {
+        return [
+            'source_key' => (string) $post->id,
+            'title' => $post->title,
+            'content' => implode("\n", array_filter([
+                'Blog post: '.$post->title,
+                'Author: '.$post->author_name,
+                $post->excerpt ? 'Excerpt: '.$post->excerpt : null,
+                'Body: '.$post->body,
+                ! empty($post->tags) ? 'Tags: '.implode(', ', $post->tags) : null,
+            ])),
+            'url' => route('blog.show', $post->slug),
+            'published_at' => $post->published_at ?? $post->created_at,
+            'metadata' => ['slug' => $post->slug, 'author' => $post->author_name],
         ];
     }
 

@@ -9,7 +9,7 @@ use Illuminate\Console\Command;
 class RagReindex extends Command
 {
     protected $signature = 'rag:reindex
-        {--source=all : all, profile, skills, portfolio, achievement, or experience}
+        {--source=all : all, profile, skills, portfolio, achievement, experience, blog, or linkedin_post}
         {--force : Re-embed unchanged documents}
         {--queue : Queue work instead of waiting for Ollama}';
 
@@ -18,7 +18,7 @@ class RagReindex extends Command
     public function handle(KnowledgeSourceService $sources): int
     {
         $source = (string) $this->option('source');
-        if (! in_array($source, ['all', 'profile', 'skills', 'portfolio', 'achievement', 'experience'], true)) {
+        if (! in_array($source, ['all', 'profile', 'skills', 'portfolio', 'achievement', 'experience', 'blog', 'linkedin_post'], true)) {
             $this->error('Invalid source.');
 
             return self::INVALID;

@@ -92,7 +92,7 @@ class RagChatService
     /** @return array{queries: list<string>, source_types: list<string>} */
     private function plan(string $message): array
     {
-        $allowed = ['profile', 'skills', 'portfolio', 'achievement', 'experience', 'linkedin_post'];
+        $allowed = ['profile', 'skills', 'portfolio', 'achievement', 'experience', 'blog', 'linkedin_post'];
         $format = [
             'type' => 'object',
             'required' => ['queries', 'source_types'],

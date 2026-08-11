@@ -195,8 +195,14 @@ class TrackVisitor
             'achievements' => 'Achievements',
             'projects' => 'Projects',
             'portfolio' => 'Portfolio',
+            'experience' => 'Experience',
+            'blog' => 'Blog',
             'contact' => 'Contact',
         ];
+
+        if (str_starts_with($path, 'blog/')) {
+            return 'Blog Post';
+        }
 
         return $titles[$path] ?? ucfirst($path);
     }

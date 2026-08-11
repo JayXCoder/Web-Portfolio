@@ -12,14 +12,30 @@
     <meta name="robots" content="index, follow">
     <meta name="theme-color" content="#000000">
 
-    <link rel="canonical" href="{{ url()->current() }}">
-    <meta property="og:title" content="@yield('title', 'Jawahar Ganesh @ Jay | Portfolio')">
+    <link rel="canonical" href="@yield('canonical', url()->current())">
+    <meta property="og:title" content="@yield('og_title', 'Jawahar Ganesh @ Jay | Portfolio')">
     <meta property="og:description" content="@yield('description', 'Professional portfolio of Jawahar Ganesh @ Jay.')">
     <meta property="og:type" content="@yield('og_type', 'website')">
-    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:url" content="@yield('og_url', url()->current())">
     <meta property="og:site_name" content="JayXCoder Portfolio">
+    @hasSection('og_image')
+    @if(trim($__env->yieldContent('og_image')) !== '')
+    <meta property="og:image" content="@yield('og_image')">
+    <meta property="og:image:width" content="@yield('og_image_width', '1200')">
+    <meta property="og:image:height" content="@yield('og_image_height', '630')">
+    <meta name="twitter:image" content="@yield('twitter_image')">
+    @endif
+    @endif
+    @hasSection('article_author')
+    <meta property="article:author" content="@yield('article_author')">
+    @endif
+    @hasSection('article_published_time')
+    @if(trim($__env->yieldContent('article_published_time')) !== '')
+    <meta property="article:published_time" content="@yield('article_published_time')">
+    @endif
+    @endif
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="@yield('title', 'Jawahar Ganesh @ Jay | Portfolio')">
+    <meta name="twitter:title" content="@yield('og_title', 'Jawahar Ganesh @ Jay | Portfolio')">
     <meta name="twitter:description" content="@yield('description', 'Professional portfolio of Jawahar Ganesh @ Jay.')">
 
     @yield('structured_data')
@@ -56,13 +72,14 @@
                         ['route' => 'projects', 'label' => 'Projects'],
                         ['route' => 'portfolio', 'label' => 'Portfolio'],
                         ['route' => 'experience', 'label' => 'Experience'],
+                        ['route' => 'blog', 'label' => 'Blog', 'match' => 'blog*'],
                         ['route' => 'contact', 'label' => 'Contact'],
                         ['route' => 'chat', 'label' => 'AI Chat'],
                     ];
                 @endphp
                 @foreach($links as $link)
                     <a href="{{ route($link['route']) }}"
-                       class="nav-link {{ request()->routeIs($link['route']) ? 'nav-link-active' : '' }}">
+                       class="nav-link {{ request()->routeIs($link['match'] ?? $link['route']) ? 'nav-link-active' : '' }}">
                         {{ $link['label'] }}
                     </a>
                 @endforeach

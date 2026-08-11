@@ -46,6 +46,11 @@ class StorageAssetController extends Controller
         return $this->servePublicFile('achievement-photos', $filename);
     }
 
+    public function blogImage(string $filename): BinaryFileResponse|Response
+    {
+        return $this->servePublicFile('blog', $filename);
+    }
+
     private function servePublicFile(string $directory, string $filename): BinaryFileResponse|Response
     {
         $filename = basename($filename);

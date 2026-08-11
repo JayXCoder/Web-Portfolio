@@ -1,15 +1,19 @@
 <?php
 
 use App\Http\Controllers\AdminAuthController;
+use App\Http\Controllers\AdminBlogCommentController;
+use App\Http\Controllers\AdminBlogController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminKnowledgeController;
 use App\Http\Controllers\AdminPortfolioAiController;
 use App\Http\Controllers\AdminUserController;
+use App\Http\Controllers\BlogController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\PortfolioController;
 use App\Http\Controllers\RagChatController;
 use App\Http\Controllers\StorageAssetController;
 use App\Http\Controllers\VisitorController;
+use App\Models\BlogPost;
 use Illuminate\Support\Facades\Route;
 
 // Main portfolio routes
@@ -20,6 +24,11 @@ Route::get('/achievements', [PortfolioController::class, 'achievements'])->name(
 Route::get('/projects', [PortfolioController::class, 'projects'])->name('projects');
 Route::get('/portfolio', [PortfolioController::class, 'portfolio'])->name('portfolio');
 Route::get('/experience', [PortfolioController::class, 'experience'])->name('experience');
+Route::get('/blog', [BlogController::class, 'index'])->name('blog');
+Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
+Route::post('/blog/{slug}/comments', [BlogController::class, 'storeComment'])
+    ->middleware('throttle:5,1')
+    ->name('blog.comments.store');
 Route::get('/contact', [PortfolioController::class, 'contact'])->name('contact');
 Route::post('/contact', [PortfolioController::class, 'submitContact'])->name('contact.submit');
 
@@ -44,6 +53,10 @@ Route::get('/sitemap.xml', function () {
     $sitemap .= '<url><loc>'.$baseUrl.'/projects</loc><lastmod>2025-10-20</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>'."\n";
     $sitemap .= '<url><loc>'.$baseUrl.'/portfolio</loc><lastmod>2025-10-20</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>'."\n";
     $sitemap .= '<url><loc>'.$baseUrl.'/experience</loc><lastmod>2025-10-20</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>'."\n";
+    $sitemap .= '<url><loc>'.$baseUrl.'/blog</loc><lastmod>'.now()->format('Y-m-d').'</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>'."\n";
+    foreach (BlogPost::published()->ordered()->get(['slug', 'updated_at']) as $blogPost) {
+        $sitemap .= '<url><loc>'.$baseUrl.'/blog/'.e($blogPost->slug).'</loc><lastmod>'.$blogPost->updated_at->format('Y-m-d').'</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>'."\n";
+    }
     $sitemap .= '<url><loc>'.$baseUrl.'/contact</loc><lastmod>2025-10-20</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>'."\n";
     $sitemap .= '</urlset>'."\n";
 
@@ -77,6 +90,10 @@ Route::get('/storage/achievement-badges/{filename}', [StorageAssetController::cl
 Route::get('/storage/achievement-photos/{filename}', [StorageAssetController::class, 'achievementPhoto'])
     ->where('filename', '[A-Za-z0-9._-]+')
     ->name('achievement.photo');
+
+Route::get('/storage/blog/{filename}', [StorageAssetController::class, 'blogImage'])
+    ->where('filename', '[A-Za-z0-9._-]+')
+    ->name('blog.image');
 
 // Individual portfolio item routes
 Route::get('/portfolio/{slug}', [PortfolioController::class, 'portfolioItem'])->name('portfolio.item');
@@ -128,6 +145,21 @@ Route::prefix('admin')->name('admin.')->middleware('force.https')->group(functio
         Route::get('/work-experiences/{workExperience}/edit', [AdminController::class, 'editWorkExperience'])->name('work-experiences.edit');
         Route::put('/work-experiences/{workExperience}', [AdminController::class, 'updateWorkExperience'])->name('work-experiences.update');
         Route::delete('/work-experiences/{workExperience}', [AdminController::class, 'deleteWorkExperience'])->name('work-experiences.delete');
+
+        // Blog posts
+        Route::get('/blog-posts', [AdminBlogController::class, 'index'])->name('blog-posts');
+        Route::get('/blog-posts/create', [AdminBlogController::class, 'create'])->name('blog-posts.create');
+        Route::post('/blog-posts', [AdminBlogController::class, 'store'])->name('blog-posts.store');
+        Route::post('/blog-posts/upload-image', [AdminBlogController::class, 'uploadImage'])->name('blog-posts.upload-image');
+        Route::get('/blog-posts/{blogPost}/edit', [AdminBlogController::class, 'edit'])->name('blog-posts.edit');
+        Route::put('/blog-posts/{blogPost}', [AdminBlogController::class, 'update'])->name('blog-posts.update');
+        Route::delete('/blog-posts/{blogPost}', [AdminBlogController::class, 'destroy'])->name('blog-posts.delete');
+
+        // Blog comments
+        Route::get('/blog-comments', [AdminBlogCommentController::class, 'index'])->name('blog-comments');
+        Route::delete('/blog-comments/bulk-delete', [AdminBlogCommentController::class, 'bulkDelete'])->name('blog-comments.bulk-delete');
+        Route::get('/blog-comments/{blogComment}', [AdminBlogCommentController::class, 'show'])->name('blog-comments.show');
+        Route::delete('/blog-comments/{blogComment}', [AdminBlogCommentController::class, 'destroy'])->name('blog-comments.delete');
 
         // Agentic RAG knowledge management (admin only)
         Route::middleware('admin')->group(function () {
