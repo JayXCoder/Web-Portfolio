@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\BlogComment;
 use App\Models\BlogPost;
 use App\Repositories\Interfaces\BlogCommentRepositoryInterface;
+use App\Support\CommentSanitizer;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 
@@ -28,9 +29,9 @@ class BlogCommentService
     {
         return $this->blogCommentRepository->create([
             'blog_post_id' => $post->id,
-            'author_name' => trim($data['author_name']),
-            'author_email' => isset($data['author_email']) ? trim((string) $data['author_email']) ?: null : null,
-            'body' => trim($data['body']),
+            'author_name' => CommentSanitizer::authorName((string) ($data['author_name'] ?? '')),
+            'author_email' => CommentSanitizer::email($data['author_email'] ?? null),
+            'body' => CommentSanitizer::body((string) ($data['body'] ?? '')),
             'ip_address' => $request->ip(),
         ]);
     }

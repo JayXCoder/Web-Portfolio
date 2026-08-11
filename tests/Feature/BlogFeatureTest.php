@@ -81,6 +81,7 @@ class BlogFeatureTest extends TestCase
             'author_name' => 'Reader',
             'author_email' => 'r@example.com',
             'body' => 'Nice post!',
+            'website' => '',
         ])->assertRedirect();
 
         $this->get(route('blog.show', 'discuss'))
@@ -97,6 +98,80 @@ class BlogFeatureTest extends TestCase
 
         $this->assertDatabaseMissing('blog_comments', ['id' => $comment->id]);
         $this->get(route('blog.show', 'discuss'))->assertDontSee('Nice post!');
+    }
+
+    public function test_comment_html_and_scripts_are_stripped_and_escaped_on_page(): void
+    {
+        $post = BlogPost::create($this->postAttrs([
+            'title' => 'Safe',
+            'slug' => 'safe-comments',
+            'is_published' => true,
+            'published_at' => now(),
+        ]));
+
+        $this->post(route('blog.comments.store', 'safe-comments'), [
+            'author_name' => '<img src=x onerror=alert(1)>Jay',
+            'author_email' => 'safe@example.com',
+            'body' => '<script>alert("xss")</script>Hello & welcome <b>friend</b>',
+            'website' => '',
+        ])->assertRedirect();
+
+        $comment = BlogComment::first();
+        $this->assertNotNull($comment);
+        $this->assertSame('Jay', $comment->author_name);
+        $this->assertSame('Hello & welcome friend', $comment->body);
+        $this->assertStringNotContainsString('<script', $comment->body);
+        $this->assertStringNotContainsString('<b>', $comment->body);
+
+        $this->get(route('blog.show', 'safe-comments'))
+            ->assertOk()
+            ->assertSee('Hello &amp; welcome friend', false)
+            ->assertDontSee('<script>', false)
+            ->assertDontSee('<img', false)
+            ->assertDontSee('onerror=', false);
+    }
+
+    public function test_honeypot_comments_are_silently_discarded(): void
+    {
+        $post = BlogPost::create($this->postAttrs([
+            'title' => 'Bot Trap',
+            'slug' => 'bot-trap',
+            'is_published' => true,
+            'published_at' => now(),
+        ]));
+
+        $this->post(route('blog.comments.store', 'bot-trap'), [
+            'author_name' => 'Spam Bot',
+            'author_email' => 'bot@spam.test',
+            'body' => 'Buy followers now',
+            'website' => 'https://spam.example',
+        ])
+            ->assertRedirect(route('blog.show', 'bot-trap').'#comments')
+            ->assertSessionHas('success');
+
+        $this->assertDatabaseCount('blog_comments', 0);
+        $this->get(route('blog.show', 'bot-trap'))->assertDontSee('Buy followers now');
+    }
+
+    public function test_blank_markup_only_comment_is_rejected(): void
+    {
+        $post = BlogPost::create($this->postAttrs([
+            'title' => 'Empty Markup',
+            'slug' => 'empty-markup',
+            'is_published' => true,
+            'published_at' => now(),
+        ]));
+
+        $this->from(route('blog.show', 'empty-markup'))
+            ->post(route('blog.comments.store', 'empty-markup'), [
+                'author_name' => '<script></script>',
+                'body' => '<script></script><b></b>',
+                'website' => '',
+            ])
+            ->assertRedirect(route('blog.show', 'empty-markup'))
+            ->assertSessionHasErrors(['author_name', 'body']);
+
+        $this->assertDatabaseCount('blog_comments', 0);
     }
 
     public function test_publishing_post_dispatches_blog_reindex(): void

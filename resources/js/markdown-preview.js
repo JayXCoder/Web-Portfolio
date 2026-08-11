@@ -1,4 +1,5 @@
 import DOMPurify from 'dompurify';
+import { enhanceMermaidViewers } from './mermaid-viewer';
 
 let mermaidReady = false;
 let hljsReady = false;
@@ -90,15 +91,19 @@ async function highlightCodeBlocks(root) {
 }
 
 async function renderMermaid(root) {
-    const nodes = root.querySelectorAll('pre.mermaid');
+    const nodes = [...root.querySelectorAll('pre.mermaid')].filter(
+        (node) => !node.closest('.mermaid-viewer') && node.dataset.mermaidViewer !== 'true',
+    );
     if (!nodes.length) return;
 
     const mermaid = await ensureMermaid();
     try {
-        await mermaid.run({ nodes: [...nodes] });
+        await mermaid.run({ nodes });
     } catch {
         // leave source visible
     }
+
+    enhanceMermaidViewers(root);
 }
 
 async function renderMath(root) {

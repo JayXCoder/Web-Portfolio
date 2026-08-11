@@ -100,3 +100,14 @@ Then submit a CSRF-authenticated request to `/chat/stream`. The NDJSON response 
 ## Rollback
 
 Set `RAG_ENABLED=false` and recreate the app container to route chat through the pre-existing chat service. The knowledge tables can remain in place; no data deletion is required.
+
+```c
+#include <iostream>
+
+int main() {
+    std::cout << "Because the best AI subscription isn't necessarily the one with the smartest model.\n"
+                 "\n"
+                 "It's the one that gives you the most useful capability for every Ringgit you spend.\n";
+    return 0;
+}
+```

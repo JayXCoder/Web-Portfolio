@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\BlogPost;
+use App\Http\Requests\StoreBlogCommentRequest;
 use App\Services\BlogCommentService;
 use App\Services\BlogPostService;
 use App\Support\MarkdownRenderer;
@@ -36,18 +36,19 @@ class BlogController extends Controller
         return view('pages.blog-post', compact('post', 'html', 'comments'));
     }
 
-    public function storeComment(Request $request, string $slug): RedirectResponse
+    public function storeComment(StoreBlogCommentRequest $request, string $slug): RedirectResponse
     {
         $post = $this->blogPostService->getPublishedBySlug($slug);
         abort_if(! $post, 404);
 
-        $validated = $request->validate([
-            'author_name' => 'required|string|max:120',
-            'author_email' => 'nullable|email|max:255',
-            'body' => 'required|string|max:5000',
-        ]);
-
-        $this->blogCommentService->createComment($post, $validated, $request);
+        // Silent success for bots that fill the honeypot — do not store anything.
+        if (! $request->isHoneypotTriggered()) {
+            $this->blogCommentService->createComment($post, $request->safe()->only([
+                'author_name',
+                'author_email',
+                'body',
+            ]), $request);
+        }
 
         return redirect()
             ->route('blog.show', $post)

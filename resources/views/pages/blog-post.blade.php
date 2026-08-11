@@ -117,12 +117,28 @@
                     @endforelse
                 </div>
 
-                <form method="POST" action="{{ route('blog.comments.store', $post->slug) }}" class="mt-10 space-y-4">
+                <form method="POST" action="{{ route('blog.comments.store', $post->slug) }}" class="mt-10 space-y-4" novalidate>
                     @csrf
                     <h3 class="blog-type text-lg font-bold text-text">Leave a comment</h3>
+
+                    {{-- Honeypot for bots. Hidden from people; filled fields are discarded server-side. --}}
+                    <div class="comment-hp" aria-hidden="true">
+                        <label for="comment_website">Website</label>
+                        <input
+                            id="comment_website"
+                            type="text"
+                            name="website"
+                            value=""
+                            tabindex="-1"
+                            autocomplete="off"
+                            autocapitalize="off"
+                            spellcheck="false"
+                        >
+                    </div>
+
                     <div>
                         <label for="author_name" class="label-field">Name</label>
-                        <input id="author_name" name="author_name" type="text" value="{{ old('author_name') }}" required maxlength="120" class="input-field mt-1">
+                        <input id="author_name" name="author_name" type="text" value="{{ old('author_name') }}" required maxlength="120" class="input-field mt-1" autocomplete="name">
                         @error('author_name')<p class="mt-1 text-sm text-danger" role="alert">{{ $message }}</p>@enderror
                     </div>
                     <div>
