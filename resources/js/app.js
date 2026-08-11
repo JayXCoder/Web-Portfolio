@@ -60,16 +60,26 @@ function initScrollReveal() {
     const targets = document.querySelectorAll('.fade-in-view');
     if (!targets.length) return;
 
+    // threshold must stay 0: tall blocks (e.g. full blog body) can never reach
+    // a percentage like 0.08 of their own height inside the viewport, so they
+    // would stay opacity-0 forever.
+    const reveal = (el) => el.classList.add('is-visible');
+
+    if (!('IntersectionObserver' in window)) {
+        targets.forEach(reveal);
+        return;
+    }
+
     const observer = new IntersectionObserver(
         (entries) => {
             entries.forEach((entry) => {
                 if (entry.isIntersecting) {
-                    entry.target.classList.add('is-visible');
+                    reveal(entry.target);
                     observer.unobserve(entry.target);
                 }
             });
         },
-        { threshold: 0.08, rootMargin: '0px 0px -40px 0px' }
+        { threshold: 0, rootMargin: '0px 0px -24px 0px' }
     );
 
     targets.forEach((el) => observer.observe(el));

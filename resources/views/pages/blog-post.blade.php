@@ -91,7 +91,7 @@
                 >
             @endif
 
-            <div class="md-preview mt-10 fade-in-view" data-md-enhance>
+            <div class="md-preview mt-10" data-md-enhance>
                 {!! $html !!}
             </div>
 
